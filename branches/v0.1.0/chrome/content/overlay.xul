@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://gprivacy/skin/overlay.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://gprivacy/locale/overlay.dtd">
+<overlay id="gprivacy-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script src="gprivacy.js"/>
+
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="gprivacy-strings" src="chrome://gprivacy/locale/overlay.properties"/>
+  </stringbundleset>
+
+  <popup id="contentAreaContextMenu">
+    <menuitem id="context-gprivacy" label="&gprivacyContext.label;"
+              class="menuitem-iconic"
+              image="&gprivacyContext.icon;"
+              accesskey="&gprivacyContext.accesskey;"
+              insertbefore="context-sep-properties"
+              oncommand="gprivacy.onMenuItemCommand(event)"/>
+  </popup>
+</overlay>

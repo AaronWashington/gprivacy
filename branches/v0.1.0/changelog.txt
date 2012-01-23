@@ -1,0 +1,29 @@
+0.1.0:
+  + Enable engines separately
+  + Add options leave links from same domain alone (default!)
+  + Open options from context menu on recognized websites
+  + YouTube support
+  + Allow blocking of all link events
+  - Improve Facebook links
+  
+0.0.4:
+  + Facebook support (alpha)
+  - Fix link order in Google results
+
+0.0.3:
+  Initial AMO public release
+
+0.0.0:
+  Icons from http://openiconlibrary.sourceforge.net/
+    private:   16x16\status\security-high-2.png
+    tracking:  16x16\status\security-low-2.png
+    attention: 16x16\status\dialog-warning-2.png
+
+Google, YouTube, Yahoo!, Bing, Facebook and probably many other websites are trying to hide the fact that are tracking your clicks, even if you tell them not to.
+
+They're doing this, sometimes by replacing the links as soon as press the mouse-button sometimes by adding other click handlers.
+
+This means that even if you drag the seemingly harmless links to another tab or copy and paste the link, you still get tracked.
+
+
+To see this effect (and for security reasons), I'd recommend you to install the excellent <a href="https://addons.mozilla.org/en-US//addon/requestpolicy/">RequestPolicy</a> add-on!
