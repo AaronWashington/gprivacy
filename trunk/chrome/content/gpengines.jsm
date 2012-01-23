@@ -109,6 +109,7 @@ gprivacyDefault.prototype = {
         link.removeAttribute(this.TRACKATTR[i]);
     }
     var evts = EventUtils.getEvents(link);
+    // FIXME: stopping "click" events breaks Ctrl-Click!
 //  if ("click" in evts)     EventUtils.stopEvent("click",     link);
     if ("mousedown" in evts) EventUtils.stopEvent("mousedown", link);
   },
@@ -130,7 +131,7 @@ gprivacyDefault.prototype = {
   },
   
   removeGlobal:  function(_doc) {
-    // see yahoo.jsm
+    // see youtube.jsm
   }
   
 };

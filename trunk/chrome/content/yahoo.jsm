@@ -28,11 +28,6 @@ gprivacyYahoo.prototype = {
     EventUtils.stopEvent("mousedown", link);
   },
   
-  removeGlobal: function(doc) {
-    this.super.removeGlobal(doc);
-    
-  },
-  
   insertLinkAnnot: function(doc, link, elt) {
     if (link.parentNode.tagName == "H3")
       return link.parentNode.parentNode.appendChild(elt);

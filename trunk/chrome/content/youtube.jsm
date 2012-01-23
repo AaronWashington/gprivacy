@@ -23,4 +23,16 @@ gprivacyYouTube.prototype = {
     return link.classList.contains("yt-uix-redirect-link");
   },
   
+  removeTracking: function(doc, link) {
+    this.super.removeTracking(doc, link);
+    // stop "click", even if it's NOT handled by the link itself
+    // this breaks Ctrl-Click!
+    // EventUtils.stopEvent("click", link.parentNode);
+    link.setAttribute("data-redirect-href-updated", "true");
+  },
+  
+  removeGlobal: function(doc) {
+    this.super.removeGlobal(doc);
+  }
+  
 };
