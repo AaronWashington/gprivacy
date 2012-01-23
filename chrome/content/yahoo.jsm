@@ -3,29 +3,36 @@ Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 
 var EXPORTED_SYMBOLS = [ "gprivacyYahoo" ];
 
-function gprivacyYahoo(gprivacy) {
-  this.gpr   = gprivacy
+function gprivacyYahoo(engines) {
+  this.engines = engines;
+  this.gpr     = engines.gpr;
   
-  this.PATTERN = Services.prefs.getCharPref("extensions.gprivacy.engines.yahoo.match");
+  this.PATTERN = /https?:\/\/(\w+\.)*?(yahoo)\.\w+\//
 }
 
 gprivacyYahoo.prototype = {
   ID:         "yahoo",
   NAME:       "Yahoo!",
-  PATTERN:    Services.prefs.getCharPref("extensions.gprivacy.engines.yahoo.match"),
   TRACKATTR:  [ "dirtyhref", "data-bk", "data-bns" ],
   LINK_CLASS: "",
 
-  onLinkMousedown: function(e) {
-    e.stopPropagation();
-  },
-  
   loggedIn: function(doc) {
     var logout = doc.evaluate('count(//a[@href[contains(.,"logout=1")]])', doc, null,
                               Components.interfaces.nsIDOMXPathResult.ANY_TYPE, null );
     return logout.numberValue > 0;
   },
 
+  removeTracking: function(doc, link) {
+    this.super.removeTracking(doc, link);
+    // stop "mousedown", even if it's NOT handled by the link itself
+    EventUtils.stopEvent("mousedown", link);
+  },
+  
+  removeGlobal: function(doc) {
+    this.super.removeGlobal(doc);
+    
+  },
+  
   insertLinkAnnot: function(doc, link, elt) {
     if (link.parentNode.tagName == "H3")
       return link.parentNode.parentNode.appendChild(elt);

@@ -1,7 +1,10 @@
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cu = Components.utils;
 
-var EXPORTED_SYMBOLS = [ "EventUtils" ];
+Cu.import("resource://gre/modules/Services.jsm");
+
+var EXPORTED_SYMBOLS = [ "EventUtils", "Logging" ];
 
 var EventUtils = {
   _els: null,
@@ -35,4 +38,77 @@ var EventUtils = {
   stopThis: function(evt) {
     evt.stopPropagation();
   }
+};
+
+function CallerInfo() {
+}
+
+CallerInfo.prototype = {
+  filename: null, fileName: null, sourceLine: null, lineNumber: null, columnNumber: null
+}
+  
+var Logging = {
+
+  callerInfo: function(level) { // should
+    if (!level) level = 0;
+    // see https://github.com/eriwen/javascript-stacktrace/blob/master/stacktrace.js
+    var info = new CallerInfo();
+    try { this.undef() }
+    catch (exc) {
+      var stack = exc.stack.replace(/(?:\n@:0)?\s+$/m, '').replace(/^\(/gm, '{anonymous}(').split('\n');
+      // "{anonymous}([object Object],\"refreshEngine\",[object Proxy])@chrome://gprivacy/content/gprivacy.js:134"
+      if (stack.length > level+1) {
+        var sinfo = stack[level+1].split('@');
+        if (sinfo.length == 2) {
+          info.sourceLine = sinfo[0];
+          var c = sinfo[1].lastIndexOf(":");
+          if (c != -1) { 
+            info.filename   = info.fileName = sinfo[1].slice(0, c);
+            info.lineNumber = parseInt(sinfo[1].slice(c+1));
+          } else {
+            info.filename   = info.fileName = sinfo[1]
+            info.lineNumber = 1;
+          }
+        }
+        else
+          info.sourcLine = stack[level+1];
+      }
+    }
+    return info;
+  },
+  
+  log: function(txt) {
+    Services.console.logStringMessage("gprivacy: " + txt);
+  },
+  
+  logException: function(exc, txt) {
+    txt = txt ? txt + ": " : ""
+    var excLog = Components.classes["@mozilla.org/scripterror;1"]
+                           .createInstance(Components.interfaces.nsIScriptError);
+    excLog.init(txt + exc.message,
+                exc.filename || exc.fileName, exc.location ? exc.location.sourceLine : null,
+                exc.lineNumber, exc.columnNumber,
+                excLog.errorFlag, "gprivacy");
+    Services.console.logMessage(excLog);
+  },
+  
+  warn: function(txt, showSrcInfo) {
+    var warn = Components.classes["@mozilla.org/scripterror;1"]
+                         .createInstance(Components.interfaces.nsIScriptError);
+    var info = showSrcInfo ? this.callerInfo(1) : new CallerInfo();
+    warn.init(txt, info.filename, info.sourceLine, info.lineNumber, info.columnNUmber,
+              warn.warningFlag, "gprivacy");
+    Services.console.logMessage(warn);
+  },
+  
+  error: function(txt, showSrcInfo) {
+    var err = Components.classes["@mozilla.org/scripterror;1"]
+                        .createInstance(Components.interfaces.nsIScriptError);
+    if (showSrcInfo === undefined) showSrcInfo = true;
+    var info = showSrcInfo ? this.callerInfo(1) : new CallerInfo();
+    err.init(txt, info.filename, info.sourceLine, info.lineNumber, info.columnNUmber,
+             err.errorFlag, "gprivacy");
+    Services.console.logMessage(err);
+  },
+  
 };

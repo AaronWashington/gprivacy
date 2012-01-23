@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
-    <em:id>{ea61041c-1e22-4400-99a0-aea461e69d04}</em:id>
+    <em:id>{4488b48a-236b-4166-a983-3c2b97d82b71}</em:id>
     <em:type>2</em:type>
-    <em:name>Google Privacy</em:name>
-    <em:version>0.1.1pre</em:version>
+    <em:name>Ask.com for Google Privacy</em:name>
+    <em:version>0.1.1</em:version>
     <em:creator>Herrminator</em:creator>
     <em:contributor></em:contributor>
-    <em:description>Make search engines respect your privacy settings</em:description>
+    <em:description>Add Ask.com support to Google Privacy</em:description>
+    <!-- gprivacy is required to be installed! -->
     <em:aboutURL>chrome://gprivacy/content/about.xul</em:aboutURL>
     <em:optionsURL>chrome://gprivacy/content/options.xul</em:optionsURL>
-    <em:iconURL>chrome://gprivacy/skin/icon.png</em:iconURL>  
+    <em:iconURL>chrome://gprask/skin/icon.png</em:iconURL>  
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- Firefox -->
