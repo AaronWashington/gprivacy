@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<!DOCTYPE prefwindow SYSTEM "chrome://gprivacy/locale/options.dtd">
+
+<prefwindow id="gprivacy-preferences"
+            xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+            xmlns:html="http://www.w3.org/1999/xhtml"
+            title="&prefwindow.title;"
+            onload="gprivacyOpts.onLoad();"
+            ondialogaccept="gprivacyOpts.onOK();">
+  <script src="gpoptions.js" />
+  <prefpane id="pane1" label="&pane1.title;">
+    <preferences defaultbutton="cancel">
+      <preference id="active"   name="extensions.gprivacy.active"    type="bool"/>
+      <preference id="activel"  name="extensions.gprivacy.active.loggedin" type="bool"/>
+      <preference id="replace"  name="extensions.gprivacy.replace"   type="bool"/>
+      <preference id="orig"     name="extensions.gprivacy.orig"      type="bool"/>
+      <preference id="debug"    name="extensions.gprivacy.debug"     type="bool"/>
+      <preference id="mark"     name="extensions.gprivacy.mark"      type="bool"/>
+      <preference id="text"     name="extensions.gprivacy.text"      type="bool"/>
+      <preference id="anon"     name="extensions.gprivacy.anonlinks" type="bool"/>
+      <preference id="DNT"      name="privacy.donottrackheader.enabled" type="bool"/>
+      
+      <preference id="egoogle"  name="extensions.gprivacy.engines.google.enabled" type="bool"/>
+      <preference id="agoogle"  name="extensions.gprivacy.engines.google.allevts" type="bool"/>
+      <preference id="sgoogle"  name="extensions.gprivacy.engines.google.own"     type="bool"/>
+      <preference id="eyahoo"   name="extensions.gprivacy.engines.yahoo.enabled"  type="bool"/>
+      <preference id="ayahoo"   name="extensions.gprivacy.engines.yahoo.allevts"  type="bool"/>
+      <preference id="syahoo"   name="extensions.gprivacy.engines.yahoo.own"      type="bool"/>
+      <preference id="ebing"    name="extensions.gprivacy.engines.bing.enabled"   type="bool"/>
+      <preference id="abing"    name="extensions.gprivacy.engines.bing.allevts"   type="bool"/>
+      <preference id="sbing"    name="extensions.gprivacy.engines.bing.own"       type="bool"/>
+      <preference id="eface"    name="extensions.gprivacy.engines.facebook.enabled" type="bool"/>
+      <preference id="aface"    name="extensions.gprivacy.engines.facebook.allevts" type="bool"/>
+      <preference id="sface"    name="extensions.gprivacy.engines.facebook.own"     type="bool"/>
+      <preference id="etube"    name="extensions.gprivacy.engines.youtube.enabled" type="bool"/>
+      <preference id="atube"    name="extensions.gprivacy.engines.youtube.allevts" type="bool"/>
+      <preference id="stube"    name="extensions.gprivacy.engines.youtube.own"     type="bool"/>
+    </preferences>
+    <checkbox id="checkactive"  preference="active"  label="&checkactive.label;"  accesskey="&checkactive.accesskey;"  oncommand="gprivacyOpts.enableCtls();"/>
+    <checkbox id="checkDNT"     preference="DNT"     label="&checkDNT.label;"     accesskey="&checkDNT.accesskey;" />
+    <hbox>
+      <groupbox id="options">
+        <caption label="&options.label;" />
+        <checkbox id="checkactivel" preference="activel" label="&checkactivel.label;" accesskey="&checkactivel.accesskey;" />
+        <checkbox id="checkreplace" preference="replace" label="&checkreplace.label;" accesskey="&checkreplace.accesskey;" oncommand="gprivacyOpts.enableCtls();"/>
+        <checkbox id="checkorig"    preference="orig"    label="&checkorig.label;"    accesskey="&checkorig.accesskey;"/>
+        <checkbox id="checkmark"    preference="mark"    label="&checkmark.label;"    accesskey="&checkmark.accesskey;"    oncommand="gprivacyOpts.enableCtls('mark');"/>
+        <checkbox id="checktext"    preference="text"    label="&checktext.label;"    accesskey="&checktext.accesskey;"    oncommand="gprivacyOpts.enableCtls('text');"/>
+        <groupbox>
+          <caption label="&advanced.label;" image="&warning.icon;" dir="reverse" tooltiptext="&advanced.tip;"/>
+          <checkbox id="checkanon"    preference="anon"    label="&checkanon.label;"  accesskey="&checkanon.accesskey;"  tooltiptext="&advanced.tip;"/>
+          <checkbox id="checkdebug"   preference="debug"   label="&checkdebug.label;" accesskey="&checkdebug.accesskey;" tooltiptext="&advanced.tip;"/>
+        </groupbox>
+      </groupbox>
+      <groupbox id="engines">
+        <caption label="&engines.label;"/>
+        <grid>
+          <columns>
+            <column flex="2"/>
+            <column flex="1" align="right"/>
+            <column flex="1" align="right"/>
+          </columns>
+          <rows>
+            <row><spacer/>
+                 <label tooltiptext="&own.tip;" value="&own.label;"/>
+                 <hbox  tooltiptext="&all.tip;" align="baseline">
+                   <label value="&all.label;"/><image src="&warning.icon;"/>
+                 </hbox>
+            </row>
+            <row><checkbox id="cegoogle" preference="egoogle"  label="&cegoogle.label;"/>
+                 <checkbox id="csgoogle" preference="sgoogle"  label="&own.allowed;" tooltiptext="&own.tip;"/>
+                 <checkbox id="cagoogle" preference="agoogle"  label="&all.blocked;" tooltiptext="&all.tip;"/>
+            </row>
+            <row><checkbox id="ceyahoo"  preference="eyahoo"   label="&ceyahoo.label;"/>
+                 <checkbox id="csyahoo"  preference="syahoo"   label="&own.allowed;" tooltiptext="&own.tip;"/>
+                 <checkbox id="cayahoo"  preference="ayahoo"   label="&all.blocked;" tooltiptext="&all.tip;"/>
+            </row>
+            <row><checkbox id="cebing"   preference="ebing"    label="&cebing.label;"/>
+                 <checkbox id="csbing"   preference="sbing"    label="&own.allowed;" tooltiptext="&own.tip;"/>
+                 <checkbox id="cabing"   preference="abing"    label="&all.blocked;" tooltiptext="&all.tip;"/>
+            </row>
+            <row><checkbox id="cetube"   preference="etube"    label="&cetube.label;"/>
+                 <checkbox id="cstube"   preference="stube"    label="&own.allowed;" tooltiptext="&own.tip;"/>
+                 <checkbox id="catube"   preference="atube"    label="&all.blocked;" tooltiptext="&all.tip;"/>
+            </row>
+            <row><checkbox id="ceface"   preference="eface"    label="&ceface.label;"/>
+                 <checkbox id="csface"   preference="sface"    label="&own.allowed;" tooltiptext="&own.tip;"/>
+                 <checkbox id="caface"   preference="aface"    label="&all.blocked;" tooltiptext="&all.tip;"/>
+            </row>
+          </rows>
+        </grid>
+      </groupbox>
+    </hbox>
+    <groupbox>
+      <description>&help.text1;</description>
+      <separator class="groove"/>
+      <description>&support.text1;<html:a href="&support.url;" style="color: blue; text-decoration: underline;">&support.urltext;</html:a>&support.text2;</description>
+    </groupbox>
+  </prefpane>
+</prefwindow>
