@@ -1,0 +1,7 @@
+#summary gprivacy Documentation
+
+== CONTENTS ==
+ # [#ABOUT ABOUT]
+ 
+= ABOUT =
+[http://code.google.com/p/gprivacy/ gprivacy] is an add-on for [http://www.seamonkey-project.org/ SeaMonkey] and [http://www.mozilla.com/firefox/ Firefox], that make certain popular websites respect the browser's DNT (Do Not Track) flag.
