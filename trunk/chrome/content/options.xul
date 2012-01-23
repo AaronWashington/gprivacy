@@ -10,7 +10,7 @@
             ondialogaccept="gprivacyOpts.onOK();">
   <script src="gpoptions.js" />
   <prefpane id="pane1" label="&pane1.title;">
-    <preferences defaultbutton="cancel">
+    <preferences id="gprivacyPrefs" defaultbutton="cancel">
       <preference id="active"   name="extensions.gprivacy.active"    type="bool"/>
       <preference id="activel"  name="extensions.gprivacy.active.loggedin" type="bool"/>
       <preference id="replace"  name="extensions.gprivacy.replace"   type="bool"/>
@@ -40,7 +40,7 @@
     <checkbox id="checkactive"  preference="active"  label="&checkactive.label;"  accesskey="&checkactive.accesskey;"  oncommand="gprivacyOpts.enableCtls();"/>
     <checkbox id="checkDNT"     preference="DNT"     label="&checkDNT.label;"     accesskey="&checkDNT.accesskey;" />
     <hbox>
-      <groupbox id="options">
+      <groupbox id="gprivacyOptions">
         <caption label="&options.label;" />
         <checkbox id="checkactivel" preference="activel" label="&checkactivel.label;" accesskey="&checkactivel.accesskey;" />
         <checkbox id="checkreplace" preference="replace" label="&checkreplace.label;" accesskey="&checkreplace.accesskey;" oncommand="gprivacyOpts.enableCtls();"/>
@@ -53,15 +53,15 @@
           <checkbox id="checkdebug"   preference="debug"   label="&checkdebug.label;" accesskey="&checkdebug.accesskey;" tooltiptext="&advanced.tip;"/>
         </groupbox>
       </groupbox>
-      <groupbox id="engines">
+      <groupbox id="gprivacyEngines">
         <caption label="&engines.label;"/>
-        <grid>
+        <grid id="gprivacyEngineGrid">
           <columns>
             <column flex="2"/>
             <column flex="1" align="right"/>
             <column flex="1" align="right"/>
           </columns>
-          <rows>
+          <rows id="gprivacyEngineRows">
             <row><spacer/>
                  <label tooltiptext="&own.tip;" value="&own.label;"/>
                  <hbox  tooltiptext="&all.tip;" align="baseline">
@@ -88,6 +88,7 @@
                  <checkbox id="csface"   preference="sface"    label="&own.allowed;" tooltiptext="&own.tip;"/>
                  <checkbox id="caface"   preference="aface"    label="&all.blocked;" tooltiptext="&all.tip;"/>
             </row>
+            <row id="gprivacyEngineInsertHere"/>
           </rows>
         </grid>
       </groupbox>

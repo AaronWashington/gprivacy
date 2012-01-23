@@ -2,16 +2,16 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 
 var EXPORTED_SYMBOLS = [ "gprivacyGoogle" ];
 
-function gprivacyGoogle(gprivacy) {
-  this.gpr   = gprivacy
+function gprivacyGoogle(engines) {
+  this.engines = engines;
+  this.gpr     = engines.gpr;
   
-  this.PATTERN = Services.prefs.getCharPref("extensions.gprivacy.engines.google.match");
+  this.PATTERN = /https?:\/\/(\w+\.)*?(google)\.\w+\//
 }
 
 gprivacyGoogle.prototype = {
   ID:        "google",
   NAME:      "Google",
-  PATTERN:    Services.prefs.getCharPref("extensions.gprivacy.engines.google.match"),
   TRACKATTR:  [ "onmousedown" ],
   
   loggedIn: function(doc) {

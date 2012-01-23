@@ -3,16 +3,16 @@ Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 
 var EXPORTED_SYMBOLS = [ "gprivacyYouTube" ];
 
-function gprivacyYouTube(gprivacy) {
-  this.gpr   = gprivacy
+function gprivacyYouTube(engines) {
+  this.engines = engines;
+  this.gpr     = engines.gpr;
   
-  this.PATTERN = Services.prefs.getCharPref("extensions.gprivacy.engines.youtube.match");
+  this.PATTERN = /https?:\/\/(\w+\.)*?(youtube)\.\w+\//
 }
 
 gprivacyYouTube.prototype = {
   ID:        "youtube",
   NAME:      "YouTube",
-  PATTERN:    Services.prefs.getCharPref("extensions.gprivacy.engines.youtube.match"),
   TRACKATTR:  [  ],
   
   loggedIn: function(doc) {
@@ -20,9 +20,7 @@ gprivacyYouTube.prototype = {
   },
   
   isTracking: function(doc, link) {
-    for (var i = 0; i < link.classList.length; i++)
-      if (link.classList[i] == "yt-uix-redirect-link")
-        return true;
+    return link.classList.contains("yt-uix-redirect-link");
   },
   
 };

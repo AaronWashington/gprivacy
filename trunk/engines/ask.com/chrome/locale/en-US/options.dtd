@@ -1,0 +1,5 @@
+<!ENTITY ceask.label "Ask.com">
+<!ENTITY own.allowed "allowed">
+<!ENTITY own.tip     "Links to the same website won't be modified">
+<!ENTITY all.blocked "blocked">
+<!ENTITY all.tip     "Careful! Removing all click events may cause the website to stop working!">

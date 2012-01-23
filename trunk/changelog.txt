@@ -1,3 +1,10 @@
+0.1.1
+  * Major Code refactoring
+  + Add possibility to add engines from other add-ons
+  + Sample Ask.com add-on
+  - More Facebook improvements
+  - Hide pattern preferences from users
+
 0.1.0:
   + Enable engines separately
   + Add options leave links from same domain alone (default!)

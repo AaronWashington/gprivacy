@@ -2,16 +2,16 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 
 var EXPORTED_SYMBOLS = [ "gprivacyBing" ];
 
-function gprivacyBing(gprivacy) {
-  this.gpr   = gprivacy
+function gprivacyBing(engines) {
+  this.engines = engines;
+  this.gpr     = engines.gpr;
   
-  this.PATTERN = Services.prefs.getCharPref("extensions.gprivacy.engines.bing.match");
+  this.PATTERN = /https?:\/\/(\w+\.)*?(bing)\.\w+\//
 }
 
 gprivacyBing.prototype = {
   ID:         "bing",
   NAME:       "Bing",
-  PATTERN:    Services.prefs.getCharPref("extensions.gprivacy.engines.bing.match"),
   TRACKATTR:  [ "onmousedown" ],
   LINK_CLASS: "sb_meta",
   
