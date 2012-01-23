@@ -4,7 +4,7 @@ const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
 
-var EXPORTED_SYMBOLS = [ "EventUtils", "Logging" ];
+var EXPORTED_SYMBOLS = [ "DOMUtils", "EventUtils", "Logging" ];
 
 var EventUtils = {
   _els: null,
@@ -38,6 +38,21 @@ var EventUtils = {
   stopThis: function(evt) {
     evt.stopPropagation();
   }
+};
+
+var DOMUtils = {
+  create: function(doc, def) {
+    var elt = doc.createElement(def.node);
+    for (var attr in def)
+      if (attr != "node") elt.setAttribute(attr, def[attr]);
+    return elt;
+  },
+  
+  removeAllChildren: function(node) {
+    while (node.hasChildNodes())
+      node.removeChild(node.firstChild);
+  }
+
 };
 
 function CallerInfo() {

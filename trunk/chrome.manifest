@@ -1,7 +1,8 @@
-content   gprivacy                 chrome/content/
+content   gprivacy                 chrome/content/ contentaccessible=yes
 skin      gprivacy   classic/1.0   chrome/skin/
 locale    gprivacy   en-US         chrome/locale/en-US/
 
+resource  gprivacy   chrome/skin/
 
 overlay chrome://browser/content/browser.xul     chrome://gprivacy/content/overlay.xul
 overlay	chrome://navigator/content/navigator.xul chrome://gprivacy/content/overlay.xul

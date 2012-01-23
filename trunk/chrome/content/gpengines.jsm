@@ -77,8 +77,8 @@ gprivacyDefault.prototype = {
   
   cloneLink: function(_doc, link) {
     var neew = link.cloneNode(false);
-    neew.setMark = function(html) {
-      this.innerHTML += html;
+    neew.setMark = function(elt) {
+      this.appendChild(elt);
     }
     return neew;
   },
@@ -89,10 +89,10 @@ gprivacyDefault.prototype = {
     var lstyle = null;
     if (this.LINK_STYLE) lstyle = this.LINK_STYLE;
       
-    var span = doc.createElement("span");
-    span.setAttribute("class", lclass);
-    span.setAttribute("style", lstyle);
-    span.innerHTML = "&nbsp;-&nbsp;";
+    var span = DOMUtils.create(doc, { node: "span", class: lclass, style: lstyle});
+    // if this is prettier than span.innerHTML = "&nbsp;-&nbsp;"; ???
+    // but if it makes reviewers happy...
+    span.appendChild(doc.createTextNode("\u00A0-\u00A0"));
     span.setLink = function(link) {
       this.appendChild(link)
     }
@@ -246,7 +246,12 @@ var Engines = {
     this.register = null;
   },
   
-  find: function(href, enabledOnly) {
+  find: function(href, enabledOnly, embedded) {
+    var doc = null;
+    if (href.nodeType && href.nodeType == href.DOCUMENT_NODE) {
+      doc = href;
+      href = doc.location.href;
+    }
     for (var e in this.engines) {
       var eng   = this._engines[e];
 
@@ -255,6 +260,14 @@ var Engines = {
 
       if (href.match(eng.PATTERN) != null)
         return eng;
+    }
+    if (doc != null && embedded) {
+      var frames = { i: doc.getElementsByTagName("iframe"), f: doc.getElementsByTagName("frame") };
+      for (var what in frames)
+        for (var f = 0; f < frames[what].length; f++) {
+          var emb = this.find(frames[what][f].contentDocument, enabledOnly, false);
+          if (emb != null) return emb;
+        }
     }
     return null;
   },

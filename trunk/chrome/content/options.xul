@@ -19,6 +19,7 @@
       <preference id="mark"     name="extensions.gprivacy.mark"      type="bool"/>
       <preference id="text"     name="extensions.gprivacy.text"      type="bool"/>
       <preference id="anon"     name="extensions.gprivacy.anonlinks" type="bool"/>
+      <preference id="embed"    name="extensions.gprivacy.embedded"  type="bool"/>
       <preference id="DNT"      name="privacy.donottrackheader.enabled" type="bool"/>
       
       <preference id="egoogle"  name="extensions.gprivacy.engines.google.enabled" type="bool"/>
@@ -47,6 +48,7 @@
         <checkbox id="checkorig"    preference="orig"    label="&checkorig.label;"    accesskey="&checkorig.accesskey;"/>
         <checkbox id="checkmark"    preference="mark"    label="&checkmark.label;"    accesskey="&checkmark.accesskey;"    oncommand="gprivacyOpts.enableCtls('mark');"/>
         <checkbox id="checktext"    preference="text"    label="&checktext.label;"    accesskey="&checktext.accesskey;"    oncommand="gprivacyOpts.enableCtls('text');"/>
+        <checkbox id="checkembed"   preference="embed"   label="&checkembed.label;"    accesskey="&checkembed.accesskey;"   oncommand="gprivacyOpts.enableCtls('embed');"/>
         <groupbox>
           <caption label="&advanced.label;" image="&warning.icon;" dir="reverse" tooltiptext="&advanced.tip;"/>
           <checkbox id="checkanon"    preference="anon"    label="&checkanon.label;"  accesskey="&checkanon.accesskey;"  tooltiptext="&advanced.tip;"/>
