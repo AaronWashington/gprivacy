@@ -12,7 +12,7 @@ function gprivacyGoogle(engines) {
 gprivacyGoogle.prototype = {
   ID:        "google",
   NAME:      "Google",
-  TRACKATTR:  [ "onmousedown" ],
+  TRACKATTR:  [ "onmousedown", "data-ctorig" ],
   
   loggedIn: function(doc) {
     return doc.getElementById("gbi4s1") == null;

@@ -39,6 +39,8 @@ var gprivacyOpts = {
     if (what == "mark" && !document.getElementById("checkmark").checked)
       document.getElementById("checktext").checked = true;
       
+    // Cannot deactivate embbedded frames for now
+    document.getElementById("checkembed").disabled = true;
   },
 
   log: function(txt) {

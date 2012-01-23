@@ -13,6 +13,8 @@
 <!ENTITY checkmark.accesskey "M">
 <!ENTITY checktext.label "Show descriptive text">
 <!ENTITY checktext.accesskey "T">
+<!ENTITY checkembed.label "Embedded websites">
+<!ENTITY checkembed.accesskey "B">
 <!ENTITY checkdebug.label "Debug output to console">
 <!ENTITY checkdebug.accesskey "D">
 <!ENTITY checkanon.label "Mark empty and JavaScript links">

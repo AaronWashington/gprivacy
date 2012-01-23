@@ -6,6 +6,7 @@ pref("extensions.gprivacy.mark",      true);
 pref("extensions.gprivacy.text",      true);
 pref("extensions.gprivacy.debug",     false);
 pref("extensions.gprivacy.anonlinks", false);
+pref("extensions.gprivacy.embedded",  true);
 
 pref("extensions.gprivacy.engines.google.enabled",   true);
 pref("extensions.gprivacy.engines.google.allevts",   false);
