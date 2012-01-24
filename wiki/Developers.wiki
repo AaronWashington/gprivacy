@@ -1,0 +1,14 @@
+#summary Information for add-on developers.
+
+= Extending gprivacy =
+
+There's a sample add-on engine in
+[http://code.google.com/p/gprivacy/source/browse/#svn%2Ftrunk%2Fengines%2Fask.com engines/ask.com].
+
+[http://code.google.com/p/gprivacy/source/browse/trunk/engines/ask.com/chrome/content/ask.jsm ask.jsm]
+contains some hints how to write your own. Just to mention it again: You *do not* need to implement *any* of the methods there, they're just documentation!
+
+In addition to the three preferences defined in
+[http://code.google.com/p/gprivacy/source/browse/trunk/engines/ask.com/defaults/preferences/prefs.js prefs.js],
+there's a fourth one, `gprivacy.engines.<ID>.custom`, which allows the
+re-definition of the URL-matching-pattern, mainly during development.
