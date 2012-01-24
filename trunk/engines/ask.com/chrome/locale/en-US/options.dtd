@@ -1,4 +1,7 @@
+<!-- Please @change this line to match your options.xul file --> 
 <!ENTITY ceask.label "Ask.com">
+
+<!-- DON'T CHANGE ... until I find out haw to avoid copying --> 
 <!ENTITY own.allowed "allowed">
 <!ENTITY own.tip     "Links to the same website won't be modified">
 <!ENTITY all.blocked "blocked">

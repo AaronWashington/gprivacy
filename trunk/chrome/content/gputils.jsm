@@ -115,6 +115,8 @@ var Logging = {
     Services.console.logMessage(excLog);
   },
   
+  info: function(txt) { this.log(txt); },
+
   warn: function(txt, showSrcInfo, stackLevel) {
     var warn = Components.classes["@mozilla.org/scripterror;1"]
                          .createInstance(Components.interfaces.nsIScriptError);
