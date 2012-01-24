@@ -1,4 +1,5 @@
 #summary Information for add-on developers.
+#labels Featured,Documentation
 
 = Extending gprivacy =
 
