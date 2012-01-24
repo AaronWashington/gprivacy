@@ -1,8 +1,6 @@
 #summary gprivacy Documentation
 #labels Featured,Documentation
 #sidebar TableOfContents
- * [#About About]
- * [#Download Download]
 
 == CONTENTS ==
  * [#About About]
