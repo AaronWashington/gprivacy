@@ -5,6 +5,7 @@
  # [#About About]
  # [#Download Download]
  # [#Options Options]
+ # [#Support Support]
  # [#Developers Developers]
  # [#Screenshots Screenshots]
 
@@ -42,7 +43,8 @@ as having tracking functionality.
   [#Developers developers can do]!
 
 = Download =
-Please download the latest version from the [Mozilla Add-On Site].
+Please download the latest version from the
+[https://addons.mozilla.org/en-US/addon/google-privacy/ Mozilla Add-On Site].
 
 Brave beta-testers may obtain a copy of the latest development releases
 [http://code.google.com/p/gprivacy/downloads/list here].
@@ -68,6 +70,11 @@ change them!
 
  * *Mark empty and !JavaScript links * - In combination with *All Clicks*, this blocks almost every possibility for website to track clicks. But it also almost certainly completely breaks it! You might as well use [https://addons.mozilla.org/en-US/addon/noscript/ NoScript] or turn !JavaScript off completely. That's probably safer.
  * *Debug output to console* - Write verbose output to the browsers error console. On large websites, this might severely impact performance.
+
+= Support =
+`gprivacy`'s support e-mail address can be found on the
+[https://addons.mozilla.org/en-US/addon/google-privacy/ Add-On Site]
+(beside the _About this Add-on_ section).
 
 = Developers =
 `gprivacy` is extensible! If you know a website that violates peoples privacy
