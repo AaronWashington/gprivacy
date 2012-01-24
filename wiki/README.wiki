@@ -2,7 +2,79 @@
 #labels Featured,Documentation
 
 == CONTENTS ==
- # [#ABOUT ABOUT]
- 
-= ABOUT =
-[http://code.google.com/p/gprivacy/ gprivacy] is an add-on for [http://www.seamonkey-project.org/ SeaMonkey] and [http://www.mozilla.com/firefox/ Firefox], that make certain popular websites respect the browser's DNT (Do Not Track) flag.
+ # [#About About]
+ # [#Download Download]
+ # [#Options Options]
+ # [#Developers Developers]
+ # [#Screenshots Screenshots]
+
+= About =
+[http://code.google.com/p/gprivacy/ gprivacy] is an add-on for
+[http://www.seamonkey-project.org/ SeaMonkey] and
+[http://www.mozilla.com/firefox/ Firefox], that tries make certain popular
+websites respect the browser's
+[http://en.wikipedia.org/wiki/Do_not_track_header DNT (Do Not Track) flag].
+
+`gprivacy` works by adding a cleaned-up link to every link that it recognizes
+as having tracking functionality.
+
+== Disclaimer ==
+  This program is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  The author
+  assumes no liability for damages arising from use of this program OR
+  of any data that might be distributed with it.
+
+== Another Disclaimer ==
+  `gprivacy` does not -- and cannot -- recognize every mechanism companies use
+  to track user behavior! In fact, this will be probably a losing battle.
+
+  With every redesign of a website, tracking mechanisms change, and `gprivacy` *will
+  definitely* become obsolete rather sooner than later. For our most used websites,
+  We will try to keep this add-on as up-to-date as possible, but some others may
+  fall through the cracks...
+  
+  If you find that a website is starting to track you again or that `gprivacy`
+  is causing errors on a page, please head over to the [#Support support section]
+  and find our contact addresses.
+
+  If on the other hand, you want to help out and extend `gprivacy`, see what
+  [#Developers developers can do]!
+
+= Download =
+Please download the latest version from the [Mozilla Add-On Site].
+
+Brave beta-testers may obtain a copy of the latest development releases
+[http://code.google.com/p/gprivacy/downloads/list here].
+
+= Options =
+http://gprivacy.googlecode.com/svn/wiki/screens/grpivacy-options.default.jpg
+
+==== General ====
+  * *Privacy active* - Switch `gprivacy` on or off.
+  * *Replace original links* - Instead of adding a link, replace the existing one.
+  * *Show original links* - If replaced, add the infested link too.
+  * *Mark modified links* - Mark links with small icons (http://gprivacy.googlecode.com/svn/trunk/chrome/skin/private.png, http://gprivacy.googlecode.com/svn/trunk/chrome/skin/tracking.png)
+  * *Show descriptive text* - Add '`private`' or '`tracked`' to the appended links. Either this or the previous option _must_ be set.
+
+==== Website Options ====
+  * *Own links allowed* - Links to the same website will not be modified. This prevents the cluttering of some websites by sacrificing a little privacy. This is usually not a problem, as the links target is clearly visible in the browsers status, and the website can register the click anyway.
+  * *All Clicks http://gprivacy.googlecode.com/svn/trunk/chrome/skin/attention.png * - Try to catch *`*`every`*`* click on recognized links, and block it. Use this only, if you don't trust a website, as this might impair its functionality!
+
+==== Advanced Options ====
+http://gprivacy.googlecode.com/svn/trunk/chrome/skin/attention.png
+You should leave this options as is, unless asked by the developers to
+change them!
+
+ * *Mark empty and !JavaScript links * - In combination with *All Clicks*, this blocks almost every possibility for website to track clicks. But it also almost certainly completely breaks it! You might as well use [https://addons.mozilla.org/en-US/addon/noscript/ NoScript] or turn !JavaScript off completely. That's probably safer.
+ * *Debug output to console* - Write verbose output to the browsers error console. On large websites, this might severely impact performance.
+
+= Developers =
+`gprivacy` is extensible! If you know a website that violates peoples privacy
+but offers otherwise useful content - And you know how to create add-ons for
+Mozilla products, head over to the [Developers Developer Page]!
+
+= Screenshots =
+
+Google search results with `gprivacy`'s default settings.
+http://gprivacy.googlecode.com/svn/wiki/screens/gprivacy-result.1.jpg
