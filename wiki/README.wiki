@@ -1,6 +1,7 @@
 #summary gprivacy Documentation
 #labels Featured,Documentation
 
+<wiki:comment>
 == CONTENTS ==
  * [#About About]
  * [#Download Download]
@@ -8,6 +9,7 @@
  * [#Support Support]
  * [#Developers Developers]
  * [#Screenshots Screenshots]
+</wiki:comment>
 
 = About =
 [http://code.google.com/p/gprivacy/ gprivacy] is an add-on for
