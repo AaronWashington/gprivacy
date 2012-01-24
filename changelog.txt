@@ -1,4 +1,7 @@
-0.2.0
+0.2.0pre2
+  * Improve Ask.com sample add-on
+
+0.2.0pre1
   + Monitor modified links for dynamic changes (for add-on developers).
   - Fix YouTube login check
   * Ignore maps|code|plus(one)?\.google\..* for now

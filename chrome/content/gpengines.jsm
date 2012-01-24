@@ -43,7 +43,7 @@ gprivacyDefault.prototype = {
   
   loggedIn: function(_doc) { return false; },
   
-  refresh: function() {
+  refresh: function(_doc) {
     if (this.instance) {
       var custom = null;
       try { custom = Services.prefs.getCharPref("extensions.gprivacy.engines." + this.instance.ID + ".custom"); }
@@ -237,11 +237,11 @@ var Engines = {
     for (var i in stdEngines)
       this.add(stdEngines[i]);
     
-    var ret = {};
+    var ret = {}, reg;
     var set = Services.prefs.getChildList(settings, ret);
     for (var c in set) {
       var name = Services.prefs.getCharPref(set[c]); ret = {};
-      try { this.register(name, ret); for (var r in ret) this.add(new ret[r](this)); }
+      try { this.register(name, ret); for (var r in ret) { reg = new ret[r](this); this.add(reg); } }
       catch (exc) { Logging.logException(exc); }
     }
     this.register = null;

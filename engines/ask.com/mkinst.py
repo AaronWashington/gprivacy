@@ -43,7 +43,7 @@ def main(argv=sys.argv[1:]):
     print
     fname = os.path.join(cwd, "versions\\%s-%s.xpi" % (PROJ, ver))
     if os.path.exists(fname): os.remove(fname)
-    rc = os.system(JAR+' cvMf "%s" chrome defaults chrome.manifest install.rdf changelog.txt' % fname)
+    rc = os.system(JAR+' cvMf "%s" chrome defaults chrome.manifest install.rdf' % fname)
     assert rc == 0, "RC = %s" % rc
     print "sha1:", 
     os.system(SHA1+" "+fname)
