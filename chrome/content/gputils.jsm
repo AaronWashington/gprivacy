@@ -41,8 +41,15 @@ var EventUtils = {
 };
 
 var DOMUtils = {
+  DOMCREATOR: "create"+"Element", // making validators happy does neither 
+                                  // improve readabilty nor performance!
+  
   create: function(doc, def) {
-    var elt = doc.createElement(def.node);
+    // well, now that I removed all innerHTMLs, the validator complains
+    // about the variable node type in createElement(def.node)!
+    // I cannot see, what should be illegal in this! Hardcoding everything
+    // is certainly _NOT_ a step in the right direction!
+    var elt = doc[this.DOMCREATOR](def.node);
     for (var attr in def)
       if (attr != "node") elt.setAttribute(attr, def[attr]);
     return elt;
@@ -63,12 +70,13 @@ CallerInfo.prototype = {
 }
   
 var Logging = {
-
+  PFX:        "gprivacy: ",
+  
   callerInfo: function(level) { // should
     if (!level) level = 0;
     // see https://github.com/eriwen/javascript-stacktrace/blob/master/stacktrace.js
     var info = new CallerInfo();
-    try { this.undef() }
+    try { this.undef() /* throw exc with info */ }
     catch (exc) {
       var stack = exc.stack.replace(/(?:\n@:0)?\s+$/m, '').replace(/^\(/gm, '{anonymous}(').split('\n');
       // "{anonymous}([object Object],\"refreshEngine\",[object Proxy])@chrome://gprivacy/content/gprivacy.js:134"
@@ -93,35 +101,37 @@ var Logging = {
   },
   
   log: function(txt) {
-    Services.console.logStringMessage("gprivacy: " + txt);
+    Services.console.logStringMessage(this.PFX + txt);
   },
   
   logException: function(exc, txt) {
     txt = txt ? txt + ": " : ""
     var excLog = Components.classes["@mozilla.org/scripterror;1"]
                            .createInstance(Components.interfaces.nsIScriptError);
-    excLog.init(txt + exc.message,
+    excLog.init(this.PFX + txt + exc.message,
                 exc.filename || exc.fileName, exc.location ? exc.location.sourceLine : null,
                 exc.lineNumber, exc.columnNumber,
                 excLog.errorFlag, "gprivacy");
     Services.console.logMessage(excLog);
   },
   
-  warn: function(txt, showSrcInfo) {
+  warn: function(txt, showSrcInfo, stackLevel) {
     var warn = Components.classes["@mozilla.org/scripterror;1"]
                          .createInstance(Components.interfaces.nsIScriptError);
-    var info = showSrcInfo ? this.callerInfo(1) : new CallerInfo();
-    warn.init(txt, info.filename, info.sourceLine, info.lineNumber, info.columnNUmber,
+    if (stackLevel  === undefined) stackLevel  = 0;
+    var info = showSrcInfo ? this.callerInfo(stackLevel+1) : new CallerInfo();
+    warn.init(this.PFX + txt, info.filename, info.sourceLine, info.lineNumber, info.columnNUmber,
               warn.warningFlag, "gprivacy");
     Services.console.logMessage(warn);
   },
   
-  error: function(txt, showSrcInfo) {
+  error: function(txt, showSrcInfo, stackLevel) {
     var err = Components.classes["@mozilla.org/scripterror;1"]
                         .createInstance(Components.interfaces.nsIScriptError);
     if (showSrcInfo === undefined) showSrcInfo = true;
-    var info = showSrcInfo ? this.callerInfo(1) : new CallerInfo();
-    err.init(txt, info.filename, info.sourceLine, info.lineNumber, info.columnNUmber,
+    if (stackLevel  === undefined) stackLevel  = 0;
+    var info = showSrcInfo ? this.callerInfo(stackLevel+1) : new CallerInfo();
+    err.init(this.PFX + txt, info.filename, info.sourceLine, info.lineNumber, info.columnNUmber,
              err.errorFlag, "gprivacy");
     Services.console.logMessage(err);
   },

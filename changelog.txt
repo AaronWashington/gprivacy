@@ -1,4 +1,11 @@
-0.1.1
+0.2.0
+  + Monitor modified links for dynamic changes (for add-on developers).
+  - Fix YouTube login check
+  * Ignore maps|code|plus(one)?\.google\..* for now
+  + Support news.google.com
+  - Remove 'data:...' urls
+  - Remove innerHTML access
+  - Fix Ctrl-click
   * Major Code refactoring
   + Add possibility to add engines from other add-ons
   + Sample Ask.com add-on

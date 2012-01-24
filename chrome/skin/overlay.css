@@ -1,4 +1,13 @@
 /* This is just an example.  You shouldn't do this. */
+
+.popup-notification-icon[popupid="gprmon-popup"] {  
+  list-style-image: url("chrome://gprivacy/skin/icon.png");  
+}
+
+#gprmon-notification-icon {
+  list-style-image: url("chrome://gprivacy/skin/icon16.png");  
+}
+
 #gprivacy-hello
 {
   color: red ! important;

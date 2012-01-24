@@ -3,6 +3,7 @@
 <!DOCTYPE overlay SYSTEM "chrome://gprivacy/locale/overlay.dtd">
 <overlay id="gprivacy-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script src="gprivacy.js"/>
+  <script src="chrome://global/content/globalOverlay.js"/>
 
   <stringbundleset id="stringbundleset">
     <stringbundle id="gprivacy-strings" src="chrome://gprivacy/locale/overlay.properties"/>
@@ -16,4 +17,8 @@
               insertbefore="context-sep-properties"
               oncommand="gprivacy.onMenuItemCommand(event)"/>
   </popup>
+  
+  <box id="notification-popup-box">
+    <image id="gprmon-notification-icon" class="notification-anchor-icon" role="button" insertbefore="default-notification-icon"/>
+  </box>
 </overlay>
