@@ -32,14 +32,22 @@ as having tracking functionality.
   `gprivacy` does not -- and cannot -- recognize every mechanism companies use
   to track user behavior! In fact, this will be probably a losing battle.
 
-  With every redesign of a website, tracking mechanisms change, and `gprivacy` *will
-  definitely* become obsolete rather sooner than later. For our most used websites,
-  We will try to keep this add-on as up-to-date as possible, but some others may
-  fall through the cracks...
+  With every redesign of a website, tracking mechanisms change, and
+  `gprivacy` *will definitely* become obsolete rather sooner than later.
+  For our most used websites, we will try to keep this add-on as up-to-date
+  as possible, but some others may fall through the cracks...
+  
+  For this reason I suggest you don't use this add-on on its own. There are
+  a lot of privacy and security add-ons out there, with
+  [https://addons.mozilla.org/en-US/addon/requestpolicy/ RequestPolicy]
+  and [http://flashblock.mozdev.org/ FlashBlock] being my favorites.
+  I would recommend you to use these to together with this add-on.
+  But there's also [https://addons.mozilla.org/en-US/addon/noscript/ NoScript],
+  which I personally don't use but it comes highly recommended.
   
   If you find that a website is starting to track you again or that `gprivacy`
-  is causing errors on a page, please head over to the [#Support support section]
-  and find our contact addresses.
+  is causing errors on a page, please head over to the
+  [#Support support section] and find our contact addresses.
 
   If on the other hand, you want to help out and extend `gprivacy`, see what
   [#Developers developers can do]!
