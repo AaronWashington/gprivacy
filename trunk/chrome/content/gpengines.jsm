@@ -132,6 +132,7 @@ gprivacyDefault.prototype = {
   
   removeGlobal:  function(_doc) {
     // see youtube.jsm
+    return 0;
   }
   
 };

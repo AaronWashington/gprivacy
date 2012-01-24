@@ -16,7 +16,7 @@ gprivacyYouTube.prototype = {
   TRACKATTR:  [  ],
   
   loggedIn: function(doc) {
-    return doc.getElementById("gbi4s1") == null;
+    return doc.getElementById("masthead-user-button") != null;
   },
   
   isTracking: function(doc, link) {
@@ -32,7 +32,7 @@ gprivacyYouTube.prototype = {
   },
   
   removeGlobal: function(doc) {
-    this.super.removeGlobal(doc);
+    return this.super.removeGlobal(doc);
   }
   
 };
