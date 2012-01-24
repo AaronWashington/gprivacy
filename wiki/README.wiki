@@ -1,6 +1,5 @@
 #summary gprivacy Documentation
 #labels Featured,Documentation
-#sidebar TableOfContents
 
 == CONTENTS ==
  * [#About About]
