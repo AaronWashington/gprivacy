@@ -1,7 +1,7 @@
 #summary Table of contents to use as a sidebat.
 
  * [README#About About]
- * [README#Download Download]
+ * [README#Disclaimer Download]
    * [https://addons.mozilla.org/en-US/addon/google-privacy/ Add-on Site]
    * [http://code.google.com/p/gprivacy/downloads/list Pre-Releases]
  * [README#Options Options]
