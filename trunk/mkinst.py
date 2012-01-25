@@ -1,56 +1,75 @@
-import sys, os, re, shutil, zipfile, glob
+#!/bin/env python
+import sys, os, re, shutil, zipfile, glob, optparse, time
 
-PROJ      = "gprivacy"
-CHROMEJAR = PROJ
-MAKE_AMO  = False # only if there's an updateURL in install.rdf
+DEFPROJ    = "gprivacy"
 
-JAR  = r"E:\jdk1.6.0_18\bin\jar.exe"
-SHA1 = r"E:\Develop\cygwin\bin\sha1sum.exe"
-SVN  = "svn"
-JSCHK= "jsshell -C"
+ROOT_FILES = "chrome defaults chrome.manifest install.rdf changelog.txt"
+OUTDIR     = "versions"
 
-if not os.path.isfile(JAR):
-  JAR = r"J:\jdk1.6.0_18\bin\jar.exe"
+JAR     = os.environ.get("JAR",      "jar")
+SHA1SUM = os.environ.get("SHA1SUM",  "sha1sum")
+SVN     = os.environ.get("SVN",      "svn")
+JSCHK   = os.environ.get("JSCHK",    "jsshell -C")
 
 def main(argv=sys.argv[1:]):
-  if os.path.isdir(".svn"):
-    rc = os.system(SVN + " export . versions\\build")
+  op = optparse.OptionParser()
+  op.add_option("-p", "--project",   default=DEFPROJ)
+  op.add_option("-d", "--directory", default=None)
+  op.add_option("-i", "--inpdir",    default=".")
+  op.add_option("-o", "--outdir",    default="versions")
+  op.add_option("-b", "--builddir",  default="build", help="only for SVN")
+  op.add_option("-a", "--AMO",       default=False,   help="build AMO version", action="store_true")
+  
+  opts, args = op.parse_args(argv);
+
+  outdir  = os.path.abspath(opts.outdir)
+  inpdir  = os.path.abspath(opts.inpdir)
+  svnbdir = "%s\\%s" % (opts.outdir, opts.builddir)
+  
+  cwd = os.getcwd()
+
+  if os.path.isdir(os.path.join(inpdir, ".svn")):
+    rc = os.system(SVN + ' export "%s" "%s"' % (inpdir, svnbdir))
     assert rc == 0, "SVN export failed"
-    cwd = os.getcwd()
-    os.chdir("versions\\build")
-  else:
-    cwd = ""
+    inpdir = svnbdir
 
   try:
-    f = file("install.rdf"); inst = f.read(); f.close()
+    f = file(os.path.join(inpdir, "install.rdf")); inst = f.read(); f.close()
     m = re.search(r'em:version="(.*?)"', inst)
     if m is None:
       m = re.search(r'<em:version>(.*?)</em:version>', inst)
     assert m != None, "Version not found in install.rdf"
     ver = m.group(1) + "-sm+fx"
-    if os.path.exists("content"):
-      # rc = os.system(JAR+" cv0Mf chrome\%s.jar content skin locale" % CHROMEJAR)
-      # assert rc == 0, "RC = %s" % rc
-      shutil.rmtree("chrome")
-      os.mkdir("chrome")
-      for d in [ "content", "skin", "locale" ]:
-        shutil.copytree(d, os.path.join("chrome", d))
-    print "checking js Syntax",
-    for fn in glob.glob("*/*/*.js") + glob.glob("*/*/*.jsm"):
-      print ".",
-      rc = os.system(JSCHK + " " + fn);
-      assert rc == 0, "Syntax check failed!"
-    print
-    fname = os.path.join(cwd, "versions\\%s-%s.xpi" % (PROJ, ver))
-    if os.path.exists(fname): os.remove(fname)
-    rc = os.system(JAR+' cvMf "%s" chrome defaults chrome.manifest install.rdf changelog.txt' % fname)
-    assert rc == 0, "RC = %s" % rc
-    print "sha1:", 
-    os.system(SHA1+" "+fname)
-    print "Please update ..\update.rdf and run McCoy"
 
-    if MAKE_AMO:
-      famo = os.path.join(cwd, "versions\\%s-%s-amo.xpi" % (PROJ, ver))
+    if JSCHK:
+      print "checking js Syntax",
+      js = []
+      for jse in [ ".js", ".jsm" ]:
+        for jsd in [ "*/*", "*/*/*"]:
+          js += glob.glob(os.path.join(inpdir, "*/*/*"+jse))
+      for fn in js:
+        print ".",
+        rc = os.system(JSCHK + " " + fn);
+        assert rc == 0, "Syntax check failed!"
+      print; sys.stdout.flush()
+    else:
+      print "Syntax check omitted!"
+
+    fname = os.path.join(outdir, "%s-%s.xpi" % (opts.project, ver))
+    if os.path.exists(fname): os.remove(fname)
+    rf = " ".join([r for r in ROOT_FILES.split() if os.path.exists(os.path.join(inpdir, r))])
+    # jar -C is only valid for one (the next) name
+    os.chdir(inpdir)
+    
+    rc = os.system(JAR+' cvMf "%s" %s' % (fname, rf))
+    assert rc == 0, "RC = %s" % rc
+
+    print "sha1:", 
+    os.system(SHA1SUM+" "+fname)
+    print "Please update update.rdf and run McCoy"
+
+    if opts.AMO:
+      famo = os.path.join(outdir, "%s-%s-amo.xpi" % (project, ver))
       p = re.compile(r'\s*<em:updateURL>.*?</em:updateKey>\n', re.S)
       inst = p.sub('\n', inst)
       xpi = zipfile.ZipFile(fname, "r")
@@ -60,11 +79,12 @@ def main(argv=sys.argv[1:]):
         if item.filename == "install.rdf": data = inst
         amo.writestr(item, data)
       amo.close(); xpi.close()
+
   finally:
-    if cwd != "":
-      os.chdir(cwd)
-    if os.path.isdir("versions\\build"):
-      shutil.rmtree("versions\\build")
+    os.chdir(cwd)
+    print "Done."
+    if os.path.isdir(svnbdir):
+      shutil.rmtree(svnbdir)
 
 if __name__ == "__main__":
-  main()
+  sys.exit(main())

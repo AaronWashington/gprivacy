@@ -6,7 +6,7 @@ function gprivacyGoogle(engines) {
   this.engines = engines;
   this.gpr     = engines.gpr;
   
-  this.PATTERN = /https?:\/\/((?!(maps|code|(plus(one)?)))\w+\.)*?(google)\.\w+\//
+  this.PATTERN = /https?:\/\/((?!(maps|code|(plusone)))\w+\.)*?(google)\.\w+\//
 }
 
 gprivacyGoogle.prototype = {
@@ -29,4 +29,10 @@ gprivacyGoogle.prototype = {
     link.classList.add("_tracked");
   },
   
+  removeGlobal: function(doc) {
+    if (doc.getElementById("main") == null)
+      // no search result on page. probably google home page so ignore and...
+      return 1; // ...make ChangeMonitor happy
+    return 0;
+  }
 };
