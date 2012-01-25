@@ -1,4 +1,7 @@
 #!/bin/env python
+
+# $Id$
+
 import sys, os, re, shutil, zipfile, glob, optparse, time
 
 DEFPROJ    = "gprivacy"
@@ -28,6 +31,8 @@ def main(argv=sys.argv[1:]):
   
   cwd = os.getcwd()
 
+  rc = 0
+
   if os.path.isdir(os.path.join(inpdir, ".svn")):
     rc = os.system(SVN + ' export "%s" "%s"' % (inpdir, svnbdir))
     assert rc == 0, "SVN export failed"
@@ -48,7 +53,7 @@ def main(argv=sys.argv[1:]):
         for jsd in [ "*/*", "*/*/*"]:
           js += glob.glob(os.path.join(inpdir, "*/*/*"+jse))
       for fn in js:
-        print ".",
+        print ".", ; sys.stdout.flush()
         rc = os.system(JSCHK + " " + fn);
         assert rc == 0, "Syntax check failed!"
       print; sys.stdout.flush()
@@ -85,6 +90,8 @@ def main(argv=sys.argv[1:]):
     print "Done."
     if os.path.isdir(svnbdir):
       shutil.rmtree(svnbdir)
+
+  return rc
 
 if __name__ == "__main__":
   sys.exit(main())
