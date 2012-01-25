@@ -1,3 +1,5 @@
+// $Id$
+
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://gre/modules/PopupNotifications.jsm");
 Components.utils.import("chrome://gprivacy/content/gputils.jsm");
@@ -5,9 +7,13 @@ Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 var EXPORTED_SYMBOLS = [ "ChangeMonitor" ];
 
 var ChangeMonitor = {
+  IGNORED_ATTRS: [
+    "wrc-processed", // avast! WebRep marker
+  ],
   active: Services.prefs.getIntPref("extensions.gprivacy.changemon"),
   DPFX:  "DO"+"M",
   engines: null,
+  
   init: function(gpr, xuldoc, tabBrowser, toOpenWindowByType) {
     this.gpr        = gpr;
 
@@ -17,6 +23,7 @@ var ChangeMonitor = {
                                              xuldoc.getElementById("notification-popup-box"));
     this.popup      = null;
     this.toOpenWindowByType = toOpenWindowByType;
+
 
     this.refresh();
   },
@@ -29,11 +36,11 @@ var ChangeMonitor = {
   pageLoaded: function(eng, doc, links, changed) {
     var self = this;
     if (changed == 0 && links.length > 0) {
-      var msg = "Engine '" + eng.NAME + "' matched, but no links were modified on '" +
-                doc.location.href.substring(0, 128) + "'. Did the website change its tracking method?";
-      Logging.warn(msg);
-
       if (this.active) {
+        var msg = "Engine '" + eng.NAME + "' matched, but no links were modified on '" +
+                  doc.location.href.substring(0, 128) + "'. Did the website change its tracking method?";
+        Logging.warn(msg);
+
         this.showPopup(this.tabBrowser.selectedBrowser, "gprmon-popup",
           msg, null, // "gprmon-notification-icon",
           { label: "OK ", accessKey: "O",  callback: function(state) { self.closePopup(); } },
@@ -46,8 +53,10 @@ var ChangeMonitor = {
   },
   
   showPopup: function(brws, id, txt, icon, prim, sec, opts) {
-    this.closePopup();
-    this.popup = this.notify.show(brws, id, txt, icon, prim, sec, opts);
+    if (this.verbose > 1) {
+      this.closePopup();
+      this.popup = this.notify.show(brws, id, txt, icon, prim, sec, opts);
+    }
   },
   
   closePopup: function() {
@@ -55,7 +64,7 @@ var ChangeMonitor = {
     this.popup = null;
   },
   
-  nodeInserted: function(eng, _doc, _node, _links, changed) {
+  nodeInserted: function(eng, doc, _node, _links, changed) {
     if (this.active && changed > 0) {
       Logging.log("Engine '" + eng.NAME + "': " + changed + " links changed while inserting on page '" + doc.location.href.substring(0, 128) + "'");
     }
@@ -89,7 +98,11 @@ var ChangeMonitor = {
     if (this.active) {
       var mods = [  this.DPFX + "Attr"+"Modified", this.DPFX + "Node"+"Inserted",
                     /* deprecated, I know: */      this.DPFX + "Subtree"+"Modified" ];
-      var status = { eng: eng, doc: doc, link: link, hit: false, notified: false }
+      var status = { eng: eng,   doc: doc,        link:    link,
+                     hit: false, notified: false, ignored: this.IGNORED_ATTRS }
+      if (eng.IGNORED_ATTRS)
+        status.ignored = status.ignored.concat(eng.IGNORED_ATTRS);
+
       for (var m in mods) {
         link.addEventListener(mods[m], function(e) { self.onPrivacyCompromised(e, status); }, false);
       }
@@ -100,11 +113,23 @@ var ChangeMonitor = {
   onPrivacyCompromised: function(e, status) {
     var self = this;
     
-    var msg = "'" + e.currentTarget.href + "' was compromised: " + e.type; 
+    var link = e.currentTarget;
+    
+    if (link.gprivacyCompromised !== undefined) // got it already
+      return;
+
+    if (e.attrChange && status.ignored.indexOf(e.attrName) != -1) {
+      link.gprivacyCompromised = false;
+      return;
+    }
+
+    link.gprivacyCompromised = true;
+
+    var msg = "'" + link.href + "' was compromised: " + e.type; 
     if (e.attrChange) msg += ", '" + e.attrName +  "': '" +
                              e.prevValue + "' -> '" + e.newValue;
                              
-    if (e.currentTarget !== e.originalTarget) {
+    if (link !== e.originalTarget) {
       Logging.warn("Maybe " + msg);
       return;
     }
@@ -113,7 +138,6 @@ var ChangeMonitor = {
     
     if (!status.hit) {
       status.hit = true;
-      var link = e.currentTarget;
       if (link.gprivacyMark) {
         var bogus = DOMUtils.create(status.doc, this.MARKBOGUS);
         link.gprivacyMark.parentNode.insertBefore(bogus, link.gprivacyMark);

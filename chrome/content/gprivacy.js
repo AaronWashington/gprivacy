@@ -5,7 +5,7 @@ Components.utils.import("chrome://gprivacy/content/gpengines.jsm");
 Components.utils.import("chrome://gprivacy/content/gpchangemon.jsm");
 
 var gprivacy = {
-  INSERT_EVT: "DOMNode" + "Inserted",
+  INSERT_EVT: "DOMNode" + "Inserted", // What are we going to do, when these will be removed (already deprecated)???
   DEBUG:      false,
   MARKHTML:   { node: "img", height:12, width:12, title: "Privacy Respected!", src: "chrome://gprivacy/skin/private.png",  class: "gprivacy-private"  },
   MARKORIG:   { node: "img", height:12, width:12, title: "Privacy Violated!",  src: "chrome://gprivacy/skin/tracking.png", class: "gprivacy-tracking" },
@@ -97,10 +97,12 @@ var gprivacy = {
   onNodeInserted:  function(e, eng) {
     var doc = e.currentTarget;
     var elt = e.originalTarget
-    if (elt.nodeName == "#text") return;
+    
+    if (elt.nodeType == elt.COMMENT_NODE || elt.nodeType == elt.TEXT_NODE)
+      return;
 
     if (!elt.getElementsByTagName) {
-      Looging.error(elt.tagName + " doesn't have a 'getElementsByTagName' method! Not inserted!");
+      Logging.error(elt.tagName + " doesn't have a 'getElementsByTagName' method! Not inserted!");
       return;
     }
     var links = elt.getElementsByTagName("a");
