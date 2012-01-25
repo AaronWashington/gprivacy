@@ -56,6 +56,16 @@ This means that even if you drag the seemingly harmless links to another tab or 
 
 To see this effect (and for security reasons), I'd recommend you to install the excellent <a href="https://addons.mozilla.org/en-US//addon/requestpolicy/">RequestPolicy</a> add-on!
 
+= Authors and Licences =
+
+== Privacy Policy ==
+This add-on tries to prevent websites from logging user behavior.
+As such, it <strong>does not</strong> transmit <strong>any</strong> data to any server by itself!
+
+<strong>Please Note: This software is still in it's beta testing phase and COMES AS IS! - <a href="http://code.google.com/p/gprivacy/wiki/README#Disclaimer">DISCLAIMER</a>
+If you're scared sh*tless now, don't use it!
+</strong>
+
 = Developer Profile =
 
 == Why did you make this add-on ==
