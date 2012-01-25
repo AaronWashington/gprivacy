@@ -1,3 +1,5 @@
+// $Id$
+
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
@@ -122,7 +124,7 @@ var Logging = {
                          .createInstance(Components.interfaces.nsIScriptError);
     if (stackLevel  === undefined) stackLevel  = 0;
     var info = showSrcInfo ? this.callerInfo(stackLevel+1) : new CallerInfo();
-    warn.init(this.PFX + txt, info.filename, info.sourceLine, info.lineNumber, info.columnNUmber,
+    warn.init(this.PFX + txt, info.filename, info.sourceLine, info.lineNumber, info.columnNumber,
               warn.warningFlag, "gprivacy");
     Services.console.logMessage(warn);
   },
@@ -133,7 +135,7 @@ var Logging = {
     if (showSrcInfo === undefined) showSrcInfo = true;
     if (stackLevel  === undefined) stackLevel  = 0;
     var info = showSrcInfo ? this.callerInfo(stackLevel+1) : new CallerInfo();
-    err.init(this.PFX + txt, info.filename, info.sourceLine, info.lineNumber, info.columnNUmber,
+    err.init(this.PFX + txt, info.filename, info.sourceLine, info.lineNumber, info.columnNumber,
              err.errorFlag, "gprivacy");
     Services.console.logMessage(err);
   },

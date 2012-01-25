@@ -1,3 +1,5 @@
+// $Id$
+
 Components.utils.import("resource://gre/modules/Services.jsm");
 
 var EXPORTED_SYMBOLS = [ "gprivacyGoogle" ];
@@ -30,7 +32,8 @@ gprivacyGoogle.prototype = {
   },
   
   removeGlobal: function(doc) {
-    if (doc.getElementById("main") == null)
+    if (doc.getElementById("gsr") != null && // google search home
+        doc.getElementById("cnt") == null)   // search result contents
       // no search result on page. probably google home page so ignore and...
       return 1; // ...make ChangeMonitor happy
     return 0;
