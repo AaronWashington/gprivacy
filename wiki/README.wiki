@@ -6,6 +6,7 @@
  * [#About About]
  * [#Download Download]
  * [#Options Options]
+ * [#Compatibility Compatibility]
  * [#Support Support]
  * [#Developers Developers]
  * [#Screenshots Screenshots]
@@ -80,6 +81,15 @@ change them!
 
  * *Mark empty and !JavaScript links * - In combination with *All Clicks*, this blocks almost every possibility for website to track clicks. But it also almost certainly completely breaks it! You might as well use [https://addons.mozilla.org/en-US/addon/noscript/ NoScript] or turn !JavaScript off completely. That's probably safer.
  * *Debug output to console* - Write verbose output to the browsers error console. On large websites, this might severely impact performance.
+
+= Compatibility =
+As you may understand, there's no to have all possible combinations of add-ons
+installed in my testing environment, but I'm trying to test at least with
+some of the most popular ones. My [https://addons.mozilla.org/en-US/firefox/collections/herrminator/ess/ favorite add-ons] are tested anyway...
+
+So far I have found out the following:
+ * *avast! !WebRep*: 
+  Appearance depends on the install order. If you install !WebRep after `gprivacy`, !WebRep marks both generated links. If it's the other way round, `gprivacy` comes in second and everything looks fine. This applies to automatic updates, too. If you don't like two !WebReps per link, just re-install `gprivacy` for now. I'll try to find a way...
 
 = Support =
 `gprivacy`'s support e-mail address can be found on the
