@@ -5,6 +5,7 @@
    * [https://addons.mozilla.org/en-US/addon/google-privacy/ Add-on Site]
    * [http://code.google.com/p/gprivacy/downloads/list Pre-Releases]
  * [README#Options Options]
+ * [README#Compatibility Compatibility]
  * [README#Support Support]
  * [README#Developers Developers]
    * [Developers Developer Page]
