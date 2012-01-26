@@ -1,3 +1,5 @@
+// $Id$
+
 Components.utils.import("resource://gre/modules/Services.jsm");
 
 Components.utils.import("chrome://gprivacy/content/google.jsm");
@@ -9,6 +11,8 @@ Components.utils.import("chrome://gprivacy/content/youtube.jsm");
 Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 
 var EXPORTED_SYMBOLS = [ "Engines" ];
+
+var UID = 0;
 
 //***************************************************************************
 //* Default engine
@@ -31,6 +35,7 @@ function gprivacyDefault(engines, instance) {
 
 gprivacyDefault.prototype = {
   ID:        "default",
+  UID:       UID,
   NAME:      "Default",
   PATTERN:   /<PLEASEDONTMATCH>/, // 'abstract' class ;-)
   TRACKATTR:  [ "onmousedown", "dirtyhref" ],
@@ -76,7 +81,7 @@ gprivacyDefault.prototype = {
   },
   
   cloneLink: function(_doc, link) {
-    var neew = link.cloneNode(false);
+    var neew = link.cloneNode(true);
     neew.setMark = function(elt) {
       this.appendChild(elt);
     }
@@ -99,11 +104,15 @@ gprivacyDefault.prototype = {
     return span;
   },
   
+  replaceLink: function(_doc, link, neew) {
+    return link.parentNode.replaceChild(neew, link);
+  },
+  
   insertLinkAnnot: function(_doc, link, what) {
     return link.parentNode.insertBefore(what, link.nextSibling);
   },
   
-  removeTracking: function(_doc, link) {
+  removeTracking: function(_doc, link, _replaced) {
     for (var i in this.TRACKATTR) {
       if (link.hasAttribute(this.TRACKATTR[i]))
         link.removeAttribute(this.TRACKATTR[i]);
@@ -114,7 +123,7 @@ gprivacyDefault.prototype = {
     if ("mousedown" in evts) EventUtils.stopEvent("mousedown", link);
   },
   
-  removeAll: function(_doc, link) {
+  removeAll: function(_doc, link, _replaced) {
     var evts = EventUtils.getEvents(link) || {};
     for (var i = 0; i < this.BAD_EVENTS.length; i++) {
       var evt  = this.BAD_EVENTS[i];
@@ -133,8 +142,12 @@ gprivacyDefault.prototype = {
   removeGlobal:  function(_doc) {
     // see youtube.jsm
     return 0;
-  }
+  },
   
+  _toString: function() {
+    var self = this.instance || this;
+    return "["+self.NAME+",{ID:'"+self.ID+",UID:"+self.UID+"}]";
+  }
 };
 
 function EngineError(txt, level) {
@@ -150,10 +163,17 @@ EngineError.prototype = new Error();
 EngineError.prototype.constructor = EngineError;
 
 //***************************************************************************
+//*
+//*
 //***************************************************************************
 
-var Engines = {
+function Engines(gprivacy) {
+  this.initialize(gprivacy);
+}
+
+Engines.prototype = {
   _initialized: false,
+  UID:          0,
   
   initialize: function(gprivacy) {
     if (this._initialized) throw new EngineError("Already initialized");
@@ -171,6 +191,7 @@ var Engines = {
     this._initialized = true;
     this._load(stdEngines, "extensions.gprivacy.engines.custom");
     this._load = null; // add-ons must use Engines.add(..)
+    this.debug("Engines instance initialized");
   },
 
   add: function(eng) {
@@ -179,14 +200,18 @@ var Engines = {
     if (!("ID" in eng) || !("NAME" in eng))
       throw new EngineError("Invalid engine", 1)
     if (eng.ID in this._engines)
-      Logging.warn("Engine '" + eng.NAME + "' will be replaced.")
+      Logging.warn("Engine '"+eng+"' will be replaced.")
     this.setPreferences(eng);
     eng.super   = new gprivacyDefault(self, eng);
+    eng.UID     = ++UID;
     eng.call    = function(func, doc, p1, p2, p3, p4, p5) {
       return self.call(this, func, doc, p1, p2, p3, p4, p5);
     }
+    eng.toString= function() {
+        return self.call(this, "_toString");
+      };
     this._engines[eng.ID] = eng;
-    this.debug("Engine '" + eng.NAME + "' " + (eng.enabled ? "" : "not ") + "active for '" + eng.PATTERN.toString() + "'");
+    this.debug("Engine "+eng+" "+(eng.enabled ? "" : "not ")+"active for '"+eng.PATTERN.toString()+"'");
   },
   
   get: function() {
@@ -216,7 +241,7 @@ var Engines = {
         break;
       case "bool": break;
       default:
-        Logging.warn("Preference type '"+type+"' for '"+name+"', engine '"+eng.NAME+"' unknown. Assuming 'bool'.");
+        Logging.warn("Preference type '"+type+"' for '"+name+"', engine '"+eng+"' unknown. Assuming 'bool'.");
     }
     if (eng["PREF_"+name.toUpperCase()] !== undefined) dflt = eng["PREF_"+name.toUpperCase()];
     try   { pref = prefs.get("extensions.gprivacy.engines."+eng.ID+"."+name); }
@@ -280,14 +305,14 @@ var Engines = {
       else ret = undefined;
     }
     catch (exc) {
-      Logging.logException(exc, "PRIVACY ENGINE ERROR: " + eng.NAME + "." + func)
+      Logging.logException(exc, "PRIVACY ENGINE ERROR: " +eng+"."+func)
       Logging.warn("PRIVACY WARNING: Trying to call generic method '" + func + "' after engine error");
       ret = undefined;
     }
     if (ret === undefined && eng.super[func])
       return eng.super[func](doc, p1, p2, p3, p4, p5);
     else if (!eng.super[func])
-      Logging.error("Engine '" + eng.NAME + "' does not have a method '" + func + "', and there's no default method too...", false);
+      Logging.error("Engine '"+eng+"' does not have a method '"+func+"', and there's no default method too...", false);
     return ret;
   },
   

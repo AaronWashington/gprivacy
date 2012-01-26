@@ -79,7 +79,7 @@ gprivacyAsk.prototype = { // @change: ...and here
     // of the default implementation
     // @change: You only need to implement this (and the next two methods),
     // If the modified web page looks particularly ugly.
-    var neew = link.cloneNode(false); // use DOM, don't copy children.
+    var neew = link.cloneNode(true);  // use DOM, copy children.
                                       // @change this if you need...
     neew.setMark = function(elt) {
       // Will be called to insert those little icons somewhere in the DOM.
@@ -89,14 +89,14 @@ gprivacyAsk.prototype = { // @change: ...and here
     return neew;
   },
   
-  createLinkAnnot: function(doc, orgLink, wasReplaced) {
+  createLinkAnnot: function(doc, trackedLink, wasReplaced) {
     // Create a HTML element that will hold the private (or original) link.
     // can attach a function 'setLink' where the private (or original) link
     // will be inserted (see 'setMark' in 'cloneLink' above, or better, see
     // 'gpengines.jsm')
-    // 'wasReplaced' indicates wheter the original link was replaced by the
+    // 'wasReplaced' indicates wheter the tracked link was replaced by the
     // private link, if you need this info.
-    return this.super.createLinkAnnot(doc, orgLink, wasReplaced);
+    return this.super.createLinkAnnot(doc, trackedLink, wasReplaced);
   },
   
   insertLinkAnnot: function(doc, link, annot) {
@@ -104,19 +104,21 @@ gprivacyAsk.prototype = { // @change: ...and here
     return this.super.insertLinkAnnot(doc, link, annot);
   },
   
-  removeTracking: function(doc, link) {
+  removeTracking: function(doc, privateLink, replaced) {
     // Remove or override all known tracking methods from a link
     // @change: This is probably the point where you want to start, if
     // adjusting this.TRACKATTR doesn't help
-    return this.super.removeTracking(doc, link);
+    // 'replaced' tells you, if the the private link replaced the tracked one
+    return this.super.removeTracking(doc, privateLink);
   },
   
-  removeAll: function(doc, link) {
+  removeAll: function(doc, privateLink, replaced) {
     // This is called, if the 'allevts' option is set.
     // The default implementation remove all mouse, click and focus 
     // attributes and stops their atached event handling.
     // This may severely impair a webpage ;-)
-    return this.super.removeAll(doc, link);
+    // 'replaced' tells you, if the the private link replaced the tracked one
+    return this.super.removeAll(doc, privateLink, replaced);
   },
   
   removeGlobal: function(doc) {

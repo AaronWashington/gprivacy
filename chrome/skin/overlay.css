@@ -4,6 +4,15 @@
   list-style-image: url("chrome://gprivacy/skin/icon.png");  
 }
 
+.popup-notification-icon[popupid="gprmon-popup-tracking"] {  
+  list-style-image: url("chrome://gprivacy/skin/tracking.png");
+}
+
+.popup-notification-icon[popupid="gprmon-popup-modified"] {  
+  list-style-image: url("chrome://gprivacy/skin/modified.png");  
+}
+
+
 #gprmon-notification-icon {
   list-style-image: url("chrome://gprivacy/skin/icon16.png");  
 }

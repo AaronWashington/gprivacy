@@ -1,7 +1,7 @@
 pref("extensions.gprivacy.active",    true);
 pref("extensions.gprivacy.active.loggedin", true);
 pref("extensions.gprivacy.replace",   false);
-pref("extensions.gprivacy.orig",      false);
+pref("extensions.gprivacy.orig",      true);
 pref("extensions.gprivacy.mark",      true);
 pref("extensions.gprivacy.text",      true);
 pref("extensions.gprivacy.debug",     false);

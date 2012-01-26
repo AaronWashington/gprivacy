@@ -1,3 +1,5 @@
+// $Id$
+
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 
@@ -13,7 +15,9 @@ function gprivacyYahoo(engines) {
 gprivacyYahoo.prototype = {
   ID:         "yahoo",
   NAME:       "Yahoo!",
-  TRACKATTR:  [ "dirtyhref", "data-bk", "data-bns" ],
+  TRACKATTR:  [ "dirtyhref", "data-bk", "data-bns", // Yahoo! Search
+                "inst_b", "inst_r", "data-guid"     // My Yahoo!
+              ],
   LINK_CLASS: "",
 
   loggedIn: function(doc) {
@@ -36,7 +40,7 @@ gprivacyYahoo.prototype = {
   },
 
   cloneLink: function(doc, link) {
-    var neew = link.cloneNode(false);
+    var neew = link.cloneNode(true);
     neew.setAttribute("class", null);
     return neew;
   }

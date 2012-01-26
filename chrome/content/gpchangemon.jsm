@@ -6,7 +6,11 @@ Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 
 var EXPORTED_SYMBOLS = [ "ChangeMonitor" ];
 
-var ChangeMonitor = {
+function ChangeMonitor(gprivacy, xuldoc, mainwindow) {
+  this.init(gprivacy, xuldoc, mainwindow);
+}
+
+ChangeMonitor.prototype = {
   IGNORED_ATTRS: [
     "wrc-processed", // avast! WebRep marker
   ],
@@ -14,18 +18,22 @@ var ChangeMonitor = {
   DPFX:  "DO"+"M",
   engines: null,
   
-  init: function(gpr, xuldoc, tabBrowser, toOpenWindowByType) {
+  init: function(gpr, xuldoc, mainwindow) {
     this.gpr        = gpr;
 
-    this.tabBrowser = tabBrowser; // :-( all these are not defined in modules...
-    this.notify     = new PopupNotifications(tabBrowser,  
-                                             xuldoc.getElementById("notification-popup"),  
-                                             xuldoc.getElementById("notification-popup-box"));
+    this.tabbrowser = mainwindow; // only works, if the window is already opened Services.wm.getMostRecentWindow("navigator:browser");
     this.popup      = null;
-    this.toOpenWindowByType = toOpenWindowByType;
-
-
+    this.debug      = gpr.debug;
     this.refresh();
+    try {
+      this.notify     = new PopupNotifications(this.tabbrowser,  
+                                               xuldoc.getElementById("notification-popup"),  
+                                               xuldoc.getElementById("notification-popup-box"));
+    } catch (exc) {
+      Logging.logException(exc);
+      this.notify = null; // nevermind
+    }
+    this.debug("ChangeMonitor instance initialized");
   },
   
   refresh: function(doc) {
@@ -37,25 +45,27 @@ var ChangeMonitor = {
     var self = this;
     if (changed == 0 && links.length > 0) {
       if (this.active) {
-        var msg = "Engine '" + eng.NAME + "' matched, but no links were modified on '" +
+        let msg = "Engine '"+eng+"' matched, but no links were modified on '" +
                   doc.location.href.substring(0, 128) + "'. Did the website change its tracking method?";
         Logging.warn(msg);
 
-        this.showPopup(this.tabBrowser.selectedBrowser, "gprmon-popup",
+        this.showPopup("gprmon-popup-modified",
           msg, null, // "gprmon-notification-icon",
           { label: "OK ", accessKey: "O",  callback: function(state) { self.closePopup(); } },
           null,
           { persistence: 256, /* timeout: Date.now() + 600000, */ persistWhileVisible: true } );
       }
     } else if (this.active && changed > 0) {
-      Logging.log("Engine '" + eng.NAME + "': " + changed + " links changed when loading page '" + doc.location.href.substring(0, 128) + "'");
+      Logging.log("Engine '"+eng+"': "+changed+" links changed when loading page '"+doc.location.href.substring(0, 128)+"'");
     }
   },
   
-  showPopup: function(brws, id, txt, icon, prim, sec, opts) {
-    if (this.verbose > 1) {
+  showPopup: function(id, txt, icon, prim, sec, opts) {
+    if ((this.verbose > 1 || opts.force) && this.notify) {
+      if (opts.force !== undefined) delete opts.force;
       this.closePopup();
-      this.popup = this.notify.show(brws, id, txt, icon, prim, sec, opts);
+      this.popup = this.notify.show(this.tabbrowser.selectedBrowser,
+                                    id, txt, icon, prim, sec, opts);
     }
   },
   
@@ -66,15 +76,17 @@ var ChangeMonitor = {
   
   nodeInserted: function(eng, doc, _node, _links, changed) {
     if (this.active && changed > 0) {
-      Logging.log("Engine '" + eng.NAME + "': " + changed + " links changed while inserting on page '" + doc.location.href.substring(0, 128) + "'");
+      Logging.log("Engine '"+eng+"': "+changed+" links changed while inserting on page '"+doc.location.href.substring(0, 128)+"'");
     }
   },
   
   getWrapper: function(eng, doc) {
     var self = this;
     return function(link) {
-      var eng = eng;
-      var doc = doc;
+      var eng  = eng;
+      var doc  = doc;
+      var link = link;
+      
       if (!link.gprwapper) {
         if (self.verbose > 2) {
           var neew = link.cloneNode(true);
@@ -87,6 +99,25 @@ var ChangeMonitor = {
         }
         link.gpwrapper = this;
         link.gpwatched = false;
+
+/* doesn't seem to work in content - TODO: find a replacement
+        if (self.active) {
+          var status = { eng: eng,   doc: doc,        link:    link,
+                         hit: false, notified: false, ignored: self.IGNORED_ATTRS }
+          link._ael = link.addEventListener;
+          link.addEventListener = function(type, func, flag) {
+            var evt = { type: "AddEventListener",
+                        currentTarget: link, originalTarget: link,
+                        attrChange: true,    attrName:  type,
+                        newValue:   "func",  prevValue: ""
+                      }
+            if (link.gpwatched)
+              self.onPrivacyCompromised(evt, status);
+            link._ael(type, func, flag);
+          }
+        }
+*/
+
       }
       return link;
     }
@@ -106,6 +137,7 @@ var ChangeMonitor = {
       for (var m in mods) {
         link.addEventListener(mods[m], function(e) { self.onPrivacyCompromised(e, status); }, false);
       }
+
       link.gpwatched = true;
     }
   },
@@ -127,7 +159,7 @@ var ChangeMonitor = {
 
     var msg = "'" + link.href + "' was compromised: " + e.type; 
     if (e.attrChange) msg += ", '" + e.attrName +  "': '" +
-                             e.prevValue + "' -> '" + e.newValue;
+                             e.prevValue + "' -> '" + e.newValue + "'";
                              
     if (link !== e.originalTarget) {
       Logging.warn("Maybe " + msg);
@@ -139,7 +171,7 @@ var ChangeMonitor = {
     if (!status.hit) {
       status.hit = true;
       if (link.gprivacyMark) {
-        var bogus = DOMUtils.create(status.doc, this.MARKBOGUS);
+        var bogus = DOMUtils.create(status.doc, this.gpr.MARKBOGUS);
         link.gprivacyMark.parentNode.insertBefore(bogus, link.gprivacyMark);
         link.gprivacyMark.parentNode.removeChild(link.gprivacyMark)
         link.gprivacyMark = null;
@@ -151,11 +183,11 @@ var ChangeMonitor = {
     if (!status.notified) {
       status.notified = true;
 
-      this.showPopup(this.tabBrowser.selectedBrowser, "gprmon-popup",
+      this.showPopup("gprmon-popup-tracking",
         msg + "'. See error log for details!", null, // "gprmon-notification-icon",
         { label: "Open error console", accessKey: "E",
           callback: function(state) { 
-              self.toOpenWindowByType("global:console", "chrome://global/content/console.xul");
+              self.tabbrowser.toOpenWindowByType("global:console", "chrome://global/content/console.xul");
           } },  
         [ { label: "Show more from this page", accessKey: "O",
             callback: function(state) { status.notified = false; } },

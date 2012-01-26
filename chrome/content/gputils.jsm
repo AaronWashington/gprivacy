@@ -112,8 +112,8 @@ var Logging = {
                            .createInstance(Components.interfaces.nsIScriptError);
     excLog.init(this.PFX + txt + exc.message,
                 exc.filename || exc.fileName, exc.location ? exc.location.sourceLine : null,
-                exc.lineNumber, exc.columnNumber,
-                excLog.errorFlag, "gprivacy");
+                exc.lineNumber || 0, exc.columnNumber || 0,
+                excLog.errorFlag || 0, "gprivacy");
     Services.console.logMessage(excLog);
   },
   

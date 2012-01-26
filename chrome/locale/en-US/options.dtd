@@ -41,11 +41,11 @@
 <!ENTITY advanced.label "Advanced (careful!)">
 <!ENTITY advanced.tip   "Setting these options may destroy websites and/or severely impact your browser performance!">
 
-<!ENTITY warning.icon   "data:image/x-png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAAsTAAALEwEAmpwYAAAACXZwQWcAAAAQAAAAEABcxq3DAAAB6klEQVQ4y42TQUsbYRCGn9lsd5vE3UWIbKX2oiFiEMMiJU1YAkGksUF6Cz0IkR56c9mL+As8G/RkwELAQ0lOBa1/oRD8AULxECgUWvBQAyXFfL1YSyBbfWHmMLw87xxmhAiF8MSA9wADeNuAb+N8ehTAhKN5eAlwAUdAdZxPi0j3UrBaWFjQnqVSWgpWQ/AeDDBhLw16YneXTLNJGnQT9h4ECKE4BcVsuSx6Po+ez5Mtl2UKiiEUuU870D2BYa/TUZ7nKc/zVK/TUScw3IHufzcIYcWFpYzvi+H7OI6D4zgYvk/G98WFpRBWIgEm7GfBSAQBomlYloVlWYimkQgCsmCYsD8WEML6NKTnCgWMUgkRwbZtbNtGRDBKJeYKBaYhHcL6CCAEMaCxeJuu6Toi8m8DETRdJxEELIJhQCMEgdsWwptZaL1aXjYmz84gFkMpRb/fByCZTCIicHPD1doan87PB5dQb8AHCSH2FK6egzV/fMzjahWlFEoparUaAO12GxFBRPh1esrFxgZd+PkVJjWBzTiYM7kc8UrlzigiuK6L67ojs3ilwkwuRxxMgU3Zhu+vITV7cMBEvX6X/reAEYCIcN1qcbm1xUf4IYcwfAHy6N4TG9Vv4DMo/QscDuDdRMRfROkahj1o/gGX3n0IZAfH7AAAACV0RVh0Y3JlYXRlLWRhdGUAMjAwOS0xMS0xMFQxOTozODoxOC0wNzowMD0dxHUAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTAtMDItMjBUMjM6MjY6MjQtMDc6MDAuw1DWAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDEwLTAxLTExVDA4OjU2OjIwLTA3OjAw2unuSAAAADJ0RVh0TGljZW5zZQBodHRwOi8vZW4ud2lraXBlZGlhLm9yZy93aWtpL1B1YmxpY19kb21haW4//erPAAAAJXRFWHRtb2RpZnktZGF0ZQAyMDA5LTExLTEwVDE5OjM4OjE4LTA3OjAwYqyyQQAAABl0RVh0U291cmNlAFRhbmdvIEljb24gTGlicmFyeVTP7YIAAAA6dEVYdFNvdXJjZV9VUkwAaHR0cDovL3RhbmdvLmZyZWVkZXNrdG9wLm9yZy9UYW5nb19JY29uX0xpYnJhcnm8yK3WAAAAAElFTkSuQmCC">
+<!ENTITY warning.icon   "chrome://gprivacy/skin/attention16.png">
 
-<!ENTITY support.text1 "If you find any problems, don't hesitate to ">
-<!ENTITY support.text2 ".">
-<!ENTITY support.urltext "send me an email">
-<!ENTITY support.url     "mailto:gprivacy.jm4s@gishpuppy.com">
+<!ENTITY support.text1   "Find help for these options and support links on the ">
+<!ENTITY support.url     "http://code.google.com/p/gprivacy/wiki/README#Options">
+<!ENTITY support.urltext "gprivacy home page">
+<!ENTITY support.text2   " on Google Code.">
 
 <!ENTITY help.text1 "When you press OK, affected Websites will be reloaded.">

@@ -1,3 +1,5 @@
+// $Id$
+
 Components.utils.import("resource://gre/modules/Services.jsm");
 
 var EXPORTED_SYMBOLS = [ "gprivacyBing" ];

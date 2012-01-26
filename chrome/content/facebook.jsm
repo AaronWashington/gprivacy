@@ -1,3 +1,5 @@
+// $Id$
+
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 
@@ -29,7 +31,7 @@ gprivacyFacebook.prototype = {
   },
   
   cloneLink: function(doc, link) {
-    var neew = link.cloneNode(false);
+    var neew = link.cloneNode(true);
     this.adjustLink(neew);
 /*
     var style = link.hasAttribute("style") ? link.getAttribute("style")+" " : ""
