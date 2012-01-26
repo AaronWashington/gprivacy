@@ -23,6 +23,7 @@ Websites supported (for now) are Google, YouTube, Yahoo!, Bing and Facebook.
 
 <strong>Known Issues</strong>
 <ul>
+  <li>Google instant - a PITA anyway, IMHO - breaks the annotated link and any embedded markups (bold text) in the main link, if RequestPolicy is installed (v0.0.3-v0.1.0).</li>
   <li>Ctrl-Click (Cmd-Click on Mac) doesn't open private links in new tab (v0.1.0).</li>
 </ul>
 

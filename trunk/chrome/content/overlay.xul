@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://gprivacy/skin/overlay.css" type="text/css"?>
 <!DOCTYPE overlay SYSTEM "chrome://gprivacy/locale/overlay.dtd">
+
+<!-- $Id$ -->
+
 <overlay id="gprivacy-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script src="gprivacy.js"/>
   <script src="chrome://global/content/globalOverlay.js"/>
