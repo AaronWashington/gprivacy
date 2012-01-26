@@ -67,7 +67,7 @@ http://gprivacy.googlecode.com/svn/wiki/screens/grpivacy-options.default.jpg
   * *Privacy active* - Switch `gprivacy` on or off.
   * *Replace original links* - Instead of adding a link, replace the existing one.
   * *Show original links* - If replaced, add the infested link too.
-  * *Mark modified links* - Mark links with small icons (http://gprivacy.googlecode.com/svn/trunk/chrome/skin/private.png, http://gprivacy.googlecode.com/svn/trunk/chrome/skin/tracking.png)
+  * *Mark modified links* - Mark links with small icons (http://gprivacy.googlecode.com/svn/trunk/chrome/skin/private16.png, http://gprivacy.googlecode.com/svn/trunk/chrome/skin/tracking16.png)
   * *Show descriptive text* - Add '`private`' or '`tracked`' to the appended links. Either this or the previous option _must_ be set.
 
 ==== Website Options ====
