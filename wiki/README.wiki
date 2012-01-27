@@ -92,9 +92,16 @@ So far I have found out the following:
   Appearance depends on the install order. If you install !WebRep after `gprivacy`, !WebRep marks both generated links. If it's the other way round, `gprivacy` comes in second and everything looks fine. This applies to automatic updates, too. If you don't like two !WebReps per link, just re-install `gprivacy` for now. I'll try to find a way...
 
 = Support =
-`gprivacy`'s support e-mail address can be found on the
+If you want to report a link that has been tracked, though it was marked private,
+or you find a problem with `gprivacy`, please
+[http://code.google.com/p/gprivacy/issues/entry report the issue].
+
+Though you have to sign up with Google Code to do this, this is really the preferred
+way to communicate problems, as they are best documented this way
+
+To avoid spamming, `gprivacy`'s support e-mail address can only be found on the
 [https://addons.mozilla.org/en-US/addon/google-privacy/ Add-On Site]
-(beside the _About this Add-on_ section).
+(beside the _About this Add-on_ section). Please use moderately!
 
 = Developers =
 `gprivacy` is extensible! If you know a website that violates peoples privacy
