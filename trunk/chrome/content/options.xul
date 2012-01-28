@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<!DOCTYPE prefwindow SYSTEM "chrome://gprivacy/locale/options.dtd">
+
+<!DOCTYPE prefwindow [ 
+<!ENTITY % overlayDTD SYSTEM "chrome://gprivacy/locale/overlay.dtd">
+<!ENTITY % optionsDTD SYSTEM "chrome://gprivacy/locale/options.dtd">
+%overlayDTD;
+%optionsDTD;
+]>
+
 
 <!-- $Id$ -->
 
@@ -11,7 +18,7 @@
             onload="gprivacyOpts.onLoad();"
             ondialogaccept="gprivacyOpts.onOK();">
   <script src="gpoptions.js" />
-  <prefpane id="pane1" label="&pane1.title;">
+  <prefpane id="gprivacy-pane" label="&prefpane.title;">
     <preferences id="gprivacyPrefs" defaultbutton="cancel">
       <preference id="active"   name="extensions.gprivacy.active"    type="bool"/>
       <preference id="activel"  name="extensions.gprivacy.active.loggedin" type="bool"/>
@@ -22,7 +29,8 @@
       <preference id="text"     name="extensions.gprivacy.text"      type="bool"/>
       <preference id="anon"     name="extensions.gprivacy.anonlinks" type="bool"/>
       <preference id="embed"    name="extensions.gprivacy.embedded"  type="bool"/>
-      <preference id="DNT"      name="privacy.donottrackheader.enabled" type="bool"/>
+      
+      <preference id="privacy.donottrackheader.enabled" name="privacy.donottrackheader.enabled" type="bool"/>
       
       <preference id="egoogle"  name="extensions.gprivacy.engines.google.enabled" type="bool"/>
       <preference id="agoogle"  name="extensions.gprivacy.engines.google.allevts" type="bool"/>
@@ -41,7 +49,7 @@
       <preference id="stube"    name="extensions.gprivacy.engines.youtube.own"     type="bool"/>
     </preferences>
     <checkbox id="checkactive"  preference="active"  label="&checkactive.label;"  accesskey="&checkactive.accesskey;"  oncommand="gprivacyOpts.enableCtls();"/>
-    <checkbox id="checkDNT"     preference="DNT"     label="&checkDNT.label;"     accesskey="&checkDNT.accesskey;" />
+    <checkbox id="checkDNT"     preference="privacy.donottrackheader.enabled" label="&checkDNT.label;"     accesskey="&checkDNT.accesskey;" />
     <hbox>
       <groupbox id="gprivacyOptions">
         <caption label="&options.label;" />
@@ -98,8 +106,8 @@
       </groupbox>
     </hbox>
     <groupbox>
-      <description>&help.text1;</description>
-      <separator class="groove"/>
+      <description id="gprivacy-help-reload">&help.text1;</description>
+      <separator id="gprivacy-sep-reload" class="groove"/>
       <description>&support.text1;<html:a href="&support.url;" style="color: blue; text-decoration: underline;" target="_blank">&support.urltext;</html:a>&support.text2;</description>
     </groupbox>
   </prefpane>

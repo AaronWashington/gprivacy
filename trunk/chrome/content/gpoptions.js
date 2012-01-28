@@ -43,6 +43,11 @@ var gprivacyOpts = {
       
     // Cannot deactivate embbedded frames for now
     document.getElementById("checkembed").disabled = true;
+    
+    if (!window.arguments) { // called from Add-on manager
+      document.getElementById("gprivacy-help-reload").hidden = true;
+      document.getElementById("gprivacy-sep-reload").hidden  = true;
+    }
   },
 
   log: function(txt) {

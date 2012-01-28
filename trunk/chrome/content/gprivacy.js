@@ -19,16 +19,21 @@ var gprivacy = {
       this.loadPrefs();
       this.strings    = document.getElementById("gprivacy-strings");
       this.appcontent = document.getElementById("appcontent");
+      this.name       = this.strings.getString("gprivacy");
       this.privtext   = this.strings.getString("privateLink");
       this.tracktext  = this.strings.getString("origLink");
 
-      this.changemon = new ChangeMonitor(this, document, gBrowser);
+      this.MARKHTML.title  = this.strings.getString("privateTip");
+      this.MARKORIG.title  = this.strings.getString("origTip");
+      this.MARKBOGUS.title = this.strings.getString("compromisedTip");
+      
+      this.changemon = new ChangeMonitor(this, window, gBrowser);
       this.engines   = new Engines(this);
 
       if (this.appcontent) {
         this.appcontent.addEventListener("DOMContentLoaded", function(e) {
           self.onPrePageLoad(e);
-        }, false);
+        }, false, true);
       }
       document.getElementById("contentAreaContextMenu")
               .addEventListener("popupshowing", function (e){ self.showContextMenu(e); }, false);
@@ -49,7 +54,7 @@ var gprivacy = {
     this.keeporg    = Services.prefs.getBoolPref("extensions.gprivacy.orig");
     this.anonlinks  = Services.prefs.getBoolPref("extensions.gprivacy.anonlinks"); this.lockedprop = "PATTERN";
     this.embedded   = Services.prefs.getBoolPref("extensions.gprivacy.embedded");
-    this.setmarks   = Services.prefs.getBoolPref("extensions.gprivacy.mark");
+    this.seticons   = Services.prefs.getBoolPref("extensions.gprivacy.mark");
   },
 
   onUnload: function() {
@@ -103,7 +108,13 @@ var gprivacy = {
 
         changed += eng.call("removeGlobal", doc) ? 1 : 0;
 
-        doc.addEventListener(this.INSERT_EVT, function(e) { self.onNodeInserted(e, eng); }, false);
+        if ((this.changemon.level & this.changemon.ALL) && !this.MARKORIG.unknown) {
+          // monitor ALL links so change their icons
+          var src = this.MARKBOGUS.src;
+          this.MARKBOGUS.src = this.MARKORIG.src; this.MARKORIG.src = src;
+          this.MARKORIG.unknown = true;
+        }
+        doc.addEventListener(this.INSERT_EVT, function(e) { self.onNodeInserted(e, eng); }, false, true);
         
         this.changemon.pageLoaded(eng, doc, links, changed);
       }
@@ -113,7 +124,7 @@ var gprivacy = {
         var frames = { i: doc.getElementsByTagName("iframe"), f: doc.getElementsByTagName("frame") };
         for (var[w] in frames)
           for (var f = 0; i < frames[w].length; f++)
-            frames[w][f].addEventListener("load", function(e) { self.onPageLoad(e); }, false);
+            frames[w][f].addEventListener("load", function(e) { self.onPageLoad(e); }, false, true);
       }
       */
       /* But TODO: option to ignore iframes and frames...
@@ -198,19 +209,20 @@ var gprivacy = {
     return eng.call("insertLinkAnnot", doc, link, what);
   },
   
-  // /REMOVEME
-
-  _setMarks: function(_eng, _doc, priv, tracked, privicon, trackicon) {
+  // end of REMOVEME:
+  
+  _setIcons: function(_eng, _doc, priv, tracked, privicon, trackicon) {
     if (priv && privicon) {
-      if (priv.setMark) priv.setMark(privicon); 
+      if (priv.setIcon) priv.setIcon(privicon); 
       else              priv.appendChild(privicon);
-      priv.gprivacyMark = privicon;
+      priv.gprivacyIcon = privicon;
     }
     
     if (tracked && trackicon) // original link is kept
     {
-      if (tracked.setMark) tracked.setMark(trackicon);
+      if (tracked.setIcon) tracked.setIcon(trackicon);
       else                 tracked.appendChild(trackicon);
+      tracked.gprivacyIcon = trackicon;
     }
   },
   
@@ -220,13 +232,25 @@ var gprivacy = {
     var self   = this;
 
     if (orgLink.hasAttribute("gprivacy"))       return false; // already handled
-    if (!this._isTracking(eng, doc, orgLink))   return false; // maybe they're hiding too well...
-
-    var verb   = Services.prefs.getBoolPref("extensions.gprivacy.text") ||
-                 !Services.prefs.getBoolPref("extensions.gprivacy.mark");
-
-    var wrap    = this.changemon.getWrapper(eng, doc);
     
+    var verb = Services.prefs.getBoolPref("extensions.gprivacy.text") ||
+                 !Services.prefs.getBoolPref("extensions.gprivacy.mark");
+    var wrap = this.changemon.getWrapper(eng, doc);
+    
+    
+    var tracking = this._isTracking(eng, doc, orgLink);   
+    
+    if (!tracking && (this.changemon.level & this.changemon.ALL) &&
+        (orgLink.hostname != "" || this.anonlinks)) {
+      var moni = wrap(orgLink), icon = DOMUtils.create(doc, this.MARKORIG);
+      moni.setAttribute("gprivacy", "unknown"); // mark as visited
+      icon.setAttribute("title", "Unknown...");
+      if (this.seticons) this._setIcons(eng, doc, moni, null, icon, null);
+      this.changemon.watch(eng, doc, moni);
+    }
+
+    if (!tracking) return false; // maybe they're hiding too well...
+
     var tracked = wrap(orgLink);
     var priv    = null; 
     
@@ -271,16 +295,19 @@ var gprivacy = {
 
     }    
     
-    if (this.setmarks) { // Set icons
-      this._setMarks(eng, doc, priv, tracked,
+    if (this.seticons) {
+      this._setIcons(eng, doc, priv, tracked,
                      DOMUtils.create(doc, this.MARKHTML),
                      DOMUtils.create(doc, this.MARKORIG));
     }
 
     tracked.setAttribute("gprivacy", "false"); // mark as visited
     
-    if (priv)            this.changemon.watch(eng, doc, priv);
-    else if (linkActive) this.changemon.watch(eng, doc, tracked); // for engine developers
+    if (priv)
+      this.changemon.watch(eng, doc, priv);
+
+    if ((!priv && linkActive) || this.changemon.level >= this.changemon.TRACKED)
+      this.changemon.watch(eng, doc, tracked); // for engine developers
 
     return true;
   },

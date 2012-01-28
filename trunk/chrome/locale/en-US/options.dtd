@@ -1,5 +1,5 @@
-<!ENTITY prefwindow.title "Google Privacy preferences">
-<!ENTITY pane1.title "Google Privacy preferences">
+<!ENTITY prefwindow.title "&gprivacy.name; preferences">
+<!ENTITY prefpane.title   "&prefwindow.title;">
 <!ENTITY options.label "Options">
 <!ENTITY checkactive.label "Privacy active">
 <!ENTITY checkactive.accesskey "A">
@@ -17,7 +17,7 @@
 <!ENTITY checkembed.accesskey "B">
 <!ENTITY checkdebug.label "Debug output to console">
 <!ENTITY checkdebug.accesskey "D">
-<!ENTITY checkanon.label "Mark empty and JavaScript links">
+<!ENTITY checkanon.label "Replace empty and JavaScript links">
 <!ENTITY checkanon.accesskey "J">
 <!ENTITY checkDNT.label "Set Mozilla's Do-Not-Track Flag">
 <!ENTITY checkDNT.accesskey "N">

@@ -13,31 +13,42 @@ JAR     = os.environ.get("JAR",      "jar")
 SHA1SUM = os.environ.get("SHA1SUM",  "sha1sum")
 SVN     = os.environ.get("SVN",      "svn")
 JSCHK   = os.environ.get("JSCHK",    "jsshell -C")
+XULLINT = os.environ.get("XULLINT",  "xullint.py")
+AMOEXIT = os.environ.get("AMOEXIT",  "amoexit.py")
+
+XMLLINT_OPTS = "--nodefdtd --noout"
+LOCALES      = [ "en-US", "de-DE"]
 
 def main(argv=sys.argv[1:]):
   op = optparse.OptionParser()
   op.add_option("-p", "--project",   default=DEFPROJ)
   op.add_option("-d", "--directory", default=None)
   op.add_option("-i", "--inpdir",    default=".")
-  op.add_option("-o", "--outdir",    default="versions")
+  op.add_option("-o", "--outdir",    default=OUTDIR)
   op.add_option("-b", "--builddir",  default="build", help="only for SVN")
+  op.add_option("-m", "--manifests", default=[], action="append")
   op.add_option("-a", "--AMO",       default=False,   help="build AMO version", action="store_true")
   
   opts, args = op.parse_args(argv);
 
   outdir  = os.path.abspath(opts.outdir)
   inpdir  = os.path.abspath(opts.inpdir)
-  svnbdir = "%s\\%s" % (opts.outdir, opts.builddir)
+  svnbdir = os.path.abspath(os.path.join(opts.outdir, opts.builddir))
   
   cwd = os.getcwd()
 
   rc = 0
 
   if os.path.isdir(os.path.join(inpdir, ".svn")):
+    print "Exporting SVN..."
     rc = os.system(SVN + ' export "%s" "%s"' % (inpdir, svnbdir))
     assert rc == 0, "SVN export failed"
-    inpdir = svnbdir
+  else:
+    print "Copying to '%s'" % svnbdir
+    shutil.copytree(inpdir, svnbdir, ignore=shutil.ignore_patterns(os.path.basename(svnbdir)));
 
+  inpdir = svnbdir
+  
   try:
     f = file(os.path.join(inpdir, "install.rdf")); inst = f.read(); f.close()
     m = re.search(r'em:version="(.*?)"', inst)
@@ -46,19 +57,34 @@ def main(argv=sys.argv[1:]):
     assert m != None, "Version not found in install.rdf"
     ver = m.group(1) + "-sm+fx"
 
-    if JSCHK:
-      print "checking js Syntax",
-      js = []
-      for jse in [ ".js", ".jsm" ]:
-        for jsd in [ "*/*", "*/*/*"]:
-          js += glob.glob(os.path.join(inpdir, "*/*/*"+jse))
-      for fn in js:
+    checks = [
+      ("JavaScript", JSCHK,   [ ".js", ".jsm" ], "%s"),
+    ]
+    # for syntax checks only
+    manifests = "-m " + os.path.join(inpdir, "chrome.manifest ") 
+    if opts.manifests: manifests += "-m " + "-m ".join(opts.manifests)
+    for loc in LOCALES:
+      if os.path.isdir(os.path.join(inpdir, "chrome", "locale", loc)):
+        checks += [ ("%s XUL" % loc,  XULLINT, [ ".xul" ], "-d %s -l %s %s %%s -- %s" % (inpdir, loc, manifests, XMLLINT_OPTS)) ]
+      else:
+        print "Warning: locale '%s' not found." % loc
+    
+    for what, cmd, exts, par in checks:
+      if not what or not cmd:
+        print "Syntax check omitted!"; continue
+
+      print "checking %s Syntax" % what,
+      files = []
+      for ext in exts:
+        for dirpat in [ "*/*", "*/*/*"]:
+          files += glob.glob(os.path.join(inpdir, dirpat+ext))
+      for fn in files:
         print ".", ; sys.stdout.flush()
-        rc = os.system(JSCHK + " " + fn);
-        assert rc == 0, "Syntax check failed!"
+
+        rc = os.system(cmd + " " + (par % fn));
+
+        assert rc == 0, "%s Syntax check failed!" % what
       print; sys.stdout.flush()
-    else:
-      print "Syntax check omitted!"
 
     fname = os.path.join(outdir, "%s-%s.xpi" % (opts.project, ver))
     if os.path.exists(fname): os.remove(fname)
@@ -73,16 +99,20 @@ def main(argv=sys.argv[1:]):
     os.system(SHA1SUM+" "+fname)
     print "Please update update.rdf and run McCoy"
 
+    global xpidata
+    
     if opts.AMO:
-      famo = os.path.join(outdir, "%s-%s-amo.xpi" % (project, ver))
+      print "Building for AMO..."
+      famo = os.path.join(outdir, "%s-%s-amo.xpi" % (opts.project, ver))
       p = re.compile(r'\s*<em:updateURL>.*?</em:updateKey>\n', re.S)
       inst = p.sub('\n', inst)
       xpi = zipfile.ZipFile(fname, "r")
       amo = zipfile.ZipFile(famo, "w")
       for item in xpi.infolist():
-        data = xpi.read(item.filename)
-        if item.filename == "install.rdf": data = inst
-        amo.writestr(item, data)
+        xpidata = xpi.read(item.filename)
+        if item.filename == "install.rdf": xpidata = inst
+        if os.path.isfile(AMOEXIT): execfile(AMOEXIT, globals(), locals())
+        amo.writestr(item, xpidata)
       amo.close(); xpi.close()
 
   finally:

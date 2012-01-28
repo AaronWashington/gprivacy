@@ -4,8 +4,8 @@ Components.utils.import("chrome://gprask/content/engine.jsm");
 var gprask = {
   // Just load our engine and add it to gprivacy
   onLoad: function() {
-    // @change this to match your EXPORTED_SYMBOLS in 
-    Engines.add(new gprivacyAsk(Engines));
+    // @change this to match your EXPORTED_SYMBOLS in engine.jsm
+    gprivacy.engines.add(new gprivacyAsk(Engines));
   }
 }
 

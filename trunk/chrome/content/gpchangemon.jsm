@@ -6,11 +6,24 @@ Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 
 var EXPORTED_SYMBOLS = [ "ChangeMonitor" ];
 
-function ChangeMonitor(gprivacy, xuldoc, mainwindow) {
-  this.init(gprivacy, xuldoc, mainwindow);
+function ChangeMonitor(gprivacy, xulwindow, mainwindow) {
+  try {
+    this.init(gprivacy, xulwindow, mainwindow);
+  } catch (exc) {
+    Logging.logException(exc);
+    Logging.error("changemon: Error initializing. Link monitoring is off!");
+    this.active = this.level = 0;
+  }
 }
 
 ChangeMonitor.prototype = {
+  OFF:     0,
+  WARN:    1,
+  NOTIFY:  2,
+  TRACKED: 4,
+  ALL:     8,
+  PROXY:  16,
+  
   IGNORED_ATTRS: [
     "wrc-processed", // avast! WebRep marker
   ],
@@ -18,17 +31,18 @@ ChangeMonitor.prototype = {
   DPFX:  "DO"+"M",
   engines: null,
   
-  init: function(gpr, xuldoc, mainwindow) {
+  init: function(gpr, xulwindow, mainwindow) {
     this.gpr        = gpr;
 
     this.tabbrowser = mainwindow; // only works, if the window is already opened Services.wm.getMostRecentWindow("navigator:browser");
+    this.xulwindow  = xulwindow;
     this.popup      = null;
     this.debug      = gpr.debug;
     this.refresh();
     try {
       this.notify     = new PopupNotifications(this.tabbrowser,  
-                                               xuldoc.getElementById("notification-popup"),  
-                                               xuldoc.getElementById("notification-popup-box"));
+                                               xulwindow.document.getElementById("notification-popup"),  
+                                               xulwindow.document.getElementById("notification-popup-box"));
     } catch (exc) {
       Logging.logException(exc);
       this.notify = null; // nevermind
@@ -37,8 +51,8 @@ ChangeMonitor.prototype = {
   },
   
   refresh: function(doc) {
-    this.active  = Services.prefs.getIntPref( "extensions.gprivacy.changemon");
-    this.verbose = this.active; // MAYBE: get a differnt pref
+    this.level  = Services.prefs.getIntPref( "extensions.gprivacy.changemon");
+    this.active = this.level != 0;
   },
   
   pageLoaded: function(eng, doc, links, changed) {
@@ -47,7 +61,7 @@ ChangeMonitor.prototype = {
       if (this.active) {
         let msg = "Engine '"+eng+"' matched, but no links were modified on '" +
                   doc.location.href.substring(0, 128) + "'. Did the website change its tracking method?";
-        Logging.warn(msg);
+        this.warnLink(msg);
 
         this.showPopup("gprmon-popup-modified",
           msg, null, // "gprmon-notification-icon",
@@ -60,8 +74,14 @@ ChangeMonitor.prototype = {
     }
   },
   
+  warnLink: function(msg, severe) {
+    if (this.level & this.WARN)
+      severe ? Logging.error(msg, false) : Logging.warn(msg);
+  },
+  
+  // TODO: Move popup functions to gputils.jsm
   showPopup: function(id, txt, icon, prim, sec, opts) {
-    if ((this.verbose > 1 || opts.force) && this.notify) {
+    if (((this.level & this.NOTIFY) || opts.force) && this.notify) {
       if (opts.force !== undefined) delete opts.force;
       this.closePopup();
       this.popup = this.notify.show(this.tabbrowser.selectedBrowser,
@@ -88,7 +108,7 @@ ChangeMonitor.prototype = {
       var link = link;
       
       if (!link.gprwapper) {
-        if (self.verbose > 2) {
+        if (self.level & self.PROXY) {
           var neew = link.cloneNode(true);
           neew = Proxy.create(self.loggingProxyHandler(neew));
           try {
@@ -135,7 +155,7 @@ ChangeMonitor.prototype = {
         status.ignored = status.ignored.concat(eng.IGNORED_ATTRS);
 
       for (var m in mods) {
-        link.addEventListener(mods[m], function(e) { self.onPrivacyCompromised(e, status); }, false);
+        link.addEventListener(mods[m], function(e) { self.onPrivacyCompromised(e, status); }, false, true);
       }
 
       link.gpwatched = true;
@@ -161,22 +181,24 @@ ChangeMonitor.prototype = {
     if (e.attrChange) msg += ", '" + e.attrName +  "': '" +
                              e.prevValue + "' -> '" + e.newValue + "'";
                              
-    if (link !== e.originalTarget) {
-      Logging.warn("Maybe " + msg);
+   
+    if (link !== e.originalTarget &&
+        link.getAttribute("gprivacy") == "true") { // monitoring tracked links means we're in debug mode
+      this.warnLink("Maybe " + msg);
       return;
     }
 
-    Logging.error(msg, false);
+    this.warnLink(msg, true);
     
     if (!status.hit) {
       status.hit = true;
-      if (link.gprivacyMark) {
+      if (link.gprivacyIcon) {
         var bogus = DOMUtils.create(status.doc, this.gpr.MARKBOGUS);
-        link.gprivacyMark.parentNode.insertBefore(bogus, link.gprivacyMark);
-        link.gprivacyMark.parentNode.removeChild(link.gprivacyMark)
-        link.gprivacyMark = null;
+        link.gprivacyIcon.parentNode.insertBefore(bogus, link.gprivacyIcon);
+        link.gprivacyIcon.parentNode.removeChild(link.gprivacyIcon)
+        link.gprivacyIcon = null;
       }
-      if (link.grpivacyText)
+      if (link.gprivacyText)
         link.appendChild(status.doc.createTextNode("\u00A0(compromised!)"));
     }
       
@@ -187,7 +209,7 @@ ChangeMonitor.prototype = {
         msg + "'. See error log for details!", null, // "gprmon-notification-icon",
         { label: "Open error console", accessKey: "E",
           callback: function(state) { 
-              self.tabbrowser.toOpenWindowByType("global:console", "chrome://global/content/console.xul");
+              self.xulwindow.toOpenWindowByType("global:console", "chrome://global/content/console.xul");
           } },  
         [ { label: "Show more from this page", accessKey: "O",
             callback: function(state) { status.notified = false; } },
