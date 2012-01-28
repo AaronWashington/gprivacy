@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE overlay SYSTEM "chrome://gprask/locale/options.dtd">
+
+<!-- $Id$ -->
+
+<!-- @change: replace 'ask' with your engine ID -->
+
+<!DOCTYPE overlay [ 
+<!ENTITY % gpoverlayDTD SYSTEM "chrome://gprivacy/locale/overlay.dtd">
+<!ENTITY % gpoptionsDTD SYSTEM "chrome://gprivacy/locale/options.dtd">
+<!ENTITY % optionsDTD   SYSTEM "chrome://gprask/locale/options.dtd">
+%gpoverlayDTD;
+%gpoptionsDTD;
+%optionsDTD;
+]>
+
 <overlay id="gprask-options" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <preferences id="gprivacyPrefs" defaultbutton="cancel">

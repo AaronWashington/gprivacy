@@ -1,9 +1,9 @@
-<!ENTITY gprivacy.name  "Website Privacy">
-<!ENTITY gprivacyContext.label "Privacy options...">
+<!ENTITY gprivacy.name  "Website&#x000A;Privacy">
+<!ENTITY gprivacyContext.label "Einstellungen Privatsphäre...">
 <!ENTITY gprivacyContext.accesskey "P">
 <!ENTITY gprivacyContext.icon "chrome://gprivacy/skin/icon16.png">
 <!ENTITY gprivacyToolbarButton.label "&gprivacy.name;">
-<!ENTITY gprivacyToolbarButton.tooltip "&gprivacy.name; Settings...">
+<!ENTITY gprivacyToolbarButton.tooltip "&gprivacy.name; Einstellungen...">
 <!ENTITY gprivacyButton.label   "&gprivacy.name;...">
 <!ENTITY gprivacyButtonLabelFx  "&gprivacy.name;: ">
-<!ENTITY gprivacyButton.labelfx "Options...">
+<!ENTITY gprivacyButton.labelfx "Einstellungen...">

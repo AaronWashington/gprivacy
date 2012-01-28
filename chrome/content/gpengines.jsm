@@ -82,7 +82,7 @@ gprivacyDefault.prototype = {
   
   cloneLink: function(_doc, link) {
     var neew = link.cloneNode(true);
-    neew.setMark = function(elt) {
+    neew.setIcon = function(elt) {
       this.appendChild(elt);
     }
     return neew;

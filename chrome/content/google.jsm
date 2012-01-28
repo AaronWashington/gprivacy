@@ -56,21 +56,33 @@ gprivacyGoogle.prototype = {
   },
   
   removeGlobal: function(doc) {
-    if (doc.getElementById("gsr") != null && // google search home
-        doc.getElementById("cnt") == null)   // search result contents
+    if (this.changeMonIgnored(doc))
       // no search result on page. probably google home page so ignore and...
       return 1; // ...make ChangeMonitor happy
     return 0;
+  },
+  
+  changeMonIgnored: function(doc) { // don't warn on certain pages without hits
+    // TODO: think of a proper policy mechanism, used by other engines too
+    var ignored =
+      // google search home without results
+         ( doc.getElementById("gsr") != null && doc.getElementById("cnt") == null )
+      // iframe with Google+ notification
+      || ( doc.getElementById("nw-content")  && doc.getElementById("notify-widget-pane") )
+      ;
+    if (ignored)
+      this.gpr.debug(this+": ignoring unchanged page '"+doc.location.href.substring(0, 128)+"'"); 
+    return ignored;
   },
   
   showWarning: function() {
     let self = this;
     this.gpr.showPopup("gprmon-popup",
         this.strings.getString("googleWarning"), null, // "gprmon-notification-icon",
-        { label: this.strings.getString("googleWarningKeep"), accessKey: "O",
+        { label: this.strings.getString("googleWarningKeep"), accessKey: "C",
           callback: function(state) { self.gpr.closePopup(); }
         },  
-        [ { label: this.strings.getString("googleWarningRemove"), accessKey: "C",
+        [ { label: this.strings.getString("googleWarningRemove"), accessKey: "O",
             callback: function(state) {
               Services.prefs.setBoolPref("extensions.gprivacy.engines.google.nowarn", true);
               self.gpr.closePopup();

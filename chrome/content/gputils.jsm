@@ -34,7 +34,7 @@ var EventUtils = {
   
   stopEvent: function(type, elt) {
     var self = this; // generate closure
-    elt.addEventListener(type, function(e) { self.stopThis(e); });
+    elt.addEventListener(type, function(e) { self.stopThis(e); }, false, true);
   },
   
   stopThis: function(evt) {

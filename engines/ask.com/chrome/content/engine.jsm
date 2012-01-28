@@ -81,7 +81,7 @@ gprivacyAsk.prototype = { // @change: ...and here
     // If the modified web page looks particularly ugly.
     var neew = link.cloneNode(true);  // use DOM, copy children.
                                       // @change this if you need...
-    neew.setMark = function(elt) {
+    neew.setIcon = function(elt) {
       // Will be called to insert those little icons somewhere in the DOM.
       // if you don't attach this function, this happens:
       this.appendChild(elt);
@@ -92,7 +92,7 @@ gprivacyAsk.prototype = { // @change: ...and here
   createLinkAnnot: function(doc, trackedLink, wasReplaced) {
     // Create a HTML element that will hold the private (or original) link.
     // can attach a function 'setLink' where the private (or original) link
-    // will be inserted (see 'setMark' in 'cloneLink' above, or better, see
+    // will be inserted (see 'setIcon' in 'cloneLink' above, or better, see
     // 'gpengines.jsm')
     // 'wasReplaced' indicates wheter the tracked link was replaced by the
     // private link, if you need this info.

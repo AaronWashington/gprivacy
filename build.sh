@@ -1,6 +1,7 @@
 # @change: please adjust to your needs
 # export JSCHK=jsshell -C
-export JSCHK="" # disables JavaScript syntax check
+export JSCHK=""   # disables JavaScript syntax check
+# export XULLINT="" # disables XUL syntax check
 # export JAR=jar
 # export SHA1SUM=sha1sum
 # export SVN=svn

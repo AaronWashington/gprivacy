@@ -1,5 +1,17 @@
 Current svn: $Id$
 
+0.2.0pre4
+
+* [google] Ignore Google+ notification iframe
+* [core] Added de-DE locale
+* [core] Overlay browser preferences  
+* [core] setMark is now setIcon, 'cause that's what it is...
+* [core] monitor tracked links in debug mode
+* [core] Change displayed Add-on name to 'Website Privacy'
+* [core] [changemon] Monitor events from untrusted sources (experimental)
++ [build] Check XUL syntax before packing
++ [build] Add a dummy change monitor for distribution on AMO
+
 0.2.0pre3
 
 * Replace inner elements in google search results (and warn user)
