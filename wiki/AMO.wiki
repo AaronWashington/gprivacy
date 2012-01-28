@@ -32,7 +32,7 @@ Websites supported (for now) are Google, YouTube, Yahoo!, Bing and Facebook.
 <strong>Please Note: This software is still in it's beta testing phase and COMES AS IS! - <a href="http://code.google.com/p/gprivacy/wiki/README#Disclaimer">DISCLAIMER</a>
 If you're scared sh*tless now, don't use it!
 </strong>
-That said, if you find any problems or websites that stopped working, e-mail me!
+That said, if you find any problems or websites that stopped working, please <a href="http://code.google.com/p/gprivacy/issues/entry">report the issue</a>!
 You may also visit the project's <a href="http://code.google.com/p/gprivacy/wiki/README">gprivacy google code page</a> where you can find a short <a href="http://code.google.com/p/gprivacy/wiki/README#Options">explanation of the preferences</a>,the latest <a href="http://code.google.com/p/gprivacy/downloads/list">development version</a> and a <a href="http://code.google.com/p/gprivacy/issues/list">problem issue tracking</a> system.
 
 <strong>One More Thing</strong>
@@ -40,9 +40,9 @@ This add-on does not -- and cannot -- recognize every mechanism companies use  t
 
 With every redesign of a website, tracking mechanisms change, and this add-on <strong>will definitely</strong> become obsolete rather sooner than later. For our most used websites, We will try to keep this add-on as up-to-date as possible, but some others may fall through the cracks...
 
-For this reason I suggest you don't use this add-on on its own. There are a lot of privacy and security add-ons out there, with <a href="https://addons.mozilla.org/en-US/addon/requestpolicy/">RequestPolicy</a>and <a href="http://flashblock.mozdev.org/">FlashBlock</a> being my favorites. I would recommend you to use these to together with this add-on. But there's also <a href="https://addons.mozilla.org/en-US/addon/noscript/">NoScript</a>, which I personally don't use, but it comes highly recommended.
+For this reason I suggest you don't use this add-on on its own. There are a lot of privacy and security add-ons out there, with <a href="https://addons.mozilla.org/en-US/addon/requestpolicy/">RequestPolicy</a> and <a href="http://flashblock.mozdev.org/">FlashBlock</a> being my favorites. I would recommend you to use these to together with this add-on. But there's also <a href="https://addons.mozilla.org/en-US/addon/noscript/">NoScript</a>, which I personally don't use, but it comes highly recommended.
 
-If you find that a website is starting to track you again or that this add-on  is causing errors on a page, you'll find our support address on the right hand side this page.
+If you find that a website is starting to track you again or that this add-on  is causing errors on a page, you can <a href="http://code.google.com/p/gprivacy/issues/entry">report the problem here</a>.
 
 If on the other hand, you want to help out and extend this add-on, see what <a href="http://code.google.com/p/gprivacy/wiki/README#Developers">developers can do</a>!
 
