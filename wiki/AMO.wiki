@@ -2,6 +2,8 @@
 #labels Deprecated
 <wiki:toc max_depth="3" />
 
+====== File $Id$ ======
+
 = Edit Listing =
 == Basic Information ==
 ==== Summary ====
@@ -31,7 +33,7 @@ Websites supported (for now) are Google, YouTube, Yahoo!, Bing and Facebook.
 If you're scared sh*tless now, don't use it!
 </strong>
 That said, if you find any problems or websites that stopped working, e-mail me!
-You may also visit the project's <a href="http://code.google.com/p/gprivacy/wiki/README">gprivacy google code page</a> where you can find a short <a href="http://code.google.com/p/gprivacy/wiki/README#Options">explanation of the preferences</a> and the latest development version.
+You may also visit the project's <a href="http://code.google.com/p/gprivacy/wiki/README">gprivacy google code page</a> where you can find a short <a href="http://code.google.com/p/gprivacy/wiki/README#Options">explanation of the preferences</a>,the latest <a href="http://code.google.com/p/gprivacy/downloads/list">development version</a> and a <a href="http://code.google.com/p/gprivacy/issues/list">problem issue tracking</a> system.
 
 <strong>One More Thing</strong>
 This add-on does not -- and cannot -- recognize every mechanism companies use  to track user behavior! In fact, this will be probably a losing battle.
