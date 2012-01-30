@@ -52,26 +52,43 @@ gprivacyGoogle.prototype = {
         this.showWarning();
       this.nowarn = true; // only once per page
     }
-    
   },
   
   removeGlobal: function(doc) {
-    if (this.changeMonIgnored(doc))
+    if (this.changemonIgnored(doc, null, null))
       // no search result on page. probably google home page so ignore and...
       return 1; // ...make ChangeMonitor happy
     return 0;
   },
   
-  changeMonIgnored: function(doc) { // don't warn on certain pages without hits
+  changemonIgnored: function(doc, link, e) { // don't warn on certain pages without hits
     // TODO: think of a proper policy mechanism, used by other engines too
-    var ignored =
-      // google search home without results
-         ( doc.getElementById("gsr") != null && doc.getElementById("cnt") == null )
-      // iframe with Google+ notification
-      || ( doc.getElementById("nw-content")  && doc.getElementById("notify-widget-pane") )
-      ;
+    var ignored = false;
+    if (link == null || e == null) { // whole document
+      ignored = (
+        // Account login
+           ( doc.location.pathname == "/ServiceLogin" )
+        // google search home without results
+        || ( doc.getElementById("gsr") != null && doc.getElementById("cnt") == null )
+        // iframe with Google+ notification
+        || ( doc.getElementById("nw-content")  && doc.getElementById("notify-widget-pane") )
+        // Image search links are tracked, anyway
+        || ( doc.location.search.match(/(&|\?)tbm=isch&?/g) )
+      );
+    }
+    if (!ignored && e && e.attrChange) {
+      if (e.attrName == "href" || e.attrName == "src") {
+        ignored = link.search.match(/(&|\?)tbm=isch&?/g);
+      } else if (e.attrName == "class") {
+        ignored = ( 
+          (link.id.match(/^gb_.*$/) &&
+           e.prevValue.replace(/\s*gb[gmz](t-hvr|0l)\s*/g, '') ==
+           e.newValue.replace( /\s*gb[gmz](t-hvr|0l)\s*/g, ''))
+        );
+      }
+    }
     if (ignored)
-      this.gpr.debug(this+": ignoring unchanged page '"+doc.location.href.substring(0, 128)+"'"); 
+      this.gpr.debug(this+": ignoring unchanged ' "+(link?"link":"page")+" "+doc.location.href.substring(0, 128)+"'"); 
     return ignored;
   },
   

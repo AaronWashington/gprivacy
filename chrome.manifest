@@ -1,9 +1,10 @@
-content   gprivacy                 chrome/content/ contentaccessible=yes
-skin      gprivacy   classic/1.0   chrome/skin/
-locale    gprivacy   en-US         chrome/locale/en-US/
-locale    gprivacy   de-DE         chrome/locale/de-DE/
+content   gprivacy                  chrome/content/ contentaccessible=yes
+skin      gprivacy    classic/1.0   chrome/skin/
+locale    gprivacy    en-US         chrome/locale/en-US/
+locale    gprivacy    de-DE         chrome/locale/de-DE/
 
-resource  gprivacy   chrome/skin/
+resource  gprivacy    chrome/skin/
+resource  gpchangemon chrome/resource/changemon/
 
 # Firefox
 overlay chrome://browser/content/browser.xul                 chrome://gprivacy/content/overlay.xul application={ec8030f7-c20a-464f-9b0e-13a3a9e97384}

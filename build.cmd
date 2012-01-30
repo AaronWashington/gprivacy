@@ -1,8 +1,8 @@
 @echo off
 @rem $Id$
-set JAR=%~d0\jdk1.6.0_18\bin\jar.exe
-set SHA1SUM=%~d0\Develop\cygwin\bin\sha1sum.exe
-SET XULLINT=python xullint.py
+if not defined JAR     set JAR=%~d0\jdk1.6.0_18\bin\jar.exe
+if not defined SHA1SUM set SHA1SUM=%~d0\Develop\cygwin\bin\sha1sum.exe
+if not defined XULLINT set XULLINT=python %~dp0xullint.py
 
 rem echo.>%~dp0build.log
 rem set "LOG=2>&1 | tee -a %~dp0build.log"

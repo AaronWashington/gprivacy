@@ -30,9 +30,15 @@ ChangeMonitor.prototype = {
   init: function(gpr, xulwindow, mainwindow) {
     this.gpr        = gpr;
     this.xulwindow  = xulwindow;
+    this.refresh();
   },
   
   refresh: function(doc) {
+    if(Services.prefs.getIntPref( "extensions.gprivacy.changemon") > 0)
+      Logging.warn("changemon: Change monitoring set in config, but no change monitor installed.");
+  },
+  
+  close: function() {
   },
   
   pageLoaded: function(eng, doc, links, changed) {

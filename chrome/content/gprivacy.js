@@ -5,6 +5,7 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 Components.utils.import("chrome://gprivacy/content/gpengines.jsm");
 Components.utils.import("chrome://gprivacy/content/gpchangemon.jsm");
+Components.utils.import("chrome://gprivacy/content/gpcompat.jsm");
 
 var gprivacy = {
   INSERT_EVT: "DOMNode" + "Inserted", // What are we going to do, when these will be removed (already deprecated)???
@@ -27,8 +28,13 @@ var gprivacy = {
       this.MARKORIG.title  = this.strings.getString("origTip");
       this.MARKBOGUS.title = this.strings.getString("compromisedTip");
       
+      // Property intializaion should be done by here...
+
+      this.compat    = new AddonCompat(this, window, gBrowser);
       this.changemon = new ChangeMonitor(this, window, gBrowser);
       this.engines   = new Engines(this);
+
+      // Now for the event listeners
 
       if (this.appcontent) {
         this.appcontent.addEventListener("DOMContentLoaded", function(e) {
@@ -62,6 +68,8 @@ var gprivacy = {
     {
       this.appcontent.removeEventListener("DOMContentLoaded", function(e) { self.onPageLoad(e); }, false);
       this.appcontent = null;
+      this.changemon.close();
+      this.compat.close();
       this.debug("instance unloaded");
     }
   },
@@ -69,7 +77,12 @@ var gprivacy = {
   onPrePageLoad: function(e) {
     var self = this;
     var evt  = e;
-    // setTimeout(function _dopl() { self.delayed_onPageLoad(e) }, 2000);
+
+    this.compat.refresh(doc);
+    this.changemon.refresh(doc);
+    this.engines.refresh(doc);
+    
+    
     var doc = e.type != "DOMFrameContentLoaded" ? e.originalTarget : e.originalTarget.contentDocument;
     doc.defaultView.addEventListener("load",   function _opl()  { self.onPageLoad(e)   }, false);
     doc.defaultView.addEventListener("unload", function _opul() { self.onPageUnload(e) }, false);
@@ -91,10 +104,6 @@ var gprivacy = {
       
       var doc   = e.type != "DOMFrameContentLoaded" ? e.originalTarget : e.originalTarget.contentDocument;
     
-      this.changemon.refresh(doc);
-
-      this.engines.refresh(doc);
-    
       var eng = this.engines.find(doc.location.href, true)
 
       if (eng != null) {
@@ -103,32 +112,24 @@ var gprivacy = {
         var links   = doc.getElementsByTagName("a");
         var changed = 0;
 
-        for (var i = 0; i < links.length; i++)
-            changed += this.changeLink(eng, doc, links[i], this.replace) ? 1 : 0;
-
-        changed += eng.call("removeGlobal", doc) ? 1 : 0;
-
+/*
         if ((this.changemon.level & this.changemon.ALL) && !this.MARKORIG.unknown) {
           // monitor ALL links so change their icons
           var src = this.MARKBOGUS.src;
           this.MARKBOGUS.src = this.MARKORIG.src; this.MARKORIG.src = src;
           this.MARKORIG.unknown = true;
         }
+*/
+
+        for (var i = 0; i < links.length; i++)
+            changed += this.changeLink(eng, doc, links[i], this.replace) ? 1 : 0;
+
+        changed += eng.call("removeGlobal", doc) ? 1 : 0;
+
         doc.addEventListener(this.INSERT_EVT, function(e) { self.onNodeInserted(e, eng); }, false, true);
         
         this.changemon.pageLoaded(eng, doc, links, changed);
       }
-
-      /* Not necessary, iframes trigger onPageLoad anyway...
-      if (this.embedded) {
-        var frames = { i: doc.getElementsByTagName("iframe"), f: doc.getElementsByTagName("frame") };
-        for (var[w] in frames)
-          for (var f = 0; i < frames[w].length; f++)
-            frames[w][f].addEventListener("load", function(e) { self.onPageLoad(e); }, false, true);
-      }
-      */
-      /* But TODO: option to ignore iframes and frames...
-      */
 
     } catch (exc) {
       Logging.logException(exc);
@@ -212,16 +213,17 @@ var gprivacy = {
   // end of REMOVEME:
   
   _setIcons: function(_eng, _doc, priv, tracked, privicon, trackicon) {
+    
     if (priv && privicon) {
       if (priv.setIcon) priv.setIcon(privicon); 
-      else              priv.appendChild(privicon);
-      priv.gprivacyIcon = privicon;
+      else              DOMUtils.setIcon(priv, privicon);
+      priv.gprivacyIcon = privicon; // remember it
     }
     
     if (tracked && trackicon) // original link is kept
     {
       if (tracked.setIcon) tracked.setIcon(trackicon);
-      else                 tracked.appendChild(trackicon);
+      else                 DOMUtils.setIcon(tracked, trackicon);
       tracked.gprivacyIcon = trackicon;
     }
   },
