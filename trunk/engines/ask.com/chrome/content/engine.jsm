@@ -84,7 +84,7 @@ gprivacyAsk.prototype = { // @change: ...and here
     neew.setIcon = function(elt) {
       // Will be called to insert those little icons somewhere in the DOM.
       // if you don't attach this function, this happens:
-      this.appendChild(elt);
+      DOMUtils.setIcon(neew, elt);
     }
     return neew;
   },

@@ -83,7 +83,7 @@ gprivacyDefault.prototype = {
   cloneLink: function(_doc, link) {
     var neew = link.cloneNode(true);
     neew.setIcon = function(elt) {
-      this.appendChild(elt);
+      DOMUtils.setIcon(neew, elt);
     }
     return neew;
   },
@@ -139,11 +139,15 @@ gprivacyDefault.prototype = {
     }
   },
   
-  removeGlobal:  function(_doc) {
+  removeGlobal: function(_doc) {
     // see youtube.jsm
     return 0;
   },
   
+  changemonIgnored: function(_doc, _link, _evt) {
+    return false;
+  },
+
   _toString: function() {
     var self = this.instance || this;
     return "["+self.NAME+",{ID:'"+self.ID+",UID:"+self.UID+"}]";

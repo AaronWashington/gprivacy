@@ -32,9 +32,10 @@ var EventUtils = {
     return evts;
   },
   
-  stopEvent: function(type, elt) {
+  stopEvent: function(type, elt, capture) {
     var self = this; // generate closure
-    elt.addEventListener(type, function(e) { self.stopThis(e); }, false, true);
+    capture = !!capture;
+    elt.addEventListener(type, function(e) { self.stopThis(e); }, capture, true);
   },
   
   stopThis: function(evt) {
@@ -60,6 +61,41 @@ var DOMUtils = {
   removeAllChildren: function(node) {
     while (node.hasChildNodes())
       node.removeChild(node.firstChild);
+  },
+
+  setIcon: function(elt, icon) {
+    // old: elt.appendChild(icon);
+    // new: use styles and take image from icon element
+    elt.style.background = 'url("' + icon.src + '") '+
+                            'no-repeat scroll right center transparent';
+    elt.style.backgroundSize =  icon.width+"px "+icon.height+"px";
+    
+    if (elt.ownerDocument && elt.ownerDocument.defaultView  &&
+        elt.getAttribute("gprivacy-icon") != "true") {
+      var pad = icon.width+1;
+      var old = elt.ownerDocument.defaultView.getComputedStyle(elt);
+      if (old && old.paddingRight != "")
+        pad += parseInt(old.paddingRight.replace(/px/,''));
+      elt.style.paddingRight   = pad+"px";
+      elt.setAttribute("gprivacy-icon", "true")
+    }
+  },
+
+  getContents: function(aURL) {
+    // from http://forums.mozillazine.org/viewtopic.php?p=921150#921150
+    var ioService=Components.classes["@mozilla.org/network/io-service;1"]
+      .getService(Components.interfaces.nsIIOService);
+    var scriptableStream=Components
+      .classes["@mozilla.org/scriptableinputstream;1"]
+      .getService(Components.interfaces.nsIScriptableInputStream);
+
+    var channel=ioService.newChannel(aURL,null,null);
+    var input=channel.open();
+    scriptableStream.init(input);
+    var str=scriptableStream.read(input.available());
+    scriptableStream.close();
+    input.close();
+    return str;
   }
 
 };

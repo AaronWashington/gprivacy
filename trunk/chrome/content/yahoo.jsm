@@ -29,7 +29,9 @@ gprivacyYahoo.prototype = {
   removeTracking: function(doc, link) {
     this.super.removeTracking(doc, link);
     // stop "mousedown", even if it's NOT handled by the link itself
-    EventUtils.stopEvent("mousedown", link);
+    EventUtils.stopEvent("mousedown", link, true);
+    EventUtils.stopEvent("click", link, true);
+    EventUtils.stopEvent("focus", link, true);
   },
   
   insertLinkAnnot: function(doc, link, elt) {
@@ -39,9 +41,32 @@ gprivacyYahoo.prototype = {
       return link.parentNode.insertBefore(elt, link.nextSibling);
   },
 
-  cloneLink: function(doc, link) {
-    var neew = link.cloneNode(true);
-    neew.setAttribute("class", null);
-    return neew;
-  }
+  IGNORED_ATTRS: ["role", "aria-haspopup", "tabindex"],
+  
+  changemonIgnored: function(doc, link, e) { // don't warn on certain pages without hits
+    // my.yahoo.com
+    var ignored = false;
+    if (!ignored && e && e.attrChange) {
+      if (e.attrName == "id") {
+        ignored = (
+          (!e.prevValue && e.newValue.match(/^yui[-_].*$/)) ||
+          (e.newValue == link.id)
+        );
+      }
+      if (!ignored && doc.location.host.match(/^my\.yahoo\..*$/)) {
+        if (e.attrName == "class") {
+          ignored = (
+            (e.prevValue == "small strong" && e.newValue == "text") ||
+            (e.prevValue.replace(/\s*yucs-(\w+-)?activate\s*/g, '') ==
+             e.newValue.replace( /\s*yucs-(\w+-)?activate\s*/g, ''))
+          );
+        } else if (e.attrName == "title") {
+          ignored = (link.host == doc.location.host);
+        }
+      }
+    }
+    if (ignored)
+      this.gpr.debug(this+": ignoring unchanged ' "+(link?"link":"page")+" "+doc.location.href.substring(0, 128)+"'"); 
+    return ignored;
+  }  
 };

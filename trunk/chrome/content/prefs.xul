@@ -12,6 +12,7 @@
         <hbox id="doNotTrackBox">
           <spacer insertafter="privacyDoNotTrackPrefs"/>
           <button label="&gprivacyButton.label;" id="gprivacy-pref-button-sm"
+                  image="&gprivacyContext.icon;"
                   oncommand='window.openDialog("chrome://gprivacy/content/options.xul", "", "chrome, dialog, modal, resizable=no", {}).focus();'/>
         </hbox>
       </groupbox>
@@ -25,6 +26,7 @@
         <hbox insertafter="privacyDoNotTrackPrefs" align="center">
           <label value="&gprivacyButtonLabelFx;" id="gprivacy-pref-button-fx-lb" control="gprivacy-pref-button-fx"/>
           <button label="&gprivacyButton.labelfx;" id="gprivacy-pref-button-fx"
+                  image="&gprivacyContext.icon;"
                   oncommand='window.openDialog("chrome://gprivacy/content/options.xul", "", "chrome, dialog, modal, resizable=no", {}).focus();'/>
           <spacer/>
         </hbox>

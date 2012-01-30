@@ -1,5 +1,18 @@
 Current svn: $Id$
 
+* [core] Use styles for icons (fixes a lot of  Yahoo! and other general click problems)
+* [core] Add an add-on compatibility module
+* [core] [changemon] Option to log modifications to DB
+* [core] [changemon] Open firebug, web console or RequestPolicy network log
+* [core] [changemon] ignore unchanged attributes
+* [core] [changemon] let engines ignore changes
+* [core] [changemon] remove proxy code
+* [yahoo] Use capturing event handlers
+* [build] Allow command overriding outside build.cmd
+* [build] Set homepage in install.rdf
+
+0.2.0pre5
+
 0.2.0pre4
 
 * [google] Ignore Google+ notification iframe

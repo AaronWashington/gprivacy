@@ -93,7 +93,7 @@ def main(argv=sys.argv[1:]):
     os.chdir(inpdir)
     
     rc = os.system(JAR+' cvMf "%s" %s' % (fname, rf))
-    assert rc == 0, "RC = %s" % rc
+    assert rc == 0, "jar RC = %s" % rc
 
     print "sha1:", 
     os.system(SHA1SUM+" "+fname)
