@@ -12,8 +12,16 @@ page to and from the AMO release notes.
 </wiki:comment>
 
 === v0.2.0pre5 (unreleased) ===
-  <li>Extensibility: New websites can be added by small extensions (Sample `Ask.com` engine <a href="http://code.google.com/p/gprivacy/downloads/detail?name=gprask-0.2.0pre5-sm%2Bfx.xpi">available here</a>).</li>
-  
+  <li>More <i>Google</i> sites supported (News, ~~Mail~~)</li>
+  <li>More <i>Yahoo</i> sites supported (My!, ~~Mail~~)</li>
+  <li><i>Facebook</i> improvements.</li>
+  <li>Options can now be accessed from Mozilla's <tt>Privacy Options</tt> page, too.</li>
+  <li>Added <tt>de-DE</tt>-locale.
+  <li>Extensibility: New websites can be added by small extensions (Sample `Ask.com` engine <a href="http://code.google.com/p/gprivacy/downloads/detail?name=gprask-0.2.0pre5-sm%2Bfx.xpi">available here</a>, <a href="http://code.google.com/p/gprivacy/wiki/Developers">Developer page</a>).</li>
+  <li>Fix clicks in formatted Google results (matches <b>bold</b>). Though formatting gets lost now, if you replace the tracked links.</li>
+  <li>Fix Ctrl-Click bug</li>
+  <li>Major code refactoring.</li>
+
 === v0.1.0 ===
   <li>Enable engines separately</li>
   <li>Add options leave links from same domain alone (default!)</li>
