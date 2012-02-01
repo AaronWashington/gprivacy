@@ -10,8 +10,11 @@ Components.utils.import("chrome://gprivacy/content/gpcmdatabase.jsm");
 
 var EXPORTED_SYMBOLS = [ "ChangeMonitor" ];
 
+const DPFX   = "DO"+"M";
+const DOMSTM = DPFX+"Subtree"+"Modified";
+
 function MoniData(eng, doc, e, ts) {
-  var link = e.currentTarget;
+  var link = e.currentTarget || doc.location;
   var attr = e.attrName || null, oldv = e.prevValue || null, newv = e.newValue || null;
   
   if (!e.attrChange && e.type == DOMSTM) {
@@ -108,7 +111,7 @@ ChangeMonitor.prototype = {
       if (this.active) {
         let msg = "changemon: Engine '"+eng+"' matched, but no links were modified on '" +
                   doc.location.href.substring(0, 128) + "'. Did the website change its tracking method?";
-        this.warnLink(msg, false, { eng: eng, doc: doc, evt: { type: "NoTrackingFound" } });
+        this.warnLink(msg, false, new MoniData(eng, doc, { type: "NoTrackingFound" }) );
 
         this.showPopup("gprmon-popup-modified", msg, null, null, null, null);
       }
@@ -143,8 +146,8 @@ ChangeMonitor.prototype = {
     var self = this;
 
     if (this.active) {
-      var mods = [  this.DPFX + "Attr"+"Modified", this.DPFX + "Node"+"Inserted",
-                    /* deprecated, I know: */      this.DPFX + "Subtree"+"Modified" ];
+      var mods = [  DPFX + "Attr"+"Modified", DPFX + "Node"+"Inserted",
+                    /* deprecated, I know: */ DPFX + "Subtree"+"Modified" ];
       var status = { eng: eng,   doc: doc,        link:    link,
                      hit: false, notified: false, ignored: this.ignorerules }
 
@@ -165,8 +168,6 @@ ChangeMonitor.prototype = {
   
   onPrivacyCompromised: function(e, status) {
     var self = this;
-    
-    const DOMSTM = this.DPFX+"Subtree"+"Modified";
     
     var link = e.currentTarget;
     
@@ -196,7 +197,7 @@ ChangeMonitor.prototype = {
    
     if (link !== e.originalTarget &&
         link.getAttribute("gprivacy") == "false") { // monitoring tracking links means we're in debug mode
-      this.warnLink("Maybe " + msg, false, status);
+      this.warnLink("Maybe " + msg, false, data);
       return;
     }
 

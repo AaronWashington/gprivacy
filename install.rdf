@@ -5,7 +5,7 @@
     <em:id>{ea61041c-1e22-4400-99a0-aea461e69d04}</em:id>
     <em:type>2</em:type>
     <em:name>Google Privacy</em:name> <!-- We'll probably have to change this -->
-    <em:version>0.2.0pre5</em:version>
+    <em:version>0.2.0pre6</em:version>
     <em:creator>Herrminator</em:creator>
     <em:homepageURL>http://code.google.com/p/gprivacy/wiki/README</em:homepageURL>
     <em:contributor></em:contributor>

@@ -8,10 +8,6 @@ Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 
 var EXPORTED_SYMBOLS = [ "ChangeMonitorDB", "IgnoreRule", "IgnoreRules" ];
 
-const DPFX   = "DO"+"M";
-const DOMSTM = DPFX+"Subtree"+"Modified";
-
-
 // MAYBE: Those classes should probably be in their own module...
 function IgnoreRule(def) {
   this.rules = {};
@@ -74,9 +70,8 @@ var ChangeMonitorDB = {
     var self = this;
 
     // refres some prefs
-/* FIXME: */ this.DEBUG = true
-// FIXME:    this.DEBUG = changemon.DEBUG;
-// FIXME:    this.debug = changemon.debug;
+    this.DEBUG = changemon.DEBUG;
+    this.debug = changemon.debug;
     
     if (!this.dbconn) {
       var pbs = null;
@@ -102,7 +97,7 @@ var ChangeMonitorDB = {
         }
       }
       if (this.dbconn)
-        try { this.dbconn.executeSimpleSQL("pragma wal_checkpoint"); } catch (dexc) { Logging.logException(dexc); }
+        try { this.dbconn.executeSimpleSQL("pragma wal_checkpoint"); } catch (dexc) { this.logSQLException(dexc); }
     }
     this.refcnt++
     this.debug("changemon: new database connection, refcnt = "+this.refcnt);
@@ -136,10 +131,9 @@ var ChangeMonitorDB = {
       if (this.DEBUG) this.logSQLException(exc);
       Logging.warn("changemon: Error reading ignore rules. Does the table 'ignore' exist?");
     } finally {
-/* REMOVEME: */Logging.log("Statement reset");
       if (stmt) stmt.reset();
     }
-    Logging.log("changemon: "+rules.length+" ignore-rules read from database.")
+    this.debug("changemon: "+rules.length+" ignore-rules read from database.")
     return rules;
   },
   
@@ -162,14 +156,14 @@ var ChangeMonitorDB = {
         if (data[d]) stmt.params[d] = data[d];
       
       stmt.executeAsync({
-        handleCompletion: function(rc)  { self.debug("SQL completed rc="+rc); },
+        handleCompletion: function(rc)  { self.debug("changemon: async SQL completed rc="+rc); },
         handleError:      function(err) {
-          Logging.error("SQL Error: "+err.message);
+          Logging.error("changemon: SQL Error: "+err.message);
           self._warnAndTurnOffDB(changemon);
         }
       });
     } catch (exc) {
-      Logging.logException(exc);
+      this.logSQLException(exc);
       self._warnAndTurnOffDB(changemon);
     }
   },
@@ -187,7 +181,7 @@ var ChangeMonitorDB = {
       return dbconn
     } catch (exc) {
       if (file.exists()) {
-        try { this.dbconn.close() } catch (dexc) { Logging.logException(dexc); }
+        try { this.dbconn.close() } catch (dexc) { this.logSQLException(dexc); }
         try { file.remove(false)  } catch (fexc) { Logging.logException(fexc); }
       }
       throw(exc);
@@ -209,10 +203,6 @@ var ChangeMonitorDB = {
     Logging.logException(exc, this.dbconn ? "changemon: SQL Error: '"+this.dbconn.lastErrorString+"'" : null);
   },
   
-  // REMOVEME: use parent's
-  debug: function(msg) {
-    Logging.log(msg);
-  }
 };
   
   

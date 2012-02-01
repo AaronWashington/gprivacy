@@ -45,6 +45,11 @@ ChangeMonitor.prototype = {
   },
   
   pageLoaded: function(eng, doc, links, changed) {
+    if (this.active && changed > 0) {
+      Logging.log("changemon: Engine '"+eng+"': "+changed+" links changed "+
+                  "in " + (new Date().getTime() - doc.gprivacyLoaded.getTime()) + " ms " +
+                  "when loading page '"+doc.location.href.substring(0, 128)+"'");
+    }
   },
   
   nodeInserted: function(eng, doc, _node, _links, changed) {
