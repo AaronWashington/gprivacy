@@ -1,4 +1,5 @@
 #summary gprivacy Release History
+#labels Featured
 
 This is a history of releases `gprivacy`-Versions.
 
@@ -18,7 +19,7 @@ page to and from the AMO release notes.
   <li>Options can now be accessed from Mozilla's <tt>Privacy Options</tt> page, too.</li>
   <li>Added <tt>de-DE</tt>-locale.
   <li>Extensibility: Support for new websites can be added by small extensions (Sample `Ask.com` support <a href="http://code.google.com/p/gprivacy/downloads/detail?name=gprask-0.2.0pre5-sm%2Bfx.xpi">available here</a>, <a href="http://code.google.com/p/gprivacy/wiki/Developers">Developer page</a>).</li>
-  <li>Improved compatibility with <a href="https://addons.mozilla.org/en-US/addon/requestpolicy/">RequestPolicy</a>.
+  <li>Improved compatibility with <a href="https://addons.mozilla.org/en-US/addon/requestpolicy/">!RequestPolicy</a>.
   <li>Fix clicks in formatted Google results (matches <b>bold</b>). Though formatting gets lost now, if you replace the tracked links.</li>
   <li>Fix Ctrl-Click bug</li>
   <li>Major code refactoring.</li>
