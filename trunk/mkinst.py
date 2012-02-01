@@ -19,6 +19,8 @@ AMOEXIT = os.environ.get("AMOEXIT",  "amoexit.py")
 XMLLINT_OPTS = "--nodefdtd --noout"
 LOCALES      = [ "en-US", "de-DE"]
 
+VERPATT      = r'([\d.]+)((?:pre\d+)?)(-dev)?'
+
 def main(argv=sys.argv[1:]):
   op = optparse.OptionParser()
   op.add_option("-p", "--project",   default=DEFPROJ)
@@ -51,11 +53,11 @@ def main(argv=sys.argv[1:]):
   
   try:
     f = file(os.path.join(inpdir, "install.rdf")); inst = f.read(); f.close()
-    m = re.search(r'em:version="(.*?)"', inst)
+    m = re.search(r'em:version="'+VERPATT+'"', inst)
     if m is None:
-      m = re.search(r'<em:version>(.*?)</em:version>', inst)
+      m = re.search(r'<em:version>'+VERPATT+'</em:version>', inst)
     assert m != None, "Version not found in install.rdf"
-    ver = m.group(1) + "-sm+fx"
+    ver = m.group(1) + m.group(2) + "-sm+fx"
 
     checks = [
       ("JavaScript", JSCHK,   [ ".js", ".jsm" ], "%s"),
@@ -86,7 +88,7 @@ def main(argv=sys.argv[1:]):
         assert rc == 0, "%s Syntax check failed!" % what
       print; sys.stdout.flush()
 
-    fname = os.path.join(outdir, "%s-%s.xpi" % (opts.project, ver))
+    fname = os.path.join(outdir, "%s-%s-dev.xpi" % (opts.project, ver))
     if os.path.exists(fname): os.remove(fname)
     rf = " ".join([r for r in ROOT_FILES.split() if os.path.exists(os.path.join(inpdir, r))])
     # jar -C is only valid for one (the next) name
@@ -104,8 +106,12 @@ def main(argv=sys.argv[1:]):
     if opts.AMO:
       print "Building for AMO..."
       famo = os.path.join(outdir, "%s-%s-amo.xpi" % (opts.project, ver))
-      p = re.compile(r'\s*<em:updateURL>.*?</em:updateKey>\n', re.S)
+      p = re.compile(r'\s*<em:updateURL>.*?</em:updateURL>\n', re.S)
       inst = p.sub('\n', inst)
+      p = re.compile(r'\s*<em:updateKey>.*?</em:updateKey>\n', re.S)
+      inst = p.sub('\n', inst)
+      p = re.compile(r'(<em:version>)'+VERPATT+'(</em:version>)')
+      inst = p.sub(r'\1\2\3\5', inst)
       xpi = zipfile.ZipFile(fname, "r")
       amo = zipfile.ZipFile(famo, "w")
       for item in xpi.infolist():
