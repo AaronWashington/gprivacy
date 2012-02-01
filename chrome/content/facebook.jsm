@@ -1,5 +1,7 @@
 // $Id$
 
+"use strict";
+
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 
@@ -66,6 +68,6 @@ gprivacyFacebook.prototype = {
   },
 
   loggedIn: function(doc) {
-    true; // TODO: really check...
+    return true; // TODO: really check...
   }
 };

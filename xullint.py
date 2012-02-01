@@ -57,7 +57,7 @@ def main(argv=sys.argv[1:]):
       id, what, path = m.group(2), m.group(3), m.group(4)
       try:
         abs = os.path.join(mf[what][id][1], mf[what][id][0][0], path)
-        return 'SYSTEM %sfile:%s%s' % (m.group(1), urllib.pathname2url(abs), m.group(5))
+        return 'SYSTEM %sfile:%s%s' % (m.group(1), urllib.pathname2url(abs).replace("|",":"), m.group(5))
       except KeyError, exc:
         from pprint import pformat
         print >> sys.stderr, "Entry '%s %s' not found in %s (`%s`)" %\

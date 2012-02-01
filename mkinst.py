@@ -12,7 +12,7 @@ OUTDIR     = "versions"
 JAR     = os.environ.get("JAR",      "jar")
 SHA1SUM = os.environ.get("SHA1SUM",  "sha1sum")
 SVN     = os.environ.get("SVN",      "svn")
-JSCHK   = os.environ.get("JSCHK",    "jsshell -C")
+JSCHK   = os.environ.get("JSCHK",    'jsshell -s -C -e options(\'werror\')')
 XULLINT = os.environ.get("XULLINT",  "xullint.py")
 AMOEXIT = os.environ.get("AMOEXIT",  "amoexit.py")
 
@@ -112,7 +112,8 @@ def main(argv=sys.argv[1:]):
         xpidata = xpi.read(item.filename)
         if item.filename == "install.rdf": xpidata = inst
         if os.path.isfile(AMOEXIT): execfile(AMOEXIT, globals(), locals())
-        amo.writestr(item, xpidata)
+        if xpidata:
+          amo.writestr(item, xpidata)
       amo.close(); xpi.close()
 
   finally:

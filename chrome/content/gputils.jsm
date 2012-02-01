@@ -1,5 +1,7 @@
 // $Id$
 
+"use strict";
+
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
@@ -63,22 +65,48 @@ var DOMUtils = {
       node.removeChild(node.firstChild);
   },
 
-  setIcon: function(elt, icon) {
-    // old: elt.appendChild(icon);
-    // new: use styles and take image from icon element
+  setIconCSS: function(elt, icon, oldStyle) {
+    var old = oldStyle || elt.ownerDocument.defaultView.getComputedStyle(elt);
     elt.style.background = 'url("' + icon.src + '") '+
                             'no-repeat scroll right center transparent';
     elt.style.backgroundSize =  icon.width+"px "+icon.height+"px";
     
     if (elt.ownerDocument && elt.ownerDocument.defaultView  &&
-        elt.getAttribute("gprivacy-icon") != "true") {
+        elt.getAttribute("gpr-icon") != "true") {
       var pad = icon.width+1;
       var old = elt.ownerDocument.defaultView.getComputedStyle(elt);
       if (old && old.paddingRight != "")
         pad += parseInt(old.paddingRight.replace(/px/,''));
       elt.style.paddingRight   = pad+"px";
-      elt.setAttribute("gprivacy-icon", "true")
+      elt.setAttribute("gpr-icon", "true")
+      let title = icon.title || (icon.hasAttribute && icon.hasAttribute("title") &&
+                                 icon.getAttribute("title"));
+      if (title && !elt.hasAttribute("title"))
+        elt.setAttribute("title", title);
     }
+  },
+  
+  setIconDOM: function(elt, icon) {
+    if (icon.isTemplate) icon = this.create(elt.ownerDocument, icon);
+    if (elt.gprivacyIcon) {
+      elt.gprivacyIcon.parentNode.insertBefore(icon, elt.gprivacyIcon);
+      elt.gprivacyIcon.parentNode.removeChild(elt.gprivacyIcon)
+    } else
+      elt.appendChild(icon);
+    elt.gprivacyIcon = icon;
+    elt.setAttribute("gpr-icon", "dom")
+  },
+  
+  setIcon: function(elt, icon, append) {
+    var isSet = elt.getAttribute("gpr-icon");
+    var old   = elt.ownerDocument.defaultView.getComputedStyle(elt);
+    
+    // if there's no CSS-image or we didn't or don't want to append, use CSS
+    if (!append && isSet != "dom" &&
+        (isSet == "true" || ["","none"].indexOf(old.backgroundImage) != -1))
+      this.setIconCSS(elt, icon, old);
+    else
+      this.setIconDOM(elt, icon);
   },
 
   getContents: function(aURL) {
