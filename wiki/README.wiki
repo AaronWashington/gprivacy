@@ -112,3 +112,6 @@ Mozilla products, head over to the [Developers Developer Page]!
 
 Google search results with `gprivacy`'s default settings.
 http://gprivacy.googlecode.com/svn/wiki/screens/gprivacy-result.1.jpg
+
+Google search results with my favorite settings.
+http://gprivacy.googlecode.com/svn/wiki/screens/gprivacy-result.2.jpg
