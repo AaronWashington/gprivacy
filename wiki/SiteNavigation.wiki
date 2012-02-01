@@ -1,4 +1,4 @@
-#summary Table of contents to use as a sidebat.
+#summary Table of contents to use as a sidebar.
 
  * [README#About About]
  * [README#Disclaimer Download]
@@ -10,3 +10,4 @@
  * [README#Developers Developers]
    * [Developers Developer Page]
  * [README#Screenshots Screenshots]
+ * [CHANGELOG Version History]
