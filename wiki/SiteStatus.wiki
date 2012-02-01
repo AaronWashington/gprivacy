@@ -1,0 +1,39 @@
+#summary A lose collection of experiences with supported websites
+<wiki:toc max_depth="2" />
+
+= Google =
+
+== Search: http://www.google.com ==
+ * `"onmousedown"`-handler that rewrites the result links. Turning !JavaScript off disables this, but also most of the functionality.
+ * Unfortunately, document clicks are handled by event listeners, that have to be prevented. This breaks the formatted results (bold words in the link), so formatting had to be removed.
+ 
+== Mail: https://mail.google.com ==
+ * External links in mails don't seem to get tracked :-)
+
+== News: http://news.google.com ==
+ * An event listener checks for the class `"_tracked"` and doesn't try to redirect if present.
+
+== Documents: https://docs.google.com ==
+ * Not tested.
+
+= Yahoo! =
+
+== Search: http://search.yahoo.com ==
+ * A _capturing_ event listener does background ping home, as soon as the mouse goes down on the link. Adding our own capturing listener really slows things down!
+
+== Mail: https://mail.google.com ==
+ * Also here, extern links in mails seem OK.
+
+== My Yahoo! http://my.yahoo.com ==
+ * External links there usually open a reader panel, that will of course be tracked. Preventing this looses some of the convenience of this portal.
+
+== News: http://news.yahoo.com ==
+ * Yahoo! has its own big news service, so almost all of the links on the portal point to Yahoo! pages. So of course, they know what you're clicking ;-)
+
+= Bing =
+
+= YouTube =
+
+= Facebook =
+
+= Ask.com =
