@@ -1,0 +1,40 @@
+#summary gprivacy Release History
+
+This is a history of releases `gprivacy`-Versions.
+
+The complete change-log can be found [http://code.google.com/p/gprivacy/source/list here] and developer-annotated change-log is [here].
+
+= Release History =
+
+<wiki:comment>
+In case somebody's wondering why I'm using HTML-markup: I want to copy this
+page to and from the AMO release notes.
+</wiki:comment>
+
+=== v0.2.0pre5 (unreleased) ===
+  <li>Extensibility: New websites can be added by small extensions (Sample `Ask.com` engine <a href="http://code.google.com/p/gprivacy/downloads/detail?name=gprask-0.2.0pre5-sm%2Bfx.xpi">available here</a>).</li>
+  
+=== v0.1.0 ===
+  <li>Enable engines separately</li>
+  <li>Add options leave links from same domain alone (default!)</li>
+  <li>Open options from context menu on recognized websites</li>
+  <li>YouTube support</li>
+  <li>Allow blocking of all link events</li>
+  <li>Improve Facebook links</li>
+
+=== v0.0.4 ===
+  <li>Added support for Yahoo! and Bing</li>
+  <li>Option to hide the link text</li>
+
+=== v0.0.3 ===
+ <li>Initial release on [https://addons.mozilla.org/en-US/addon/google-privacy/ AMO].</li>
+ <li>Supported engines: Google, Yahoo! and Bing.</li>
+
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
