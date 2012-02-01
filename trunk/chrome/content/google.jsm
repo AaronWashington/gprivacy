@@ -1,5 +1,7 @@
 // $Id$
 
+"use strict";
+
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 
@@ -81,7 +83,7 @@ gprivacyGoogle.prototype = {
         ignored = link.search.match(/(&|\?)tbm=isch&?/g);
       } else if (e.attrName == "class") {
         ignored = ( 
-          (link.id.match(/^gb_.*$/) &&
+          (link.id.match(/^gb.*$/) &&
            e.prevValue.replace(/\s*gb[gmz](t-hvr|0l)\s*/g, '') ==
            e.newValue.replace( /\s*gb[gmz](t-hvr|0l)\s*/g, ''))
         );

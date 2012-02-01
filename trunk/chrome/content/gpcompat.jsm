@@ -1,5 +1,7 @@
 // $Id$
 
+"use strict";
+
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://gre/modules/AddonManager.jsm");
 Components.utils.import("chrome://gprivacy/content/gputils.jsm");
@@ -42,10 +44,23 @@ RequestPolicyCompat.prototype = {
   init: function(compatMgr, addon) {
     this.compat    = compatMgr;
     this.xulwindow = this.compat.xulwindow;
+    this.rpService = Components.classes["@requestpolicy.com/requestpolicy-service;1"]
+                               .getService(Components.interfaces.nsIRequestPolicy);
     this.compat.debug("RequestPolicy compatibility established");
   },
 
   refresh: function(doc) {
+  },
+  
+  fixPrivateLink: function(eng, doc, link) {
+    var self = this;
+    // If RequestPolicies page load handler is called before us, it won't
+    // register the clicked link and complain!
+    // Unfortunately, there's no way to find out what happened, so just register!
+    link.addEventListener("click", function(event) {
+      self.rpService.registerLinkClicked(event.currentTarget.ownerDocument.URL,
+                                         event.currentTarget.href);
+    }, false);
   },
   
   showLog: function() {
@@ -130,6 +145,16 @@ AddonCompat.prototype = {
     }        
   },
   
+  fixPrivateLink: function(eng, doc, link) {
+    for (let a in this.addons) {
+      var add = this.addons[a];
+      if (add.fixPrivateLink) {
+        try { add.fixPrivateLink(eng, doc, link); }
+        catch (exc) { this.logAddonException(exc, id, "fixing link failed"); }
+      }
+    }        
+  },
+
   logAddonException: function(exc, id, desc) {
      Logging.logException(exc);
      Logging.error("compat: Add-on id '"+id+"': "+desc);

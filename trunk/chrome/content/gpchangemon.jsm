@@ -1,11 +1,39 @@
 // $Id$
 
+"use strict";
+
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://gre/modules/FileUtils.jsm");
 Components.utils.import("resource://gre/modules/PopupNotifications.jsm");
 Components.utils.import("chrome://gprivacy/content/gputils.jsm");
+Components.utils.import("chrome://gprivacy/content/gpcmdatabase.jsm");
 
 var EXPORTED_SYMBOLS = [ "ChangeMonitor" ];
+
+function MoniData(eng, doc, e, ts) {
+  var link = e.currentTarget;
+  var attr = e.attrName || null, oldv = e.prevValue || null, newv = e.newValue || null;
+  
+  if (!e.attrChange && e.type == DOMSTM) {
+    var elt = e.originalTarget;
+    attr = elt.tagName; oldv = link.outerHTML; newv = elt.outerHTML;
+  }
+  this.ts     = ts || new Date().getTime();
+  this.engine = eng.ID;                  this.what  = e.type;
+  this.id     = link.id || null;         this.attr  = attr;
+  this.oldv   = oldv;                    this.newv  = newv;
+  this.proto  = link.protocol || null;   this.host  = link.host || null;
+  this.path   = link.pathname || null;   this.query = link.search || null;
+  this.doc    = doc.location.href||null; this.note  = null;
+  try { this.note = (link.hasAttribute("gprivacy") &&
+                     link.getAttribute("gprivacy") == "false" && "tracking") || null;
+  } catch (exc) {}
+}
+
+//***************************************************************************
+//*
+//*
+//***************************************************************************
 
 function ChangeMonitor(gprivacy, xulwindow, mainwindow) {
   try {
@@ -18,13 +46,14 @@ function ChangeMonitor(gprivacy, xulwindow, mainwindow) {
 }
 
 ChangeMonitor.prototype = {
-  OFF:     0,
-  WARN:    1,
-  NOTIFY:  2,
-  TRACKED: 4,
-  ALL:     8,
-  STORE:  16,
-  
+  OFF:       0,
+  WARN:      1,  // write warnings to error console
+  NOTIFY:    2,  // Popup-notifications
+  TRACKING:  4,  // Monitor tracking links, too
+  ALL:       8,  // Monitor _ALL_ links on a page
+  STORE:    16,  // Store events in gpchangemon.sqlite
+  SILENT: 1024,  // Don't show icons when watching all links, ...
+
   IGNORED_ATTRS: [
     "wrc-processed", // avast! WebRep marker
   ],
@@ -40,49 +69,54 @@ ChangeMonitor.prototype = {
     this.xulwindow  = xulwindow;
     this.popup      = null;
     this.debug      = gpr.debug;
+    this.db         = null;
+    this.ignorerules= [];
+    
     this.refresh();
-    try {
-      this.notify     = new PopupNotifications(this.tabbrowser,  
-                                               xulwindow.document.getElementById("notification-popup"),
-                                               xulwindow.document.getElementById("notification-popup-box"));
-    } catch (exc) {
-      Logging.logException(exc);
-      this.notify = null; // nevermind
+
+    if (this.level & this.NOTIFY) {
+      try {
+        this.notify     = new PopupNotifications(this.tabbrowser,  
+                                                 xulwindow.document.getElementById("notification-popup"),
+                                                 xulwindow.document.getElementById("notification-popup-box"));
+      } catch (exc) {
+        Logging.logException(exc);
+        this.notify = null; // nevermind
+      }
     }
     this.debug("ChangeMonitor instance initialized");
   },
   
   close: function() {
-    if (this.dbconn) this.dbconn.asyncClose();
+    if (this.db) this.db.close();
   },
   
-  refresh: function(doc) {
-    this.DEBUG  = Services.prefs.getBoolPref("extensions.gprivacy.debug");
-    this.level  = Services.prefs.getIntPref( "extensions.gprivacy.changemon");
-    this.active = this.level != 0;
-    this.openDB();
+  refresh: function(doc, eng) {
+    this.DEBUG       = Services.prefs.getBoolPref("extensions.gprivacy.debug");
+    this.level       = Services.prefs.getIntPref( "extensions.gprivacy.changemon");
+    this.active      = this.level != 0;
+    if (this.level & this.STORE) {
+      if (!this.db) this.db = ChangeMonitorDB.open(this);
+    }
+    this.ignorerules = new IgnoreRules(this.db,
+      this.IGNORED_ATTRS.concat(eng && eng.IGNORED_ATTRS ? eng.IGNORED_ATTRS : []));
   },
   
   pageLoaded: function(eng, doc, links, changed) {
     var self = this;
     if (changed == 0 && links.length > 0) {
       if (this.active) {
-        let msg = "Engine '"+eng+"' matched, but no links were modified on '" +
+        let msg = "changemon: Engine '"+eng+"' matched, but no links were modified on '" +
                   doc.location.href.substring(0, 128) + "'. Did the website change its tracking method?";
         this.warnLink(msg, false, { eng: eng, doc: doc, evt: { type: "NoTrackingFound" } });
 
         this.showPopup("gprmon-popup-modified", msg, null, null, null, null);
       }
     } else if (this.active && changed > 0) {
-      Logging.log("Engine '"+eng+"': "+changed+" links changed when loading page '"+doc.location.href.substring(0, 128)+"'");
+      Logging.log("changemon: Engine '"+eng+"': "+changed+" links changed "+
+                  "in " + (new Date().getTime() - doc.gprivacyLoaded.getTime()) + " ms " +
+                  "when loading page '"+doc.location.href.substring(0, 128)+"'");
     }
-  },
-  
-  warnLink: function(msg, severe, data) {
-    if (this.level & this.WARN)
-      severe ? Logging.error(msg, false) : Logging.warn(msg);
-    if ((this.level & this.STORE) && this.dbconn)
-      this.logToDB(data);
   },
   
   nodeInserted: function(eng, doc, _node, _links, changed) {
@@ -96,7 +130,6 @@ ChangeMonitor.prototype = {
     return function(link) {
       var eng  = eng;
       var doc  = doc;
-      var link = link;
       
       if (!link.gprwapper) {
         link.gpwrapper = this;
@@ -113,9 +146,7 @@ ChangeMonitor.prototype = {
       var mods = [  this.DPFX + "Attr"+"Modified", this.DPFX + "Node"+"Inserted",
                     /* deprecated, I know: */      this.DPFX + "Subtree"+"Modified" ];
       var status = { eng: eng,   doc: doc,        link:    link,
-                     hit: false, notified: false, ignored: this.IGNORED_ATTRS }
-      if (eng.IGNORED_ATTRS)
-        status.ignored = status.ignored.concat(eng.IGNORED_ATTRS);
+                     hit: false, notified: false, ignored: this.ignorerules }
 
       for (var m in mods) {
         link.addEventListener(mods[m], function(e) { self.onPrivacyCompromised(e, status); }, false, true);
@@ -123,6 +154,13 @@ ChangeMonitor.prototype = {
 
       link.gpwatched = true;
     }
+  },
+  
+  warnLink: function(msg, severe, data) {
+    if (this.level & this.WARN)
+      severe ? Logging.error(msg, false) : Logging.warn(msg);
+    if ((this.level & this.STORE) && this.db)
+      this.db.writeEntry(this, data);
   },
   
   onPrivacyCompromised: function(e, status) {
@@ -135,18 +173,15 @@ ChangeMonitor.prototype = {
     if (link.gprivacyCompromised !== undefined && e.type == DOMSTM) // got it already
       return;
 
-    if (status.eng.call("changemonIgnored", status.doc, link, e) || // Engine said it's OK!
+    var data = new MoniData(status.eng, status.doc, e);
+    
+    if (this.ignorerules.match(data) ||
+        status.eng.call("changemonIgnored", status.doc, link, e) || // Engine said it's OK!
         e.type == this.gpr.INSERT_EVT) { // This is handled by gprivacy itself
       link.gprivacyCompromised = false;
-//      status.hit = true;
       return;
     }
     
-    if (e.attrChange && status.ignored.indexOf(e.attrName) != -1) {
-      link.gprivacyCompromised = false;
-      return;
-    }
-
     link.gprivacyCompromised = true;
 
     var msg = status.eng+": "+(link.id ? "#"+link.id+" " : "")+"'"+link.href+
@@ -160,18 +195,9 @@ ChangeMonitor.prototype = {
     }
    
     if (link !== e.originalTarget &&
-        link.getAttribute("gprivacy") == "true") { // monitoring tracked links means we're in debug mode
+        link.getAttribute("gprivacy") == "false") { // monitoring tracking links means we're in debug mode
       this.warnLink("Maybe " + msg, false, status);
       return;
-    }
-
-    if (e.type == DOMSTM) {
-      var elt = e.originalTarget;
-      var dummy = {
-        type:    e.type,          attrChange: true, attrName: elt.tagName,
-        prevValue:link.outerHTML, newValue:   elt.outerHTML
-      }
-      e = dummy;
     }
 
     status.link = link;
@@ -179,7 +205,7 @@ ChangeMonitor.prototype = {
 
     if (!status.hit) {
     
-      this.warnLink(msg, true, status);
+      this.warnLink(msg, true, data);
     
       status.hit = true;
       if (link.gprivacyIcon) {
@@ -202,86 +228,6 @@ ChangeMonitor.prototype = {
     Services.prefs.setIntPref("extensions.gprivacy.changemon", this.level);
   },
   
-  
-  _warnAndTurnOffDB: function (msg) {
-    Logging.warn(msg || "changemon: Error accessing database. Logging turned off for this page.");
-    var conn = this.dbconn;
-    if (conn) {
-      this.dbconn = null;
-      this.level &= ~this.STORE;
-      conn.asyncClose();
-    }
-  },
-
-  openDB: function() {
-    var pbs = null;
-    try { var pbs = Components.classes["@mozilla.org/privatebrowsing;1"].getService(Components.interfaces.nsIPrivateBrowsingService); }
-    catch (exc) { }
-    if (pbs && pbs.privateBrowsingEnabled) {
-      this._warnAndTurnOffDB("changemon: No logging in private browsing mode");
-      return;
-    }
-     
-    var self = this;
-
-    if ((this.level & this.STORE) && !this.dbconn) {
-      var there = true, file = null;
-      try {
-        var file    = FileUtils.getFile("ProfD", ["gpchangemon.sqlite"]);
-        var there   = file.exists();
-        this.dbconn = Services.storage.openDatabase(file);
-        if (!there) {
-          var creates = DOMUtils.getContents("resource://gpchangemon/changemon.sql");
-          this.dbconn.executeSimpleSQL(creates);
-        }
-      } catch (exc) {
-        Logging.logException(exc);
-        self._warnAndTurnOffDB();
-        if (!there && file && file.exists()) // we just ried to create it, so remove it...
-          try { file.remove() } catch (exc) { Logging.logException(exc); }
-      }
-    }
-  },
-  
-  logToDB:  function(data) {
-    if (!this.dbconn) return;
-    
-    var self = this;
-
-    try {
-      var link = data.link || data.doc.location, evt = data.evt;
-/*
-      var stmt = this.dbconn.createStatement("insert into changemon " + 
-               "(ts, engine, what, attr, oldv, newv, id, proto, host, path, query, doc) " +
-        "values(  0,      1,    2,    3,    4,    5,  6,     7,    8,    9,    10,  11)");
-*/
-      var stmt = this.dbconn.createStatement("insert into changemon " + 
-               "(ts, engine, what, attr, oldv, newv, id, proto, host, path, query, doc) " +
-        "values(:ts,:engine,:what,:attr,:oldv,:newv,:id,:proto,:host,:path,:query,:doc)");
-      var par = stmt.params;
-      
-      par.ts     = new Date().getTime();      par.engine = data.eng.ID;
-      par.what   = (evt && evt.type) || "";   par.id     = link.id || null;
-      par.proto  = link.protocol || null;     par.host   = link.host || null;
-      par.path   = link.pathname || null;     par.query  = link.search || null;
-      par.doc    = data.doc.location.href || null;
-      if (evt && evt.attrChange) {
-        par.attr = evt.attrName || null;      par.oldv = evt.prevValue || null;
-        par.newv = evt.newValue || null;
-      }
-      stmt.executeAsync({
-        handleCompletion: function(rc)  { self.debug("SQL completed rc="+rc); },
-        handleError:      function(err) {
-          Logging.error("SQL Error: "+err.message);
-          self._warnAndTurnOffDB();
-        }
-      });
-    } catch (exc) {
-      Logging.logException(exc);
-      self._warnAndTurnOffDB();
-    }
-  },
-  
   showLogs: function() {
     var self = this;
     
@@ -302,26 +248,27 @@ ChangeMonitor.prototype = {
   showPopup: function(id, txt, icon, prim, sec, opts) {
     var self = this;
  // icon = icon || "gprmon-notification-icon";
-    prim = prim || {           
-      label: "Open error console", accessKey: "E",
-      callback: function(state) { self.showLogs(); self.closePopup(); }
-    };
-    sec = sec || [ 
-      { label: "Stop nagging in this window", accessKey: "S", 
-        callback: function(state) { self.closePopup(); self.notify = null; }
-      },
-      { label: "Turn off completely", accessKey: "O", 
-        callback: function(state) { self.switchOff(self.NOTIFY); self.closePopup(); }
-      }
-    ];
-    opts = opts || {
-      persistence: 8, timeout: Date.now() + 60000,
-      persistWhileVisible: true,
-      eventCallback: function(state) { if (state == "removed") self.closePopup(); },
-    };
+    if (((this.level & this.NOTIFY) || (opts && opts.force)) && this.notify) {
+
+      prim = prim || {           
+        label: "Open error console", accessKey: "E",
+        callback: function(state) { self.showLogs(); self.closePopup(); }
+      };
+      sec = sec || [ 
+        { label: "Stop nagging in this window", accessKey: "S", 
+          callback: function(state) { self.closePopup(); self.notify = null; }
+        },
+        { label: "Turn off completely", accessKey: "O", 
+          callback: function(state) { self.switchOff(self.NOTIFY); self.closePopup(); }
+        }
+      ];
+      opts = opts || {
+        persistence: 8, timeout: Date.now() + 60000,
+        persistWhileVisible: true,
+        eventCallback: function(state) { if (state == "removed") self.closePopup(); },
+      };
     
-    if (((this.level & this.NOTIFY) || opts.force) && this.notify) {
-      if (opts.force !== undefined) delete opts.force;
+      if (opts || opts.force !== undefined) delete opts.force; // for us only
       this.closePopup();
       this.popup = this.notify.show(this.tabbrowser.selectedBrowser, id, txt,
                                     icon, prim, sec, opts);

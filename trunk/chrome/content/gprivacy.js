@@ -10,9 +10,9 @@ Components.utils.import("chrome://gprivacy/content/gpcompat.jsm");
 var gprivacy = {
   INSERT_EVT: "DOMNode" + "Inserted", // What are we going to do, when these will be removed (already deprecated)???
   DEBUG:      false,
-  MARKHTML:   { node: "img", height:12, width:12, title: "Privacy Respected!", src: "chrome://gprivacy/skin/private16.png",  class: "gprivacy-private"  },
-  MARKORIG:   { node: "img", height:12, width:12, title: "Privacy Violated!",  src: "chrome://gprivacy/skin/tracking16.png", class: "gprivacy-tracking" },
-  MARKBOGUS:  { node: "img", height:12, width:12, title: "Compromised!",       src: "chrome://gprivacy/skin/modified16.png", class: "gprivacy-bogus" },
+  MARKHTML:   { node: "img", height:12, width:12, title: "Privacy Respected!", src: "chrome://gprivacy/skin/private16.png",  class: "gprivacy-private" , isTemplate: true },
+  MARKORIG:   { node: "img", height:12, width:12, title: "Privacy Violated!",  src: "chrome://gprivacy/skin/tracking16.png", class: "gprivacy-tracking", isTemplate: true },
+  MARKBOGUS:  { node: "img", height:12, width:12, title: "Compromised!",       src: "chrome://gprivacy/skin/modified16.png", class: "gprivacy-bogus",    isTemplate: true },
 
   onLoad: function() {
     try {
@@ -28,21 +28,21 @@ var gprivacy = {
       this.MARKORIG.title  = this.strings.getString("origTip");
       this.MARKBOGUS.title = this.strings.getString("compromisedTip");
       
-      // Property intializaion should be done by here...
+      if (this.appcontent) { // this is a browser
+        // Property intializaion should be done by here...
 
-      this.compat    = new AddonCompat(this, window, gBrowser);
-      this.changemon = new ChangeMonitor(this, window, gBrowser);
-      this.engines   = new Engines(this);
+        this.compat    = new AddonCompat(this, window, gBrowser);
+        this.changemon = new ChangeMonitor(this, window, gBrowser);
+        this.engines   = new Engines(this);
 
-      // Now for the event listeners
+        // Now for the event listeners
 
-      if (this.appcontent) {
         this.appcontent.addEventListener("DOMContentLoaded", function(e) {
           self.onPrePageLoad(e);
         }, false, true);
+        document.getElementById("contentAreaContextMenu")
+                .addEventListener("popupshowing", function (e){ self.showContextMenu(e); }, false);
       }
-      document.getElementById("contentAreaContextMenu")
-              .addEventListener("popupshowing", function (e){ self.showContextMenu(e); }, false);
       window.addEventListener("unload", function() { self.onUnload(); }, false);
     
     
@@ -78,58 +78,53 @@ var gprivacy = {
     var self = this;
     var evt  = e;
 
-    this.compat.refresh(doc);
-    this.changemon.refresh(doc);
-    this.engines.refresh(doc);
-    
-    
-    var doc = e.type != "DOMFrameContentLoaded" ? e.originalTarget : e.originalTarget.contentDocument;
-    doc.defaultView.addEventListener("load",   function _opl()  { self.onPageLoad(e)   }, false);
-    doc.defaultView.addEventListener("unload", function _opul() { self.onPageUnload(e) }, false);
-  },
-  
-  onPageUnload: function(e) {
-    var doc = e.target;
-    // TODO: find and remove all listeners
-    Logging.log("Page '"+doc.location.href+"' unloaded.");
-  },
-  
-  onPageLoad: function(e) {
     try {
-      var self = this;
-
       this.loadPrefs();
       
       if (!this.active) return;
       
-      var doc   = e.type != "DOMFrameContentLoaded" ? e.originalTarget : e.originalTarget.contentDocument;
+      this.compat.refresh(doc);
+      this.engines.refresh(doc);
     
-      var eng = this.engines.find(doc.location.href, true)
+      var doc = e.type != "DOMFrameContentLoaded" ? e.originalTarget : e.originalTarget.contentDocument;
+    
+      var eng = self.engines.find(doc.location.href, true)
 
       if (eng != null) {
-        this.debug("page '"+doc.location.href+"' matched engine "+eng);
+        self.debug("page '"+doc.location.href+"' matched engine "+eng);
+      
+        this.changemon.refresh(doc, eng);
 
-        var links   = doc.getElementsByTagName("a");
-        var changed = 0;
-
-/*
-        if ((this.changemon.level & this.changemon.ALL) && !this.MARKORIG.unknown) {
-          // monitor ALL links so change their icons
-          var src = this.MARKBOGUS.src;
-          this.MARKBOGUS.src = this.MARKORIG.src; this.MARKORIG.src = src;
-          this.MARKORIG.unknown = true;
-        }
-*/
-
-        for (var i = 0; i < links.length; i++)
-            changed += this.changeLink(eng, doc, links[i], this.replace) ? 1 : 0;
-
-        changed += eng.call("removeGlobal", doc) ? 1 : 0;
-
-        doc.addEventListener(this.INSERT_EVT, function(e) { self.onNodeInserted(e, eng); }, false, true);
-        
-        this.changemon.pageLoaded(eng, doc, links, changed);
+        doc.defaultView.addEventListener("load",   function _opl()  { self.onPageLoad(eng, doc, e)   }, false);
+        doc.defaultView.addEventListener("unload", function _opul() { self.onPageUnload(eng, doc, e) }, false);
       }
+    } catch (exc) {
+      Logging.logException(exc);
+    }
+  },
+  
+  onPageUnload: function(eng, doc, e) {
+    // TODO: find and remove all listeners
+    Logging.log("Page '"+doc.location.href+"' unloaded.");
+  },
+  
+  onPageLoad: function(eng, doc, e) {
+    try {
+      var self = this;
+
+      doc.gprivacyLoaded = new Date(); // a little bit of performance timing
+    
+      var links   = doc.getElementsByTagName("a");
+      var changed = 0;
+
+      for (var i = 0; i < links.length; i++)
+          changed += self.changeLink(eng, doc, links[i], self.replace) ? 1 : 0;
+
+      changed += eng.call("removeGlobal", doc) ? 1 : 0;
+
+      doc.addEventListener(self.INSERT_EVT, function(e) { self.onNodeInserted(e, eng); }, false, true);
+        
+      self.changemon.pageLoaded(eng, doc, links, changed);
 
     } catch (exc) {
       Logging.logException(exc);
@@ -242,12 +237,14 @@ var gprivacy = {
     
     var tracking = this._isTracking(eng, doc, orgLink);   
     
-    if (!tracking && (this.changemon.level & this.changemon.ALL) &&
+    if (!tracking && // do we watch this link anyway?
+        (this.changemon.level & this.changemon.ALL) &&
         (orgLink.hostname != "" || this.anonlinks)) {
       var moni = wrap(orgLink), icon = DOMUtils.create(doc, this.MARKORIG);
       moni.setAttribute("gprivacy", "unknown"); // mark as visited
       icon.setAttribute("title", "Unknown...");
-      if (this.seticons) this._setIcons(eng, doc, moni, null, icon, null);
+      if (this.seticons && !(this.changemon.level & this.changemon.SILENT))
+        this._setIcons(eng, doc, moni, null, icon, null);
       this.changemon.watch(eng, doc, moni);
     }
 
@@ -305,10 +302,12 @@ var gprivacy = {
 
     tracked.setAttribute("gprivacy", "false"); // mark as visited
     
-    if (priv)
+    if (priv) {
+      this.compat.fixPrivateLink(eng, doc, priv);
       this.changemon.watch(eng, doc, priv);
+    }
 
-    if ((!priv && linkActive) || this.changemon.level >= this.changemon.TRACKED)
+    if ((!priv && linkActive) || this.changemon.level >= this.changemon.TRACKING)
       this.changemon.watch(eng, doc, tracked); // for engine developers
 
     return true;

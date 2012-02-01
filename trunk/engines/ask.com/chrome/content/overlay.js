@@ -1,3 +1,7 @@
+// $Id$
+
+"use strict";
+
 Components.utils.import("chrome://gprivacy/content/gpengines.jsm");
 Components.utils.import("chrome://gprask/content/engine.jsm");
 
