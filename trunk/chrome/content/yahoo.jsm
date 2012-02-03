@@ -30,10 +30,11 @@ gprivacyYahoo.prototype = {
 
   removeTracking: function(doc, link) {
     this.super.removeTracking(doc, link);
+    link.style.cursor = "pointer"; // mainly for My Yahoo!, but well...
     // stop "mousedown", even if it's NOT handled by the link itself
     EventUtils.stopEvent("mousedown", link, true);
-    EventUtils.stopEvent("click", link, true);
     EventUtils.stopEvent("focus", link, true);
+    EventUtils.makeBrowserLinkClick(this.gpr.window, doc, link, true);
   },
   
   insertLinkAnnot: function(doc, link, elt) {

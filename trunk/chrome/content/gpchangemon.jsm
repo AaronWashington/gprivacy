@@ -129,11 +129,7 @@ ChangeMonitor.prototype = {
   },
   
   getWrapper: function(eng, doc) {
-    var self = this;
     return function(link) {
-      var eng  = eng;
-      var doc  = doc;
-      
       if (!link.gprwapper) {
         link.gpwrapper = this;
         link.gpwatched = false;

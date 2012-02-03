@@ -7,6 +7,7 @@ pref("extensions.gprivacy.text",      true);
 pref("extensions.gprivacy.debug",     false);
 pref("extensions.gprivacy.anonlinks", false);
 pref("extensions.gprivacy.embedded",  true);
+pref("extensions.gprivacy.browserclick", false);
 pref("extensions.gprivacy.changemon", 0); // hidden, add-on developers only ;)
 
 pref("extensions.gprivacy.engines.google.enabled",   true);

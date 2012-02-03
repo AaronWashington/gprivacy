@@ -110,7 +110,13 @@ AddonCompat.prototype = {
 
     if (keys) {
       AddonManager.getAddonsByIDs(keys, function initAddons(addons) {
-        for (let a in addons) {
+        for (let a = 0; a < addons.length; a++) {
+          if (addons[a] == null ) {
+            // Seems to happen with disabled addons
+            // This seems to be fixed in Gecko 12.0 (maybe even 11.0)
+            Logging.error("AddonManager returned null for installed addon '"+keys[a]+"'. Compatibility checks not added!");
+            continue;
+          }
           if (addons[a].isActive) {
             var id = addons[a].id;
             try {

@@ -1,5 +1,7 @@
 // $Id$
 
+"use strict";
+
 Components.utils.import("resource://gre/modules/Services.jsm");
 
 Components.utils.import("chrome://gprivacy/content/gputils.jsm");
@@ -31,6 +33,8 @@ var gprivacy = {
       if (this.appcontent) { // this is a browser
         // Property intializaion should be done by here...
 
+        this.window    = window;
+        this.browser   = gBrowser;
         this.compat    = new AddonCompat(this, window, gBrowser);
         this.changemon = new ChangeMonitor(this, window, gBrowser);
         this.engines   = new Engines(this);
@@ -54,13 +58,14 @@ var gprivacy = {
   },
 
   loadPrefs: function() {
-    this.DEBUG      = Services.prefs.getBoolPref("extensions.gprivacy.debug");
-    this.active     = Services.prefs.getBoolPref("extensions.gprivacy.active");
-    this.replace    = Services.prefs.getBoolPref("extensions.gprivacy.replace");
-    this.keeporg    = Services.prefs.getBoolPref("extensions.gprivacy.orig");
-    this.anonlinks  = Services.prefs.getBoolPref("extensions.gprivacy.anonlinks"); this.lockedprop = "PATTERN";
-    this.embedded   = Services.prefs.getBoolPref("extensions.gprivacy.embedded");
-    this.seticons   = Services.prefs.getBoolPref("extensions.gprivacy.mark");
+    this.DEBUG        = Services.prefs.getBoolPref("extensions.gprivacy.debug");
+    this.active       = Services.prefs.getBoolPref("extensions.gprivacy.active");
+    this.replace      = Services.prefs.getBoolPref("extensions.gprivacy.replace");
+    this.keeporg      = Services.prefs.getBoolPref("extensions.gprivacy.orig");
+    this.anonlinks    = Services.prefs.getBoolPref("extensions.gprivacy.anonlinks"); this.lockedprop = "PATTERN";
+    this.embedded     = Services.prefs.getBoolPref("extensions.gprivacy.embedded");
+    this.browserclick = Services.prefs.getBoolPref("extensions.gprivacy.browserclick");
+    this.seticons     = Services.prefs.getBoolPref("extensions.gprivacy.mark");
   },
 
   onUnload: function() {
@@ -181,8 +186,12 @@ var gprivacy = {
   },
 
   _removeTracking: function(eng, doc, link, replaced) {
-    if (eng.all) return this._removeAll(eng, doc, link, replaced);
-    return eng.call("removeTracking", doc, link, replaced);
+    var rc = null;
+    if (eng.all) rc = this._removeAll(eng, doc, link, replaced);
+    else         rc = eng.call("removeTracking", doc, link, replaced);
+    if (this.browserclick)
+      EventUtils.makeBrowserLinkClick(this.window, doc, link, true);
+    return rc;
   },
   
   _removeAll: function(eng, doc, link, replaced) {
@@ -295,9 +304,7 @@ var gprivacy = {
     }    
     
     if (this.seticons) {
-      this._setIcons(eng, doc, priv, tracked,
-                     DOMUtils.create(doc, this.MARKHTML),
-                     DOMUtils.create(doc, this.MARKORIG));
+      this._setIcons(eng, doc, priv, tracked, this.MARKHTML, this.MARKORIG);
     }
 
     tracked.setAttribute("gprivacy", "false"); // mark as visited
