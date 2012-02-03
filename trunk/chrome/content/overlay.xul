@@ -22,6 +22,6 @@
   </popup>
   
   <box id="notification-popup-box">
-    <image id="gprmon-notification-icon" class="notification-anchor-icon" role="button" insertbefore="default-notification-icon"/>
+    <image id="gprivacy-notification-icon" class="notification-anchor-icon" role="button" insertafter="password-notification-icon"/>
   </box>
 </overlay>

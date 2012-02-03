@@ -2,20 +2,22 @@
 
 "use strict";
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cu = Components.utils;
+Components.utils.import("resource://gre/modules/Services.jsm");
+Components.utils.import("resource://gre/modules/PopupNotifications.jsm");
 
-Cu.import("resource://gre/modules/Services.jsm");
+var EXPORTED_SYMBOLS = [ "DOMUtils", "EventUtils", "Popup", "Logging" ];
 
-var EXPORTED_SYMBOLS = [ "DOMUtils", "EventUtils", "Logging" ];
+//*****************************************************************************
+//* EventUtils
+//*****************************************************************************
 
 var EventUtils = {
   _els: null,
   
   get els() { // EventListenerService
     if (this._els == null) {
-      try { this._els = Cc["@mozilla.org/eventlistenerservice;1"].getService(Ci.nsIEventListenerService); }
+      try { this._els = Components.classes["@mozilla.org/eventlistenerservice;1"]
+                                  .getService(Components.interfaces.nsIEventListenerService); }
       catch (exc) {  }
     }
     return this._els;
@@ -74,6 +76,10 @@ var EventUtils = {
   
   
 };
+
+//*****************************************************************************
+//* DOMUtils
+//*****************************************************************************
 
 var DOMUtils = {
   DOMCREATOR: "create"+"Element", // making validators happy does neither 
@@ -155,13 +161,83 @@ var DOMUtils = {
 
 };
 
+//*****************************************************************************
+//* Popup
+//*****************************************************************************
+function Popup(gprivacy) {
+  this.init(gprivacy);
+}
+
+Popup.prototype = {
+  popup:      null,
+  panel:      null,
+  xulwindow:  null,
+  tabbrowser: null,
+  failed:     false,
+  
+  init: function(gprivacy) {
+    this.gpr        = gprivacy;
+    this.xulwindow  = this.gpr.window;
+    this.tabbrowser = this.gpr.browser;
+  },
+  
+  show: function(id, txt, icon, prim, sec, opts) {
+    var self = this;
+    
+    opts = opts || {
+      persistence: 8, timeout: Date.now() + 60000,
+      persistWhileVisible: true,
+      eventCallback: function(state) { if (state == "removed") self.close(); },
+    };
+    // FIXME: Figure out, why this doesn't work (also the default-...-icon doesn't):
+    // icon = icon || "gprivacy-notification-icon";
+    icon = icon || "addons-notification-icon";
+
+    if (!this.panel) this.create();
+    else             this.close();
+    
+    if (!this.failed)
+      this.popup = this.panel.show(this.tabbrowser.selectedBrowser, id, txt,
+                                   icon, prim, sec, opts);
+    else
+      Logging.error("Cannot open popup for: '"+txt+"'");
+  },
+  
+  create: function()
+  {
+    if (!this.panel && !this.failed) {
+      try {
+        this.panel = new PopupNotifications(this.tabbrowser,  
+                                            this.xulwindow.document.getElementById("notification-popup"),
+                                            this.xulwindow.document.getElementById("notification-popup-box"));
+/*
+        FIXME: I don't know, if this is documented or not... 
+        this.panel = this.xulwindow.PopupNotifications;
+*/
+      } catch (exc) {
+        Logging.logException(exc);
+        this.panel  = null; // nevermind
+        this.failed = true;
+      }
+    }
+  },
+  
+  close: function() {
+    if (this.popup) this.popup.remove(this.popup);
+    this.popup = null;
+  }
+};
+
+//*****************************************************************************
+//* Logging
+//*****************************************************************************
 function CallerInfo() {
 }
 
 CallerInfo.prototype = {
   filename: null, fileName: null, sourceLine: null, lineNumber: null, columnNumber: null
 }
-  
+
 var Logging = {
   PFX:        "gprivacy: ",
   
@@ -201,7 +277,7 @@ var Logging = {
     txt = txt ? txt + ": " : ""
     var excLog = Components.classes["@mozilla.org/scripterror;1"]
                            .createInstance(Components.interfaces.nsIScriptError);
-    excLog.init(this.PFX + txt + exc.message,
+    excLog.init(this.PFX + txt + (exc.message || exc.toString()),
                 exc.filename || exc.fileName, exc.location ? exc.location.sourceLine : null,
                 exc.lineNumber || 0, exc.columnNumber || 0,
                 excLog.errorFlag || 0, "gprivacy");

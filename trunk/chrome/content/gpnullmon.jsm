@@ -63,24 +63,4 @@ ChangeMonitor.prototype = {
   watch: function(eng, doc, link) {
   },
   
-  // TODO: Move popup functions (preferably) to gputils.jsm
-  showPopup: function(id, txt, icon, prim, sec, opts) {
-    var ok = this.gpr.strings.getString("okButton"); 
-    var cancel = (sec && sec.length > 0) ? this.gpr.strings.getString("cancelButton") : null;
-    var msg    = this.gpr.name + ": " + txt;
-    if (cancel) {
-      // reverse ok / cancel
-      if (this.xulwindow.confirm(msg+" \n("+ok+": "+sec[0].label+", "+cancel+": "+prim.label+")") )
-        sec[0].callback("removed");
-      else
-        prim.callback("removed");
-    } else {
-      this.xulwindow.alert(msg);
-      prim.callback("removed");
-    }
-  },
-  
-  closePopup: function() {
-  },
-  
 };

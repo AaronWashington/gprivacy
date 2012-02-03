@@ -4,7 +4,6 @@
 
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://gre/modules/FileUtils.jsm");
-Components.utils.import("resource://gre/modules/PopupNotifications.jsm");
 Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 Components.utils.import("chrome://gprivacy/content/gpcmdatabase.jsm");
 
@@ -38,9 +37,9 @@ function MoniData(eng, doc, e, ts) {
 //*
 //***************************************************************************
 
-function ChangeMonitor(gprivacy, xulwindow, mainwindow) {
+function ChangeMonitor(gprivacy) {
   try {
-    this.init(gprivacy, xulwindow, mainwindow);
+    this.init(gprivacy);
   } catch (exc) {
     Logging.logException(exc);
     Logging.error("changemon: Error initializing. Link monitoring is off!");
@@ -64,29 +63,19 @@ ChangeMonitor.prototype = {
   DPFX:  "DO"+"M",
   engines: null,
   
-  init: function(gpr, xulwindow, mainwindow) {
+  init: function(gpr) {
     this.gpr        = gpr;
 
     this.DEBUG      = Services.prefs.getBoolPref("extensions.gprivacy.debug");
-    this.tabbrowser = mainwindow; // only works, if the window is already opened Services.wm.getMostRecentWindow("navigator:browser");
-    this.xulwindow  = xulwindow;
-    this.popup      = null;
+    this.tabbrowser = this.gpr.browser; // only works, if the window is already opened Services.wm.getMostRecentWindow("navigator:browser");
+    this.xulwindow  = this.gpr.window;
+    this.popup      = gpr.popup;
     this.debug      = gpr.debug;
     this.db         = null;
     this.ignorerules= [];
     
     this.refresh();
 
-    if (this.level & this.NOTIFY) {
-      try {
-        this.notify     = new PopupNotifications(this.tabbrowser,  
-                                                 xulwindow.document.getElementById("notification-popup"),
-                                                 xulwindow.document.getElementById("notification-popup-box"));
-      } catch (exc) {
-        Logging.logException(exc);
-        this.notify = null; // nevermind
-      }
-    }
     this.debug("ChangeMonitor instance initialized");
   },
   
@@ -241,40 +230,23 @@ ChangeMonitor.prototype = {
     }
   },
 
-  // TODO: Move popup functions (preferably) to gputils.jsm
   showPopup: function(id, txt, icon, prim, sec, opts) {
-    var self = this;
- // icon = icon || "gprmon-notification-icon";
-    if (((this.level & this.NOTIFY) || (opts && opts.force)) && this.notify) {
-
+    let self = this;
+    
+    if ((this.level & this.NOTIFY) && this.popup) {
       prim = prim || {           
         label: "Open error console", accessKey: "E",
-        callback: function(state) { self.showLogs(); self.closePopup(); }
+        callback: function(state) { self.showLogs(); self.popup.close(); }
       };
       sec = sec || [ 
         { label: "Stop nagging in this window", accessKey: "S", 
-          callback: function(state) { self.closePopup(); self.notify = null; }
+          callback: function(state) { self.popup.close(); self.popup = null; }
         },
         { label: "Turn off completely", accessKey: "O", 
-          callback: function(state) { self.switchOff(self.NOTIFY); self.closePopup(); }
+          callback: function(state) { self.switchOff(self.NOTIFY); self.popup.close(); }
         }
       ];
-      opts = opts || {
-        persistence: 8, timeout: Date.now() + 60000,
-        persistWhileVisible: true,
-        eventCallback: function(state) { if (state == "removed") self.closePopup(); },
-      };
-    
-      if (opts || opts.force !== undefined) delete opts.force; // for us only
-      this.closePopup();
-      this.popup = this.notify.show(this.tabbrowser.selectedBrowser, id, txt,
-                                    icon, prim, sec, opts);
+      this.popup.show(id, txt, icon, prim, sec, opts);
     }
-  },
-  
-  closePopup: function() {
-    if (this.popup) this.notify.remove(this.popup);
-    this.popup = null;
   }
-  
 };
