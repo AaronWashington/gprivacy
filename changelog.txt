@@ -1,24 +1,39 @@
 Current svn: $Id$
 
-* [core] Omit some initializations if we're not in a browser window
-* [core] Only handle complete load events if engine matches
-* [core] Don't overwrite existing background-image styles
-* [compat] Fix RequestPolicy compatibility by registering link clicks with it
-+ [changemon] Read ignore rules from DB
-* [changemon] Page-load timing
-* [changemon] Option to switch off all-links-decoration (SILENT)
-* [changemon] Split DB access into a module
-* [changemon] Fix DB creation handling
-* [build] Enable and fix strict JavaScript warnings
-* [build] Fix Python < 2.7 incompatibility in xullint
-* [build] Don't ship monitor sources with AMO builds
+0.2.0pre6
+
++ [bing] Hotmail support (experimental)
+* [google] Display add-on name in popup warning
+* [yahoo] Route clicks through browser API on Search
++ [core] Advanced option to route all link clicks through chrome
+* [core] New method to block event handlers (load page via browser API)
+* [core] Some small optimizations
+- [compat] AddonManager seems tu return null for some add-ons in older Geckos
+- [changemon] Fix error when logging NoTracking found events
+- [build] Bump Mozilla browser versions
++ [build] create an update.rdf for developer versions
+* [build] remove all changemon resources from AMO build
+- [options] Fix checking for context menu call
 
 0.2.0pre5
 
+- [core] Omit some initializations if we're not in a browser window
+- [core] Only handle complete load events if engine matches
+- [core] Don't overwrite existing background-image styles
+- [compat] Fix RequestPolicy compatibility by registering link clicks with it
++ [changemon] Read ignore rules from DB
++ [changemon] Page-load timing
++ [changemon] Option to switch off all-links-decoration (SILENT)
+* [changemon] Split DB access into a module
+- [changemon] Fix DB creation handling
+- [build] Enable and fix strict JavaScript warnings
+- [build] Fix Python < 2.7 incompatibility in xullint
+* [build] Don't ship monitor sources with AMO builds
+
 * [core] Use styles for icons (fixes a lot of  Yahoo! and other general click problems)
-* [core] Add an add-on compatibility module
-* [changemon] Option to log modifications to DB
-* [changemon] Open firebug, web console or RequestPolicy network log
++ [core] Add an add-on compatibility module
++ [changemon] Option to log modifications to DB
++ [changemon] Open firebug, web console or RequestPolicy network log
 * [changemon] ignore unchanged attributes
 * [changemon] let engines ignore changes
 * [changemon] remove proxy code
@@ -29,12 +44,12 @@ Current svn: $Id$
 0.2.0pre4
 
 * [google] Ignore Google+ notification iframe
-* [core] Added de-DE locale
-* [core] Overlay browser preferences  
++ [core] Added de-DE locale
++ [core] Overlay browser preferences  
 * [core] setMark is now setIcon, 'cause that's what it is...
 * [core] monitor tracked links in debug mode
 * [core] Change displayed Add-on name to 'Website Privacy'
-* [changemon] Monitor events from untrusted sources (experimental)
++ [changemon] Monitor events from untrusted sources (experimental)
 + [build] Check XUL syntax before packing
 + [build] Add a dummy change monitor for distribution on AMO
 

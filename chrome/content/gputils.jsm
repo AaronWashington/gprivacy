@@ -42,7 +42,37 @@ var EventUtils = {
   
   stopThis: function(evt) {
     evt.stopPropagation();
-  }
+  },
+  
+  // This should be the last resort, as it might remove useful functionality
+  // from the original link.
+  // HANDLE WITH CARE!
+
+  makeBrowserLinkClick: function(win, doc, link, capture) {
+    let self = this;
+    link.addEventListener("click", function _linkClick(evt) {
+      evt.stopImmediatePropagation();
+      evt.preventDefault();
+
+      // there's the nice openUILink in chrome://browser/content/utilityOverlay.js
+      // (see http://mxr.mozilla.org/mozilla-central/source/browser/base/content/utilityOverlay.js)
+      
+      // FIXME: But, you cannot specify the target, so simulate it by opening a new window
+      let pe = { button:  evt.button, altKey:  evt.altKey,  ctrlKey:  evt.ctrlKey,
+                                      metaKey: evt.metaKey, shiftKey: evt.shiftKey };
+      if (link.target != "") { pe.ctrlKey = pe.metaKey = true; }
+      
+      // And tho MDN doc (and MXR) is wrong. It actually is:
+      // openUILink( url, e, ignoreButton, ignoreAlt, allowKeywordFixup, postData, referrerUrl )
+      // so we need:
+      let where = win.whereToOpenLink(pe, false, false);
+      let parms = { relatedToCurrent: true,     referrerURI: null /* FIXME: page doesn't load: doc.location.href */,
+                    allowThirdPartyFixup: true, postData: null };
+      win.openUILinkIn(link.href, where, parms);
+    }, !!capture, true);
+  },
+  
+  
 };
 
 var DOMUtils = {
@@ -66,18 +96,15 @@ var DOMUtils = {
   },
 
   setIconCSS: function(elt, icon, oldStyle) {
-    var old = oldStyle || elt.ownerDocument.defaultView.getComputedStyle(elt);
     elt.style.background = 'url("' + icon.src + '") '+
                             'no-repeat scroll right center transparent';
     elt.style.backgroundSize =  icon.width+"px "+icon.height+"px";
     
-    if (elt.ownerDocument && elt.ownerDocument.defaultView  &&
-        elt.getAttribute("gpr-icon") != "true") {
+    if (elt.getAttribute("gpr-icon") != "true") {
       var pad = icon.width+1;
-      var old = elt.ownerDocument.defaultView.getComputedStyle(elt);
-      if (old && old.paddingRight != "")
-        pad += parseInt(old.paddingRight.replace(/px/,''));
-      elt.style.paddingRight   = pad+"px";
+      if (oldStyle && oldStyle.paddingRight != "")
+        pad += parseInt(oldStyle.paddingRight.replace(/px/,''));
+      elt.style.paddingRight = pad+"px";
       elt.setAttribute("gpr-icon", "true")
       let title = icon.title || (icon.hasAttribute && icon.hasAttribute("title") &&
                                  icon.getAttribute("title"));
@@ -103,7 +130,7 @@ var DOMUtils = {
     
     // if there's no CSS-image or we didn't or don't want to append, use CSS
     if (!append && isSet != "dom" &&
-        (isSet == "true" || ["","none"].indexOf(old.backgroundImage) != -1))
+        (isSet == "true" || (old && ["","none"].indexOf(old.backgroundImage) != -1) ) )
       this.setIconCSS(elt, icon, old);
     else
       this.setIconDOM(elt, icon);

@@ -48,14 +48,14 @@ gprivacyFacebook.prototype = {
         !orgLink.classList.contains("uiImageBlockImage"))
       return this.super.createLinkAnnot(doc, orgLink, isReplacement);
     else {
-      return { gprdummy: true,
+      return { gprfbdummy: true,
                setLink: function(link) { this.link = link, this.after = orgLink; } }
     }
     
   },
   
   insertLinkAnnot: function(doc, link, elt) {
-    if (elt.gprdummy) {
+    if (elt.gprfbdummy) {
       if (elt.after && elt.link) {
         this.adjustLink(elt.link, "clear: left !important;");
         return elt.after.parentNode.insertBefore(elt.link, elt.after.nextSibling);

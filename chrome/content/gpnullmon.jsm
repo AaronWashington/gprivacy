@@ -40,12 +40,13 @@ ChangeMonitor.prototype = {
   },
   
   refresh: function(doc) {
-    if(Services.prefs.getIntPref( "extensions.gprivacy.changemon") > 0)
+    this.level = Services.prefs.getIntPref( "extensions.gprivacy.changemon");
+    if(this.level > 0)
       Logging.warn("changemon: Change monitoring set in config, but no change monitor installed.");
   },
   
   pageLoaded: function(eng, doc, links, changed) {
-    if (this.active && changed > 0) {
+    if (this.level > 0 && changed > 0) {
       Logging.log("changemon: Engine '"+eng+"': "+changed+" links changed "+
                   "in " + (new Date().getTime() - doc.gprivacyLoaded.getTime()) + " ms " +
                   "when loading page '"+doc.location.href.substring(0, 128)+"'");

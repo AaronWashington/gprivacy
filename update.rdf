@@ -9,7 +9,7 @@
 
         <RDF:li>
           <RDF:Description>
-            <em:version>0.2.0pre5-dev</em:version> <!-- This is the version number of the add-on -->
+            <em:version>0.2.0pre6-dev</em:version> <!-- This is the version number of the add-on -->
 
             <em:targetApplication>
               <!-- Firefox -->
@@ -17,7 +17,7 @@
                 <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
                 <em:minVersion>6.0</em:minVersion>
                 <em:maxVersion>13.0a1</em:maxVersion>
-                <em:updateLink>https://gprivacy.googlecode.com/files/gprivacy-0.2.0pre5-sm%2Bfx.xpi</em:updateLink>
+                <em:updateLink>https://gprivacy.googlecode.com/files/gprivacy-0.2.0pre6-sm%2Bfx-dev.xpi</em:updateLink>
               </Description>
             </em:targetApplication>
             <em:targetApplication>
@@ -26,7 +26,7 @@
                 <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
                 <em:minVersion>2.1</em:minVersion>
                 <em:maxVersion>2.10a1</em:maxVersion>
-                <em:updateLink>https://gprivacy.googlecode.com/files/gprivacy-0.2.0pre5-sm%2Bfx.xpi</em:updateLink>
+                <em:updateLink>https://gprivacy.googlecode.com/files/gprivacy-0.2.0pre6-sm%2Bfx-dev.xpi</em:updateLink>
               </Description>
             </em:targetApplication>
           </RDF:Description>

@@ -29,6 +29,7 @@
       <preference id="text"     name="extensions.gprivacy.text"      type="bool"/>
       <preference id="anon"     name="extensions.gprivacy.anonlinks" type="bool"/>
       <preference id="embed"    name="extensions.gprivacy.embedded"  type="bool"/>
+      <preference id="browser"  name="extensions.gprivacy.browserclick" type="bool"/>
       
       <preference id="privacy.donottrackheader.enabled" name="privacy.donottrackheader.enabled" type="bool"/>
       
@@ -61,8 +62,9 @@
         <checkbox id="checkembed"   preference="embed"   hidden="true" label="&checkembed.label;"    accesskey="&checkembed.accesskey;"  oncommand="gprivacyOpts.enableCtls('embed');"/>
         <groupbox>
           <caption label="&advanced.label;" image="&warning.icon;" dir="reverse" tooltiptext="&advanced.tip;"/>
-          <checkbox id="checkanon"    preference="anon"    label="&checkanon.label;"  accesskey="&checkanon.accesskey;"  tooltiptext="&advanced.tip;"/>
-          <checkbox id="checkdebug"   preference="debug"   label="&checkdebug.label;" accesskey="&checkdebug.accesskey;" tooltiptext="&advanced.tip;"/>
+          <checkbox id="checkbrowser" preference="browser" label="&checkbrowser.label;" accesskey="&checkbrowser.accesskey;" tooltiptext="&advanced.tip;"/>
+          <checkbox id="checkanon"    preference="anon"    label="&checkanon.label;"    accesskey="&checkanon.accesskey;"    tooltiptext="&advanced.tip;"/>
+          <checkbox id="checkdebug"   preference="debug"   label="&checkdebug.label;"   accesskey="&checkdebug.accesskey;"   tooltiptext="&advanced.tip;"/>
         </groupbox>
       </groupbox>
       <groupbox id="gprivacyEngines">

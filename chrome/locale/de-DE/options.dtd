@@ -19,6 +19,8 @@
 <!ENTITY checkdebug.accesskey "D">
 <!ENTITY checkanon.label "JavaScript- und leere Links ersetzen">
 <!ENTITY checkanon.accesskey "J">
+<!ENTITY checkbrowser.label "Private Links über den Browser leiten">
+<!ENTITY checkbrowser.accesskey "Ü">
 <!ENTITY checkDNT.label "Mozilla's &quot;Do-Not-Track Flag&quot; setzen">
 <!ENTITY checkDNT.accesskey "N">
 
