@@ -35,8 +35,9 @@ var gprivacy = {
 
         this.window    = window;
         this.browser   = gBrowser;
-        this.compat    = new AddonCompat(this, window, gBrowser);
-        this.changemon = new ChangeMonitor(this, window, gBrowser);
+        this.popup     = new Popup(this);
+        this.compat    = new AddonCompat(this);
+        this.changemon = new ChangeMonitor(this);
         this.engines   = new Engines(this);
 
         // Now for the event listeners
@@ -341,18 +342,6 @@ var gprivacy = {
         if (self.engines.find(b.contentDocument, false, this.embedded) != null)
           b.reload();
       }
-  },
-
-  showPopup: function(id, txt, icon, prim, sec, opts) {
-    if (this.changemon) {
-      opts = opts || {}; opts.force = true;
-      this.changemon.showPopup(id, txt, icon, prim, sec, opts);
-    }
-    Logging.log("MESSAGE: " + txt);
-  },
-  
-  closePopup: function() {
-    if (this.changemon) this.changemon.closePopup();
   },
   
   debug: function(txt) {

@@ -80,9 +80,9 @@ const KNOWN_ADDONS = {
 };
   
 
-function AddonCompat(gprivacy, xulwindow, mainwindow) {
+function AddonCompat(gprivacy) {
   try {
-    this.init(gprivacy, xulwindow, mainwindow);
+    this.init(gprivacy);
   } catch (exc) {
     Logging.logException(exc);
     Logging.error("compat: Error initializing. Addon compatibility checks are off!");
@@ -92,15 +92,15 @@ function AddonCompat(gprivacy, xulwindow, mainwindow) {
 
 AddonCompat.prototype = {
 
-  init: function(gpr, xulwindow, mainwindow) {
+  init: function(gpr) {
     var self        = this;
     
     this.gpr        = gpr;
 
     this.DEBUG      = Services.prefs.getBoolPref("extensions.gprivacy.debug");
     this.debug      = gpr.debug;
-    this.tabbrowser = mainwindow; // only works, if the window is already opened Services.wm.getMostRecentWindow("navigator:browser");
-    this.xulwindow  = xulwindow;
+    this.tabbrowser = this.gpr.browser; // only works, if the window is already opened Services.wm.getMostRecentWindow("navigator:browser");
+    this.xulwindow  = this.gpr.window;
     
     this.addons     = [];
 

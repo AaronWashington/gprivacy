@@ -13,6 +13,7 @@ function gprivacyGoogle(engines) {
   this.strings = this.gpr.strings;
   this.PATTERN = /https?:\/\/((?!(maps|code|(plusone)))\w+\.)*?(google)\.\w+\//
   this.nowarn  = this.engines.getEnginePref(this, "nowarn", "bool", false);
+  this.warned  = this.nowarn;
 }
 
 gprivacyGoogle.prototype = {
@@ -50,8 +51,10 @@ gprivacyGoogle.prototype = {
         link.appendChild(doc.createTextNode(plain));
         this.engines.debug("google: replaced '"+html+"' with '"+plain+"'");
       }
-      if (!this.nowarn)
+      if (!this.nowarn && !this.warned) {
+        this.warned = true;
         this.showWarning();
+      }
       this.nowarn = true; // only once per page
     }
   },
@@ -96,19 +99,17 @@ gprivacyGoogle.prototype = {
   
   showWarning: function() {
     let self = this;
-    this.gpr.showPopup("gprmon-popup",
-        this.strings.getString("googleWarning"), null, // "gprmon-notification-icon",
-        { label: this.strings.getString("googleWarningKeep"), accessKey: "C",
-          callback: function(state) { self.gpr.closePopup(); }
-        },  
-        [ { label: this.strings.getString("googleWarningRemove"), accessKey: "O",
-            callback: function(state) {
-              Services.prefs.setBoolPref("extensions.gprivacy.engines.google.nowarn", true);
-              self.gpr.closePopup();
-             } }
-        ],
-        { persistence: 256,    timeout: Date.now() + 600000,
-          persistWhileVisible: true } );
+    this.gpr.popup.show("gprivacy-popup",
+        this.strings.getString("googleWarning"),
+        null, // "gprmon-notification-icon",
+        { label: this.strings.getString("googleWarningRemove"), accessKey: "O",
+          callback: function(state) {
+            Services.prefs.setBoolPref("extensions.gprivacy.engines.google.nowarn", true);
+            self.gpr.popup.close();
+        } },
+        [ { label: this.strings.getString("googleWarningKeep"), accessKey: "C",
+            callback: function(state) { self.gpr.popup.close(); } }
+        ]);
     
   }
 };
