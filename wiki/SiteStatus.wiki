@@ -49,5 +49,6 @@
 
 = Facebook =
  * Another simple `"onmousedown"`-handler, that opens a redirect-page. The problem with FB is, not to break its formatting completely.
+ * Facebook seems to recognize !NoScript and sends the tracking links immediately. You can recognize them, but not avoid them anymore! How long will it take, until they recognize `gprivacy`...
 
 = Ask.com =
