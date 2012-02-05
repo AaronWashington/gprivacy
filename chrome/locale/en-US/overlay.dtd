@@ -2,6 +2,9 @@
 <!ENTITY gprivacyContext.label "Privacy options...">
 <!ENTITY gprivacyContext.accesskey "P">
 <!ENTITY gprivacyContext.icon "chrome://gprivacy/skin/icon16.png">
+<!ENTITY gprivacyRun.label "Protect privacy!">
+<!ENTITY gprivacyRun.accesskey "Y">
+<!ENTITY gprivacyRun.icon "chrome://gprivacy/skin/modified16.png">
 <!ENTITY gprivacyToolbarButton.label "&gprivacy.name;">
 <!ENTITY gprivacyToolbarButton.tooltip "&gprivacy.name; Settings...">
 <!ENTITY gprivacyButton.label   "&gprivacy.name;...">

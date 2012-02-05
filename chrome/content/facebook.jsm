@@ -19,13 +19,8 @@ gprivacyFacebook.prototype = {
   NAME:      "Facebook",
   TRACKATTR:  [ "onmousedown" ],
   LINK_CLASS: "emuEvent1",
-  // DELCLASSES: /(force(LTR|RTL))|identity/g,
   
   adjustLink: function(link, moreStyles) {
-    if (link.hasAttribute("class") && (typeof this.DELCLASSES !== "undefined")) {
-      var clazz = link.getAttribute("class").replace(this.DELCLASSES, "");
-      link.setAttribute("class", clazz);
-    }
     var style = link.hasAttribute("style") ? link.getAttribute("style")+" " : ""
     style += "display: inline !important;"
     if (moreStyles) style += moreStyles;
@@ -35,17 +30,13 @@ gprivacyFacebook.prototype = {
   cloneLink: function(doc, link) {
     var neew = link.cloneNode(true);
     this.adjustLink(neew);
-/*
-    var style = link.hasAttribute("style") ? link.getAttribute("style")+" " : ""
-    style += "float: none !important;"
-    neew.setAttribute("style", style);
-*/
+
     return neew;
   },
   
   createLinkAnnot: function(doc, orgLink, isReplacement) {
     if (!orgLink.classList.contains("UIImageBlock_Image") &&
-        !orgLink.classList.contains("uiImageBlockImage"))
+        !orgLink.classList.contains("uiImageBlockImage") )
       return this.super.createLinkAnnot(doc, orgLink, isReplacement);
     else {
       return { gprfbdummy: true,

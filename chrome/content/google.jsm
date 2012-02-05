@@ -59,6 +59,24 @@ gprivacyGoogle.prototype = {
     }
   },
   
+  showWarning: function() {
+    let self = this;
+    this.gpr.popup.show("gprivacy-popup",
+        this.strings.getString("googleWarning"),
+        null, // "gprmon-notification-icon",
+        { label: this.strings.getString("googleWarningRemove"), accessKey: "O",
+          callback: function(state) {
+            Services.prefs.setBoolPref("extensions.gprivacy.engines.google.nowarn", true);
+            self.gpr.popup.close();
+        } },
+        [ { label: this.strings.getString("googleWarningKeep"), accessKey: "C",
+            callback: function(state) { self.gpr.popup.close(); } }
+        ]);
+    
+  }
+
+  // <ChangeMonitor>
+  ,
   removeGlobal: function(doc) {
     if (this.changemonIgnored(doc, null, null))
       // no search result on page. probably google home page so ignore and...
@@ -95,21 +113,7 @@ gprivacyGoogle.prototype = {
     if (ignored)
       this.gpr.debug(this+": ignoring unchanged ' "+(link?"link":"page")+" "+doc.location.href.substring(0, 128)+"'"); 
     return ignored;
-  },
-  
-  showWarning: function() {
-    let self = this;
-    this.gpr.popup.show("gprivacy-popup",
-        this.strings.getString("googleWarning"),
-        null, // "gprmon-notification-icon",
-        { label: this.strings.getString("googleWarningRemove"), accessKey: "O",
-          callback: function(state) {
-            Services.prefs.setBoolPref("extensions.gprivacy.engines.google.nowarn", true);
-            self.gpr.popup.close();
-        } },
-        [ { label: this.strings.getString("googleWarningKeep"), accessKey: "C",
-            callback: function(state) { self.gpr.popup.close(); } }
-        ]);
-    
   }
+  // </ChangeMonitor>
+  
 };

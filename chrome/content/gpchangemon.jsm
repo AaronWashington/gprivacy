@@ -13,11 +13,11 @@ const DPFX   = "DO"+"M";
 const DOMSTM = DPFX+"Subtree"+"Modified";
 
 function MoniData(eng, doc, e, ts) {
-  var link = e.currentTarget || doc.location;
-  var attr = e.attrName || null, oldv = e.prevValue || null, newv = e.newValue || null;
+  let link = e.currentTarget || doc.location;
+  let attr = e.attrName || null, oldv = e.prevValue || null, newv = e.newValue || null;
   
   if (!e.attrChange && e.type == DOMSTM) {
-    var elt = e.originalTarget;
+    let elt = e.originalTarget;
     attr = elt.tagName; oldv = link.outerHTML; newv = elt.outerHTML;
   }
   this.ts     = ts || new Date().getTime();
@@ -27,7 +27,7 @@ function MoniData(eng, doc, e, ts) {
   this.proto  = link.protocol || null;   this.host  = link.host || null;
   this.path   = link.pathname || null;   this.query = link.search || null;
   this.doc    = doc.location.href||null; this.note  = null;
-  try { this.note = (link.hasAttribute("gprivacy") &&
+  try { this.note = (link.hasAttribute && link.hasAttribute("gprivacy") &&
                      link.getAttribute("gprivacy") == "false" && "tracking") || null;
   } catch (exc) {}
 }
@@ -95,7 +95,7 @@ ChangeMonitor.prototype = {
   },
   
   pageLoaded: function(eng, doc, links, changed) {
-    var self = this;
+    let self = this;
     if (changed == 0 && links.length > 0) {
       if (this.active) {
         let msg = "changemon: Engine '"+eng+"' matched, but no links were modified on '" +
@@ -128,15 +128,15 @@ ChangeMonitor.prototype = {
   },
   
   watch: function(eng, doc, link) {
-    var self = this;
+    let self = this;
 
     if (this.active) {
-      var mods = [  DPFX + "Attr"+"Modified", DPFX + "Node"+"Inserted",
+      let mods = [  DPFX + "Attr"+"Modified", DPFX + "Node"+"Inserted",
                     /* deprecated, I know: */ DPFX + "Subtree"+"Modified" ];
-      var status = { eng: eng,   doc: doc,        link:    link,
+      let status = { eng: eng,   doc: doc,        link:    link,
                      hit: false, notified: false, ignored: this.ignorerules }
 
-      for (var m in mods) {
+      for (let m in mods) {
         link.addEventListener(mods[m], function(e) { self.onPrivacyCompromised(e, status); }, false, true);
       }
 
@@ -152,14 +152,14 @@ ChangeMonitor.prototype = {
   },
   
   onPrivacyCompromised: function(e, status) {
-    var self = this;
+    let self = this;
     
-    var link = e.currentTarget;
+    let link = e.currentTarget;
     
     if (link.gprivacyCompromised !== undefined && e.type == DOMSTM) // got it already
       return;
 
-    var data = new MoniData(status.eng, status.doc, e);
+    let data = new MoniData(status.eng, status.doc, e);
     
     if (this.ignorerules.match(data) ||
         status.eng.call("changemonIgnored", status.doc, link, e) || // Engine said it's OK!
@@ -170,7 +170,7 @@ ChangeMonitor.prototype = {
     
     link.gprivacyCompromised = true;
 
-    var msg = status.eng+": "+(link.id ? "#"+link.id+" " : "")+"'"+link.href+
+    let msg = status.eng+": "+(link.id ? "#"+link.id+" " : "")+"'"+link.href+
               "' was compromised: "+e.type; 
 
     if (e.attrChange) {
@@ -215,7 +215,7 @@ ChangeMonitor.prototype = {
   },
   
   showLogs: function() {
-    var self = this;
+    let self = this;
     
     // Show native error console
     self.xulwindow.toOpenWindowByType("global:console", "chrome://global/content/console.xul");

@@ -8,6 +8,3 @@ export JSCHK=""   # disables JavaScript syntax check
 
 mkinst.py -i .               -o versions || exit
 mkinst.py -i engines/ask.com -o versions || exit
-
-touch chrome/content/about.xul
-touch chrome/locale/en-US/overlay.properties

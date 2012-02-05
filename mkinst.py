@@ -118,9 +118,10 @@ def main(argv=sys.argv[1:]):
       amo = zipfile.ZipFile(famo, "w")
       for item in xpi.infolist():
         xpidata = xpi.read(item.filename)
+        print item.filename, item.file_size, item.external_attr
         if item.filename == "install.rdf": xpidata = inst
         if os.path.isfile(AMOEXIT): execfile(AMOEXIT, globals(), locals())
-        if xpidata:
+        if xpidata is not None:
           amo.writestr(item, xpidata)
       amo.close(); xpi.close()
 

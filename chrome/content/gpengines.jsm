@@ -27,7 +27,7 @@ function gprivacyDefault(engines, instance) {
   
   if (instance) {
     this.instance = instance;
-    for (var i in this._COPYPROPS)
+    for (let i in this._COPYPROPS)
       if (instance[this._COPYPROPS[i]])
         this[this._COPYPROPS[i]] = instance[this._COPYPROPS[i]];
   }
@@ -50,9 +50,12 @@ gprivacyDefault.prototype = {
   
   loggedIn: function(_doc) { return false; },
   
+  close: function() {
+  },
+  
   refresh: function(_doc) {
     if (this.instance) {
-      var custom = null;
+      let custom = null;
       try { custom = Services.prefs.getCharPref("extensions.gprivacy.engines." + this.instance.ID + ".custom"); }
       catch (exc) {}
       if (custom) this.instance[this.CUSTOM] = new RegExp(custom);
@@ -60,9 +63,9 @@ gprivacyDefault.prototype = {
   },
   
   isTracking: function(_doc, link) {
-    var is = false; // only for debugging...
+    let is = false; // only for debugging...
 
-    for (var i in this.TRACKATTR) {
+    for (let i in this.TRACKATTR) {
       if (link.hasAttribute(this.TRACKATTR[i])) {
         is = true;
         if (!this.engines.DEBUG) break;
@@ -73,8 +76,8 @@ gprivacyDefault.prototype = {
   },
   
   hasBadHandler: function(_doc, link) {
-    var evts = EventUtils.getEvents(link) || {};
-    for (var i = 0; i < this.BAD_EVENTS.length; i++) {
+    let evts = EventUtils.getEvents(link) || {};
+    for (let i = 0; i < this.BAD_EVENTS.length; i++) {
       if (this.BAD_EVENTS[i] in evts ||
           link.hasAttribute("on" + this.BAD_EVENTS[i]))
         return true;
@@ -83,7 +86,7 @@ gprivacyDefault.prototype = {
   },
   
   cloneLink: function(_doc, link) {
-    var neew = link.cloneNode(true);
+    let neew = link.cloneNode(true);
     neew.setIcon = function(elt) {
       DOMUtils.setIcon(neew, elt);
     }
@@ -91,12 +94,12 @@ gprivacyDefault.prototype = {
   },
   
   createLinkAnnot: function(doc, _orgLink, _isReplacement) {
-    var lclass = "gl";
+    let lclass = "gl";
     if (this.LINK_CLASS) lclass = this.LINK_CLASS;
-    var lstyle = null;
+    let lstyle = null;
     if (this.LINK_STYLE) lstyle = this.LINK_STYLE;
       
-    var span = DOMUtils.create(doc, { node: "span", class: lclass, style: lstyle});
+    let span = DOMUtils.create(doc, { node: "span", class: lclass, style: lstyle});
     // if this is prettier than span.innerHTML = "&nbsp;-&nbsp;"; ???
     // but if it makes reviewers happy...
     span.appendChild(doc.createTextNode("\u00A0-\u00A0"));
@@ -115,21 +118,21 @@ gprivacyDefault.prototype = {
   },
   
   removeTracking: function(_doc, link, _replaced) {
-    for (var i in this.TRACKATTR) {
+    for (let i in this.TRACKATTR) {
       if (link.hasAttribute(this.TRACKATTR[i]))
         link.removeAttribute(this.TRACKATTR[i]);
     }
-    var evts = EventUtils.getEvents(link);
+    let evts = EventUtils.getEvents(link);
     // FIXME: stopping "click" events breaks Ctrl-Click!
 //  if ("click" in evts)     EventUtils.stopEvent("click",     link);
     if ("mousedown" in evts) EventUtils.stopEvent("mousedown", link);
   },
   
   removeAll: function(_doc, link, _replaced) {
-    var evts = EventUtils.getEvents(link) || {};
-    for (var i = 0; i < this.BAD_EVENTS.length; i++) {
-      var evt  = this.BAD_EVENTS[i];
-      var stop = null;
+    let evts = EventUtils.getEvents(link) || {};
+    for (let i = 0; i < this.BAD_EVENTS.length; i++) {
+      let evt  = this.BAD_EVENTS[i];
+      let stop = null;
       if (evt in evts) {
         EventUtils.stopEvent(evt, link);
         this.engines.debug("Removed '" + evt + "' handler from '" + link.href + "'");
@@ -151,7 +154,7 @@ gprivacyDefault.prototype = {
   },
 
   _toString: function() {
-    var self = this.instance || this;
+    let self = this.instance || this;
     return "["+self.NAME+",{ID:'"+self.ID+",UID:"+self.UID+"}]";
   }
 };
@@ -160,8 +163,8 @@ function EngineError(txt, level) {
   if (level === undefined) level = 0
   this.message = txt;
   this.name    = "EngineError";
-  var info = Logging.callerInfo(level+1);
-  for (p in info)
+  let info = Logging.callerInfo(level+1);
+  for (let p in info)
     this[p] = info[p];
 }
 
@@ -184,15 +187,21 @@ Engines.prototype = {
   initialize: function(gprivacy) {
     if (this._initialized) throw new EngineError("Already initialized");
     this.DEBUG = Services.prefs.getBoolPref("extensions.gprivacy.debug");
-    var self   = this;
+    let self   = this;
 
     this.gpr       = gprivacy;
     this.debug     = gprivacy.debug;
     this.register  = Components.utils.import;
-    var stdEngines = [ new gprivacyGoogle(self), new gprivacyYahoo(self),
-                       new gprivacyBing(self),   new gprivacyFacebook(self), 
-                       new gprivacyYouTube(self)
+    let stdEngines = [];
+    let stdClasses = [ gprivacyGoogle, gprivacyYahoo,
+                       gprivacyBing,   gprivacyFacebook, 
+                       gprivacyYouTube
                      ];
+    for (let i in stdClasses) {
+      let Class = stdClasses[i];
+      try { stdEngines.push(new Class(this)); }
+      catch (exc) { Logging.logException(exc, "Engine '"+Class.prototype.NAME+"' (id: '"+Class.prototype.ID+"') failed to initialize"); }
+    }
     this._engines     = {};
     this._initialized = true;
     this._load(stdEngines, "extensions.gprivacy.engines.custom");
@@ -200,8 +209,13 @@ Engines.prototype = {
     this.debug("Engines instance initialized");
   },
 
+  close: function() {
+    for (let e in this.engines)
+      this._engines[e].call("close");
+  },
+  
   add: function(eng) {
-    var self   = this;
+    let self   = this;
     if (!this._initialized) throw new EngineError("Not initialized", 1);
     if (!("ID" in eng) || !("NAME" in eng))
       throw new EngineError("Invalid engine", 1)
@@ -240,7 +254,7 @@ Engines.prototype = {
   },
   
   getEnginePref: function(eng, name, type, dflt) { // get prefs with defaults, in case add-ons don't set them
-    var pref = null; var prefs = { get: Services.prefs.getBoolPref, dflt: Services.prefs.setBoolPref };
+    let pref = null; let prefs = { get: Services.prefs.getBoolPref, dflt: Services.prefs.setBoolPref };
     switch (type) {
       case "char":
         prefs = { get: Services.prefs.getCharPref, dflt: Services.prefs.setCharPref };
@@ -258,34 +272,34 @@ Engines.prototype = {
   
   refresh: function(doc) {
     this.DEBUG = Services.prefs.getBoolPref("extensions.gprivacy.debug");
-    for (var e in this.engines) {
+    for (let e in this.engines) {
       this.setPreferences(this._engines[e]);
       this._engines[e].call("refresh", doc);
     }
   },
   
   _load: function(stdEngines, settings) {
-    for (var i in stdEngines)
+    for (let i in stdEngines)
       this.add(stdEngines[i]);
     
-    var ret = {}, reg;
-    var set = Services.prefs.getChildList(settings, ret);
-    for (var c in set) {
-      var name = Services.prefs.getCharPref(set[c]); ret = {};
-      try { this.register(name, ret); for (var r in ret) { reg = new ret[r](this); this.add(reg); } }
-      catch (exc) { Logging.logException(exc); }
+    let ret = {}, reg;
+    let set = Services.prefs.getChildList(settings, ret);
+    for (let c in set) {
+      let name = Services.prefs.getCharPref(set[c]); ret = {};
+      try { this.register(name, ret); for (let r in ret) { reg = new ret[r](this); this.add(reg); } }
+      catch (exc) { Logging.logException(exc, "Error registering '"+name+"'"); }
     }
     this.register = null;
   },
   
   find: function(href, enabledOnly, embedded) {
-    var doc = null;
+    let doc = null;
     if (href.nodeType && href.nodeType == href.DOCUMENT_NODE) {
       doc = href;
       href = doc.location.href;
     }
-    for (var e in this.engines) {
-      var eng   = this._engines[e];
+    for (let e in this.engines) {
+      let eng   = this._engines[e];
 
       if (enabledOnly && !eng.enabled)
         continue;
@@ -294,10 +308,10 @@ Engines.prototype = {
         return eng;
     }
     if (doc != null && embedded) {
-      var frames = { i: doc.getElementsByTagName("iframe"), f: doc.getElementsByTagName("frame") };
-      for (var what in frames)
-        for (var f = 0; f < frames[what].length; f++) {
-          var emb = this.find(frames[what][f].contentDocument, enabledOnly, false);
+      let frames = { i: doc.getElementsByTagName("iframe"), f: doc.getElementsByTagName("frame") };
+      for (let what in frames)
+        for (let f = 0; f < frames[what].length; f++) {
+          let emb = this.find(frames[what][f].contentDocument, enabledOnly, false);
           if (emb != null) return emb;
         }
     }
@@ -305,9 +319,10 @@ Engines.prototype = {
   },
   
   call: function(eng, func, doc, p1, p2, p3, p4, p5) {
-    var ret = null;
+    let ret = null;
     try {
-      if (eng[func]) ret = eng[func] (doc, p1, p2, p3, p4, p5); 
+      let f = eng[func];
+      if (f) ret = f.call(eng, doc, p1, p2, p3, p4, p5); 
       else ret = undefined;
     }
     catch (exc) {
@@ -315,9 +330,10 @@ Engines.prototype = {
       Logging.warn("PRIVACY WARNING: Trying to call generic method '" + func + "' after engine error");
       ret = undefined;
     }
-    if (ret === undefined && eng.super[func])
-      return eng.super[func](doc, p1, p2, p3, p4, p5);
-    else if (!eng.super[func])
+    let superf = eng.super[func];
+    if (ret === undefined && superf)
+      return superf.call(eng, doc, p1, p2, p3, p4, p5);
+    else if (!superf)
       Logging.error("Engine '"+eng+"' does not have a method '"+func+"', and there's no default method too...", false);
     return ret;
   },

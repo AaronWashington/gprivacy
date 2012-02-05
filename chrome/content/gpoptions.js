@@ -26,7 +26,7 @@ var gprivacyOpts = {
     this.debug("Privacy is " + (inact ? "NOT " : "") + "active");
 
     // options
-    var ctls  = [ "checkreplace", "checkactivel", "checkmark", "checktext", "checkanon" ];
+    var ctls  = [ "checkreplace", "checkauto", "checkactivel", "checkmark", "checktext", "checkanon" ];
     // engines
     var xpres = function(pfx) { return "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"; }
     var ectls = document.evaluate('//xul:checkbox[starts-with(@id,"ce") or starts-with(@id,"cs") or starts-with(@id,"ca")]', document, xpres,
@@ -46,7 +46,7 @@ var gprivacyOpts = {
     // Cannot deactivate embbedded frames for now
     document.getElementById("checkembed").disabled = true;
     
-    if (!window.arguments || window.arguments.rc === undefined) { // called from Add-on manager
+    if (!window.arguments || window.arguments[0].rc === undefined) { // called from Add-on manager
       document.getElementById("gprivacy-help-reload").hidden = true;
       document.getElementById("gprivacy-sep-reload").hidden  = true;
     }
