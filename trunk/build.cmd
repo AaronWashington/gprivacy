@@ -13,6 +13,3 @@ set JAVA_TOOL_OPTIONS=-Duser.language=en -Duser.country=US
 call python26 "%~dp0mkinst.py" -p gprivacy -o "%~dp0\versions" -i "%~dp0." --AMO %LOG%
 if errorlevel 1 exit /b %errorlevel%
 call python26 "%~dp0mkinst.py" -p gprask   -o "%~dp0\versions" -i "%~dp0engines\ask.com" -m "%~dp0chrome.manifest" %LOG%
-
-rem force a new version on commit?
-touch "%~dp0chrome\content\about.xul"

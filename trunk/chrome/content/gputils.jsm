@@ -3,6 +3,7 @@
 "use strict";
 
 Components.utils.import("resource://gre/modules/Services.jsm");
+Components.utils.import("resource://gre/modules/FileUtils.jsm");
 Components.utils.import("resource://gre/modules/PopupNotifications.jsm");
 
 var EXPORTED_SYMBOLS = [ "DOMUtils", "EventUtils", "Popup", "Logging" ];
@@ -26,9 +27,9 @@ var EventUtils = {
   getEvents: function(elt) {
     if (this.els == null)
       return null;
-    var evts = {};
-    var infos = this.els.getListenerInfoFor(elt);
-    for (var i = 0; i < infos.length; i++)
+    let evts = {};
+    let infos = this.els.getListenerInfoFor(elt);
+    for (let i = 0; i < infos.length; i++)
       if (typeof evts[infos[i].type] == "undefined")
         evts[infos[i].type]  = 1;
       else
@@ -37,7 +38,7 @@ var EventUtils = {
   },
   
   stopEvent: function(type, elt, capture) {
-    var self = this; // generate closure
+    let self = this; // generate closure
     capture = !!capture;
     elt.addEventListener(type, function(e) { self.stopThis(e); }, capture, true);
   },
@@ -90,8 +91,8 @@ var DOMUtils = {
     // about the variable node type in createElement(def.node)!
     // I cannot see, what should be illegal in this! Hardcoding everything
     // is certainly _NOT_ a step in the right direction!
-    var elt = doc[this.DOMCREATOR](def.node);
-    for (var attr in def)
+    let elt = doc[this.DOMCREATOR](def.node);
+    for (let attr in def)
       if (attr != "node") elt.setAttribute(attr, def[attr]);
     return elt;
   },
@@ -102,21 +103,22 @@ var DOMUtils = {
   },
 
   setIconCSS: function(elt, icon, oldStyle) {
-    elt.style.background = 'url("' + icon.src + '") '+
+    let nstyle = elt.cloneNode(false).style; // avoid reflows/redraws
+    nstyle.background = 'url("' + icon.src + '") '+
                             'no-repeat scroll right center transparent';
-    elt.style.backgroundSize =  icon.width+"px "+icon.height+"px";
+    nstyle.backgroundSize =  icon.width+"px "+icon.height+"px";
     
-    if (elt.getAttribute("gpr-icon") != "true") {
-      var pad = icon.width+1;
+    if (elt.getAttribute("gpr-icon") != "css") {
+      let pad = icon.width+1;
       if (oldStyle && oldStyle.paddingRight != "")
         pad += parseInt(oldStyle.paddingRight.replace(/px/,''));
-      elt.style.paddingRight = pad+"px";
-      elt.setAttribute("gpr-icon", "true")
-      let title = icon.title || (icon.hasAttribute && icon.hasAttribute("title") &&
-                                 icon.getAttribute("title"));
+      nstyle.paddingRight = pad+"px";
+      elt.setAttribute("gpr-icon", "css")
+      let title = icon.title || (icon.getAttribute && icon.getAttribute("title"));
       if (title && !elt.hasAttribute("title"))
         elt.setAttribute("title", title);
     }
+    elt.style.cssText = nstyle.cssText;
   },
   
   setIconDOM: function(elt, icon) {
@@ -131,29 +133,31 @@ var DOMUtils = {
   },
   
   setIcon: function(elt, icon, append) {
-    var isSet = elt.getAttribute("gpr-icon");
-    var old   = elt.ownerDocument.defaultView.getComputedStyle(elt);
+    let isSet  = elt.getAttribute("gpr-icon");
+    let usecss = null;
     
     // if there's no CSS-image or we didn't or don't want to append, use CSS
-    if (!append && isSet != "dom" &&
-        (isSet == "true" || (old && ["","none"].indexOf(old.backgroundImage) != -1) ) )
-      this.setIconCSS(elt, icon, old);
-    else
-      this.setIconDOM(elt, icon);
+    if (!append && isSet != "dom") {
+      usecss = elt.ownerDocument.defaultView.getComputedStyle(elt);
+      if (isSet == null && usecss.backgroundImage != "none")
+        usecss = null;
+    }
+    if (usecss) this.setIconCSS(elt, icon, usecss);
+    else        this.setIconDOM(elt, icon);
   },
 
   getContents: function(aURL) {
     // from http://forums.mozillazine.org/viewtopic.php?p=921150#921150
-    var ioService=Components.classes["@mozilla.org/network/io-service;1"]
+    let ioService=Components.classes["@mozilla.org/network/io-service;1"]
       .getService(Components.interfaces.nsIIOService);
-    var scriptableStream=Components
+    let scriptableStream=Components
       .classes["@mozilla.org/scriptableinputstream;1"]
       .getService(Components.interfaces.nsIScriptableInputStream);
 
-    var channel=ioService.newChannel(aURL,null,null);
-    var input=channel.open();
+    let channel = ioService.newChannel(aURL,null,null);
+    let input   = channel.open();
     scriptableStream.init(input);
-    var str=scriptableStream.read(input.available());
+    let str = scriptableStream.read(input.available());
     scriptableStream.close();
     input.close();
     return str;
@@ -182,7 +186,7 @@ Popup.prototype = {
   },
   
   show: function(id, txt, icon, prim, sec, opts) {
-    var self = this;
+    let self = this;
     
     opts = opts || {
       persistence: 8, timeout: Date.now() + 60000,
@@ -240,6 +244,7 @@ CallerInfo.prototype = {
 
 var Logging = {
   PFX:        "gprivacy: ",
+  logfile:    null,
   
   callerInfo: function(level) { // should
     if (!level) level = 0;
@@ -268,12 +273,34 @@ var Logging = {
     }
     return info;
   },
+    
+  _writeFile: function(msg) {
+    if (this.logname !== undefined && this.logfile == null) return; // failed before
+    if (this.logfile == null) {
+      try         { this.logname = Services.prefs.getCharPref("extensions.gprivacy.logfile"); }
+      catch (exc) { this.logname = null; }
+      if (!this.logname) return;
+      this.logfile = new FileUtils.File(this.logname);
+      if (!this.logfile) return;
+    }
+    try {
+      let ostream = FileUtils.openFileOutputStream(this.logfile, 0x1A)
+      let sstream = Components.classes["@mozilla.org/intl/converter-output-stream;1"]
+                               .createInstance(Components.interfaces.nsIConverterOutputStream);
+      sstream.init(ostream, "UTF-8", 0, 0);
+      let logmsg = "["+new Date().toISOString()+"] "+
+                   msg.toString().replace(/^gprivacy:\s*/,"");
+      sstream.writeString(logmsg+"\n");
+      sstream.close();
+    } catch (exc) { this.logname = null; this._logException(exc, null, false); }
+  },
   
   log: function(txt) {
     Services.console.logStringMessage(this.PFX + txt);
+    this._writeFile(txt);
   },
   
-  logException: function(exc, txt) {
+  _logException: function(exc, txt, toFileIfOpen) {
     txt = txt ? txt + ": " : ""
     var excLog = Components.classes["@mozilla.org/scripterror;1"]
                            .createInstance(Components.interfaces.nsIScriptError);
@@ -282,6 +309,11 @@ var Logging = {
                 exc.lineNumber || 0, exc.columnNumber || 0,
                 excLog.errorFlag || 0, "gprivacy");
     Services.console.logMessage(excLog);
+    if (toFileIfOpen) this._writeFile(excLog);
+  },
+  
+  logException: function(exc, txt) {
+    this._logException(exc, txt, true);
   },
   
   info: function(txt) { this.log(txt); },
@@ -294,6 +326,7 @@ var Logging = {
     warn.init(this.PFX + txt, info.filename, info.sourceLine, info.lineNumber, info.columnNumber,
               warn.warningFlag, "gprivacy");
     Services.console.logMessage(warn);
+    this._writeFile(warn);
   },
   
   error: function(txt, showSrcInfo, stackLevel) {
@@ -305,6 +338,7 @@ var Logging = {
     err.init(this.PFX + txt, info.filename, info.sourceLine, info.lineNumber, info.columnNumber,
              err.errorFlag, "gprivacy");
     Services.console.logMessage(err);
+    this._writeFile(err);
   },
   
 };

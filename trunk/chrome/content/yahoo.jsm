@@ -37,14 +37,34 @@ gprivacyYahoo.prototype = {
     EventUtils.makeBrowserLinkClick(this.gpr.window, doc, link, true);
   },
   
+  
+  createLinkAnnot: function(doc, orgLink, isReplacement) {
+    let annot = this.super.createLinkAnnot(doc, orgLink, isReplacement);
+    if (orgLink.parentNode.classList.contains("pix")) {
+      let setlink = annot.setLink;
+      annot.setLink = function(link) {
+        link.style.font    = "medium normal"; link.style.height = "auto";
+        link.style.display = "inline";        link.style.border = "none";
+        setlink.call(annot, link);
+      };
+    }
+    return annot;
+  },
+  
   insertLinkAnnot: function(doc, link, elt) {
     if (link.parentNode.tagName == "H3")
       return link.parentNode.parentNode.appendChild(elt);
-    else
+    else if (link.parentNode.classList.contains("pix")) {
+        link.parentNode.style.backgroundPosition = "left top";
+        link.style.marginBottom = "4px";
+        link.style.border       = "none";
+        return link.parentNode.appendChild(elt);
+    } else
       return link.parentNode.insertBefore(elt, link.nextSibling);
-  },
+  }
 
-  IGNORED_ATTRS: ["role", "aria-haspopup", "tabindex"],
+  // <ChangeMonitor>
+  , IGNORED_ATTRS: ["role", "aria-haspopup", "tabindex"],
   
   changemonIgnored: function(doc, link, e) { // don't warn on certain pages without hits
     // my.yahoo.com
@@ -72,4 +92,5 @@ gprivacyYahoo.prototype = {
       this.gpr.debug(this+": ignoring unchanged ' "+(link?"link":"page")+" "+doc.location.href.substring(0, 128)+"'"); 
     return ignored;
   }  
+  // </ChangeMonitor>
 };

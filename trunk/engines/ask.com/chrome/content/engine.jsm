@@ -133,6 +133,10 @@ gprivacyAsk.prototype = { // @change: ...and here
     return this.super.removeGlobal(doc);
   },
   
+  close: function() {
+    // perform cleanup if necessary
+  }
+  
   // Well, thats it!
   // @change: You may remove any method up to here!
 };

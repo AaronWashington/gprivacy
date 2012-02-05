@@ -17,10 +17,11 @@
             title="&prefwindow.title;" image="&gprivacyContext.icon;"
             onload="gprivacyOpts.onLoad();"
             ondialogaccept="gprivacyOpts.onOK();">
-  <script src="gpoptions.js" />
+  <script src="gpoptions.js" type="application/ecmascript"/>
   <prefpane id="gprivacy-pane" label="&prefpane.title;">
     <preferences id="gprivacyPrefs" defaultbutton="cancel">
       <preference id="active"   name="extensions.gprivacy.active"    type="bool"/>
+      <preference id="auto"     name="extensions.gprivacy.auto"      type="bool"/>
       <preference id="activel"  name="extensions.gprivacy.active.loggedin" type="bool"/>
       <preference id="replace"  name="extensions.gprivacy.replace"   type="bool"/>
       <preference id="orig"     name="extensions.gprivacy.orig"      type="bool"/>
@@ -49,16 +50,17 @@
       <preference id="atube"    name="extensions.gprivacy.engines.youtube.allevts" type="bool"/>
       <preference id="stube"    name="extensions.gprivacy.engines.youtube.own"     type="bool"/>
     </preferences>
-    <checkbox id="checkactive"  preference="active"  label="&checkactive.label;"  accesskey="&checkactive.accesskey;"  oncommand="gprivacyOpts.enableCtls();"/>
-    <checkbox id="checkDNT"     preference="privacy.donottrackheader.enabled" label="&checkDNT.label;"     accesskey="&checkDNT.accesskey;" />
+    <checkbox     id="checkactive"  preference="active"  label="&checkactive.label;"  accesskey="&checkactive.accesskey;"  oncommand="gprivacyOpts.enableCtls();"/>
+    <checkbox     id="checkDNT"     preference="privacy.donottrackheader.enabled" label="&checkDNT.label;"     accesskey="&checkDNT.accesskey;" />
     <hbox>
-      <groupbox id="gprivacyOptions">
-        <caption label="&options.label;" />
+      <groupbox   id="gprivacyOptions">
+        <caption  label="&options.label;" />
         <checkbox id="checkactivel" preference="activel" label="&checkactivel.label;" accesskey="&checkactivel.accesskey;" />
         <checkbox id="checkreplace" preference="replace" label="&checkreplace.label;" accesskey="&checkreplace.accesskey;" oncommand="gprivacyOpts.enableCtls();"/>
         <checkbox id="checkorig"    preference="orig"    label="&checkorig.label;"    accesskey="&checkorig.accesskey;"/>
         <checkbox id="checkmark"    preference="mark"    label="&checkmark.label;"    accesskey="&checkmark.accesskey;"    oncommand="gprivacyOpts.enableCtls('mark');"/>
         <checkbox id="checktext"    preference="text"    label="&checktext.label;"    accesskey="&checktext.accesskey;"    oncommand="gprivacyOpts.enableCtls('text');"/>
+        <checkbox id="checkauto"    preference="auto"    label="&checkauto.label;"    accesskey="&checkauto.accesskey;" tooltiptext="&checkauto.tip;"/>
         <checkbox id="checkembed"   preference="embed"   hidden="true" label="&checkembed.label;"    accesskey="&checkembed.accesskey;"  oncommand="gprivacyOpts.enableCtls('embed');"/>
         <groupbox>
           <caption label="&advanced.label;" image="&warning.icon;" dir="reverse" tooltiptext="&advanced.tip;"/>
