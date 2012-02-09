@@ -1,5 +1,32 @@
 Current svn: $Id$
 
+0.2.0pre7
+
+- [google] Fix a syntax error in the developer release
+* [google] re-enable formatting (keep inner elements, remove warnings, pref)
+- [google] Avoid multiple warning popups in one window
+* [google] Reverse defaults in warning
++ [yahoo] Better styling for images
++ [core] Prepare engines for dynamic removal (bootstrapped engines)
+* [core] Option to turn of automatic privatization
+* [core] Optimize CSS-icon assignments
+* [core] More 'strict' enforcements and optimizations
+* [core] [changemon] Move popup-functions to utilities (and use in AMO version, too)
+* [core] Get window and browser from gprivacy instance
+- [options] Fix checking for context menu call - again.
+* [options] cosmetics
+* [utils] flush log files after writing
++ [utils] Write log to file
++ [build] Prepare build for bootstrapping
+* [build] Touching sources doesn't update SVN-stamps - so don't do it
+* [build] Remove more ChangeMonitor code from AMO builds.
+* [build] [changemon] remove resource directory from AMO build
++ [tests] add Ask.com tests
++ [tests] allow venkman
++ [tests] show error console
+- [tests] fallback coordinate calculation
++ [tests] Slowly start adding unit tests
+
 0.2.0pre6
 
 + [bing] Hotmail support (experimental)

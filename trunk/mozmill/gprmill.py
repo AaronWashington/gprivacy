@@ -25,15 +25,17 @@ class GprivacyProfile(mozrunner.FirefoxProfile):
     "extensions.requestpolicy.initialSetupDialogShown": True,
     "extensions.requestpolicy.lastVersion": "0.5.24",
     
+    # Override some of mozmills defaults
     "browser.rights.1.shown": True,
     "browser.rights.3.shown": True,
     "browser.startup.homepage": "about:blank",
     "browser.startup.homepage.count": 1,
     "browser.startup.homepage_override.mstone": "ignore",
+    "extensions.installDistroAddons": True,
     "font.default.x-western": "sans-serif",
-    "font.minimum-size.x-western": 10,
-    "font.size.fixed.x-western": 12,
-    "font.size.variable.x-western": 13,
+    "font.minimum-size.x-western": 9, # avoid linebreaks
+    "font.size.fixed.x-western": 11, 
+    "font.size.variable.x-western": 12,
     "layout.css.report_errors": False,
     "security.warn_viewing_mixed": False,
     "shell.checkDefaultClient": False,

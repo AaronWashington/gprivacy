@@ -87,6 +87,7 @@ CommonTests.prototype = {
     // The default takes x, y = w/2, h/2 - which is unlikely to hit, if there's
     // a line break in the link...
     let first = elt.getClientRects()[0];
+    if (!first) return { dX: null, dY:null }; // let the controller decide... (though I don't know why this happens)
     let bound = elt.getBoundingClientRect();
     return { dX: first.left - bound.left + first.width / 2,
              dY: first.top  - bound.top  + first.height / 2 };
@@ -273,7 +274,7 @@ CommonTests.prototype = {
 
     let newTab = (!!expct.target && expct.target != "_self" && expct.target != "_top")
               || (info && (info.accelKey || info.ctrlKey || info.metaKey || (info.button && info.button == 2)));
-    if (newTab) ctlr.sleep(500);
+    if (newTab) ctlr.sleep(750);
 
     doc = gpr.waitPage(this.ctlr, false, newTab ? 1 : undefined);
 
@@ -342,7 +343,7 @@ CommonTests.prototype = {
     }
   },
   
-  testInnerLinkElements: function(domain, isSameFunc, noAccel) {
+  testInnerLinkElements: function(domain, isSameFunc, noAccel, firstOnly) {
     let prefs = this.defaultPrefs;
     prefs["extensions.gprivacy.replace"] = true;
     prefs["extensions.gprivacy.orig"]    = false;
@@ -362,6 +363,7 @@ CommonTests.prototype = {
             elts[e].focus(); // doesn't help... accelKey doesn't work in mozmill
             this.testPrivateClick(null, isSameFunc, elts[e], noAccel);
             clks++;
+            if (firstOnly) break;
           }
         }
       }

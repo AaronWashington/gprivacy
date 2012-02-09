@@ -2,31 +2,37 @@
 
 "use strict";
 
-Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 
 var gpr              = require("../lib/gprtests");
-var {CommonTests}    = require("../lib/common");
 var {assert, expect} = require("../lib/mozmill/assertions");
-var el               = elementslib;
 
-const TEST_URL    = "https://www.google.com/search?q=%22google+privacy%22";
 const PREFS = {
-  "gprivacy.active.loggedin": false,
+//  "gprivacy.active.loggedin": false,
 };
 
 var setupModule = function (mod) {
   mod.ctlr    = mozmill.getBrowserController();
   mod.saved   = gpr.setPrefs(PREFS, "extensions");
-  mod.common  = new CommonTests("google", 10);
   
   mod.ctlr.window.toOpenWindowByType("global:console", "chrome://global/content/console.xul");
+  mod.ctlr.sleep(750);
+  
+  let cons = mozmill.wm.getMostRecentWindow('global:console');  
+  let consCtrl = new mozmill.controller.MozMillController(cons);  
+  consCtrl.window.changeSortOrder("reverse")
 
+  ctlr.window.focus();
+  
   Logging._mozmill = [];
 //  Logging._saved   = gpr.setPrefs({"extensions.gprivacy.changemon": 1052 });
 
 //  mod.common.testDelay = 2000;
 //  mod.common.testConfirm = true;
+}
+
+var teardownModule = function(mod) {
+  gpr.setPrefs(saved);
 }
 
 var testHookLogging = function() {
@@ -43,7 +49,7 @@ var testHookLogging = function() {
   for (let h in hooks) Logging[hooks[h]] = hookLogFunc(hooks[h]);
 
   try         { undefined(); }
-  catch (exc) { Logging.logException(exc, "There should be exactly this one entry"); }
+  catch (exc) { Logging.logException(exc, "mozmill-tests: There should be exactly this one entry"); }
 
 }
 

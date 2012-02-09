@@ -6,7 +6,7 @@ import sys, os, re, shutil, zipfile, glob, optparse, time
 
 DEFPROJ    = "gprivacy"
 
-ROOT_FILES = "chrome defaults chrome.manifest install.rdf changelog.txt"
+ROOT_FILES = "chrome defaults chrome.manifest install.rdf bootstrap.js changelog.txt"
 OUTDIR     = "versions"
 
 JAR     = os.environ.get("JAR",      "jar")
