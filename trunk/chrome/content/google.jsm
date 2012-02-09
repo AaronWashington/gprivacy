@@ -12,8 +12,6 @@ function gprivacyGoogle(engines) {
   this.gpr     = engines.gpr;
   this.strings = this.gpr.strings;
   this.PATTERN = /https?:\/\/((?!(maps|code|(plusone)))\w+\.)*?(google)\.\w+\//
-  this.nowarn  = this.engines.getEnginePref(this, "nowarn", "bool", false);
-  this.warned  = this.nowarn;
 }
 
 gprivacyGoogle.prototype = {
@@ -39,42 +37,8 @@ gprivacyGoogle.prototype = {
       return;
     }
     this.super.removeTracking(doc, link);
-
-    // In search results, clicks on embedded elements (span, em, ...) are
-    // routed to the main window, which tracks. I don't know how to prevent
-    // this other than by removing them :-(
-    if (replaced) {
-      let html  = link.innerHTML; // getting it should be legal, dear reviewer?
-      if (link.textContent != html) {
-        let plain = link.textContent;
-        DOMUtils.removeAllChildren(link);
-        link.appendChild(doc.createTextNode(plain));
-        this.engines.debug("google: replaced '"+html+"' with '"+plain+"'");
-      }
-      if (!this.nowarn && !this.warned) {
-        this.warned = true;
-        this.showWarning();
-      }
-      this.nowarn = true; // only once per page
-    }
   },
   
-  showWarning: function() {
-    let self = this;
-    this.gpr.popup.show("gprivacy-popup",
-        this.strings.getString("googleWarning"),
-        null, // "gprmon-notification-icon",
-        { label: this.strings.getString("googleWarningRemove"), accessKey: "O",
-          callback: function(state) {
-            Services.prefs.setBoolPref("extensions.gprivacy.engines.google.nowarn", true);
-            self.gpr.popup.close();
-        } },
-        [ { label: this.strings.getString("googleWarningKeep"), accessKey: "C",
-            callback: function(state) { self.gpr.popup.close(); } }
-        ]);
-    
-  }
-
   // <ChangeMonitor>
   ,
   removeGlobal: function(doc) {
