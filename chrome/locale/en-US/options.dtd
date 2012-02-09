@@ -3,7 +3,7 @@
 <!ENTITY options.label "Options">
 <!ENTITY checkactive.label "Privacy active">
 <!ENTITY checkactive.accesskey "A">
-<!ENTITY checkauto.label "Change links when loading">
+<!ENTITY checkauto.label "Change links when loading pages">
 <!ENTITY checkauto.accesskey "L">
 <!ENTITY checkauto.tip "If deactivated, please use the context menu (right mouse button) to create private links.">
 <!ENTITY checkactivel.label "Privacy active when logged in">

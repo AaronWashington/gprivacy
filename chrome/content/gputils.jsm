@@ -290,7 +290,7 @@ var Logging = {
       sstream.init(ostream, "UTF-8", 0, 0);
       let logmsg = "["+new Date().toISOString()+"] "+
                    msg.toString().replace(/^gprivacy:\s*/,"");
-      sstream.writeString(logmsg+"\n");
+      sstream.writeString(logmsg+"\n"); ostream.flush();
       sstream.close();
     } catch (exc) { this.logname = null; this._logException(exc, null, false); }
   },

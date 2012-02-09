@@ -3,7 +3,7 @@
 <!ENTITY options.label "Einstellungen">
 <!ENTITY checkactive.label "Privatsphäre aktiv">
 <!ENTITY checkactive.accesskey "A">
-<!ENTITY checkauto.label "Links beim Laden anpassen">
+<!ENTITY checkauto.label "Links beim Laden von Websites anpassen">
 <!ENTITY checkauto.accesskey "L">
 <!ENTITY checkauto.tip "Falls abgeschaltet, bitte das Kontextmenü (rechte Maustaste) benutzen, um private Links zu erzeugen.">
 <!ENTITY checkactivel.label "Privatsphäre aktiv wenn angemeldet">
