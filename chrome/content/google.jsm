@@ -37,7 +37,7 @@ gprivacyGoogle.prototype = {
       return;
     }
     this.super.removeTracking(doc, link);
-  },
+  }
   
   // <ChangeMonitor>
   ,

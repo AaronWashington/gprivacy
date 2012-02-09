@@ -209,30 +209,49 @@ Engines.prototype = {
     this.debug("Engines instance initialized");
   },
 
-  close: function() {
-    for (let e in this.engines)
-      this._engines[e].call("close");
-  },
-  
   add: function(eng) {
     let self   = this;
     if (!this._initialized) throw new EngineError("Not initialized", 1);
     if (!("ID" in eng) || !("NAME" in eng))
       throw new EngineError("Invalid engine", 1)
-    if (eng.ID in this._engines)
-      Logging.warn("Engine '"+eng+"' will be replaced.")
     this.setPreferences(eng);
     eng.super   = new gprivacyDefault(self, eng);
     eng.UID     = ++UID;
     eng.call    = function(func, doc, p1, p2, p3, p4, p5) {
       return self.call(this, func, doc, p1, p2, p3, p4, p5);
     }
-    eng.toString= function() {
+    eng.toString = function() {
         return self.call(this, "_toString");
-      };
+    };
+    if (eng.ID in this._engines) {
+      Logging.warn("Engine '"+eng+"' will be replaced.");
+      this._closeEngine(eng.ID);
+    }
     this._engines[eng.ID] = eng;
     this.debug("Engine "+eng+" "+(eng.enabled ? "" : "not ")+"active for '"+eng.PATTERN.toString()+"'");
   },
+  
+  _closeEngine: function(id) {
+    try {
+      this._engines[e].call("close");
+      delete this._engines[e].call;
+      delete this._engines[e].UID;
+      delete this._engines[e].super;
+      delete this._engines[e].sameorigin;
+      delete this._engines[e].enabled;
+      delete this._engines[e].all;
+      delete this._engines[e];
+    } catch (exc) {
+      Logging.logExcpetion(e);
+    }
+  },
+  
+  close: function() {
+    for (let id in this.engines)
+      this._closeEngine(e);
+  },
+  
+  remove: function(eng) { this._closeEngine(eng.ID); },
   
   get: function() {
     if (!this._initialized) throw new EngineError("Not initialized", 1);

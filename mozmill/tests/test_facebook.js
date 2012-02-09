@@ -40,7 +40,8 @@ var testLoad = function () {
 
   let {doc, track} = common.refreshResults(TEST_URL);
   loggedin = !(new el.ID(doc, "email").exists());
-  assert.ok(loggedin, "Logged in");
+  assert.ok(loggedin, "Logged in. For the facebook tests you need to be logged in. "+
+                      "For now, use the --template option of gprmill to copy cookies from a profile.");
 
   common.expect.minLinks(track);
   common.progress("testLoad");

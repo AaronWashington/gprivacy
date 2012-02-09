@@ -76,7 +76,7 @@ var testTrackedClick     = function() { common.testTrackedClick(mickey, isNotSam
 var testClickNetwork     = function() { assert.fail("Not implemented"); };
 testClickNetwork.__force_skip__ = "Not implemented";
 var testLinkModification = function() { common.testLinkModification(mickey, true); };
-var testInnerLinkElements= function() { common.testInnerLinkElements(mickey, isSameLocation, true); };
+var testInnerLinkElements= function() { common.testInnerLinkElements(mickey, isSameLocation, true, true); };
 
 var testInnerLinkCtrlClick = function() {}
 testInnerLinkCtrlClick.__force_skip__ = "Find out how to implement";
