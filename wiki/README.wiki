@@ -61,7 +61,7 @@ Brave beta-testers may obtain a copy of the latest development releases
 [http://code.google.com/p/gprivacy/downloads/list here].
 
 = Options =
-http://gprivacy.googlecode.com/svn/wiki/screens/grpivacy-options.default.jpg
+http://gprivacy.googlecode.com/svn/wiki/screens/gprivacy-options.default.jpg
 
 ==== General ====
   * *Privacy active* - Switch `gprivacy` on or off.
@@ -69,6 +69,7 @@ http://gprivacy.googlecode.com/svn/wiki/screens/grpivacy-options.default.jpg
   * *Show original links* - If replaced, add the infested link too.
   * *Mark modified links* - Mark links with small icons (http://gprivacy.googlecode.com/svn/trunk/chrome/skin/private16.png, http://gprivacy.googlecode.com/svn/trunk/chrome/skin/tracking16.png)
   * *Show descriptive text* - Add '`private`' or '`tracked`' to the appended links. Either this or the previous option _must_ be set.
+  * *Change links when loading pages* - If switched off, you have to make the tracked links private manually. Use the context menu of the page to do this. Use, if some pages don't work.
 
 ==== Website Options ====
   * *Own links allowed* - Links to the same website will not be modified. This prevents the cluttering of some websites by sacrificing a little privacy. This is usually not a problem, as the links target is clearly visible in the browsers status, and the website can register the click anyway.
@@ -79,6 +80,7 @@ http://gprivacy.googlecode.com/svn/trunk/chrome/skin/attention.png
 You should leave this options as is, unless asked by the developers to
 change them!
 
+ * *Route private links through browser* - Every click on a private link will look as if it's been started like a bookmark. Neither the originating nor the destination server will know where the click came from. Not necessarily desirable.
  * *Mark empty and !JavaScript links * - In combination with *All Clicks*, this blocks almost every possibility for website to track clicks. But it also almost certainly completely breaks it! You might as well use [https://addons.mozilla.org/en-US/addon/noscript/ NoScript] or turn !JavaScript off completely. That's probably safer.
  * *Debug output to console* - Write verbose output to the browsers error console. On large websites, this might severely impact performance.
 
