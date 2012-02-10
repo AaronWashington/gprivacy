@@ -2,7 +2,9 @@ Current svn: $Id$
 
 0.2.0
 
-- [google] Fix login recognition
+- [google] fix log-in-check
+* [core] fix typo
+* [core] check login only once per document
 - [build] Adress AMO reviewers complaints
 * [build] Upload to AMO
 * [build] Bump version number

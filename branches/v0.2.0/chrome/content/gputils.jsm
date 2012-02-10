@@ -96,7 +96,7 @@ var DOMUtils = {
       case "img":  elt = doc.createElement("img");  break;
       case "span": elt = doc.createElement("span"); break;
       default: {
-        let e = newError("Unknown DOM Element"); e.info = Logging.callerInfo(1); 
+        let e = new Error("Unknown DOM Element"); e.info = Logging.callerInfo(1); 
         throw e;
       }
     }
