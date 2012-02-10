@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Overlays connot be used yet: https://bugzilla.mozilla.org/show_bug.cgi?id=675387 -->
+<!-- But for a bootstrapped extension, this file will be obsolete anyway... -->
+
 <!DOCTYPE overlay SYSTEM "chrome://gprask/locale/overlay.dtd">
 <overlay id="gprask-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 

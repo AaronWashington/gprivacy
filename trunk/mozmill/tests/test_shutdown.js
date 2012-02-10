@@ -19,5 +19,13 @@ var setupModule = function (mod) {
 
   if (Logging._saved) gpr.setPrefs(Logging._saved);
   
-  assert.equal(Logging._mozmill.length-1, 0, "No errors or warnings - see logfile");
+  
+  assert.equal(Logging._mozmill.length, Logging._mozmillExpected.length,
+               "Unexpected errors or warnings - see logfile");
+  // TODO: thorough examination...
+  for (let l in Logging._mozmill) {
+    let log = Logging._mozmill[l].args[0].toString();
+    assert.ok(log.indexOf(Logging._mozmillExpected[l]) != -1,
+              "Expcected log entry '"+Logging._mozmillExpected[l]+"' matched '"+log+"'");
+  }
 }

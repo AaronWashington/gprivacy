@@ -2,7 +2,7 @@
 
 import os, copy, mozmill, mozrunner, glob
 
-GPRIVACY_DEFAULT_EXT = "../versions/gprivacy-0.2.0-sm+fx-amo.xpi"
+GPRIVACY_DEFAULT_EXT = "../versions/gprivacy-0.2.1pre1-sm+fx-amo.xpi"
 
 # Try to find latest version
 for en in sorted(glob.glob(os.path.join("..","versions","gprivacy-*.xpi")),
@@ -64,6 +64,8 @@ class CLI(mozmill.CLI):
   def __init__(self):
     super(CLI, self).__init__()
     self.addons += [ self.options.gprivacy ]
+    print "Using gprivacy: '%s'" % self.options.gprivacy
+
     if not self.tests:
        mp = mozmill.manifestparser.TestManifest(manifests=["tests/gprivacy.ini"])
        self.tests.extend(mp.test_paths())
@@ -84,7 +86,7 @@ class CLI(mozmill.CLI):
 
         insert into moz_cookies
           select * from template.moz_cookies
-          where  baseDomain in ('facebook.com','bing.com'); -- , 'google.com', 'yahoo.com'
+          where  baseDomain in ('facebook.com', 'bing.com', 'google.com'); --, 'yahoo.com'
       """ % self.options.template);
       db.close()    
     return profile    

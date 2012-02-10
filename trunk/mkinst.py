@@ -78,14 +78,15 @@ def main(argv=sys.argv[1:]):
       print "checking %s Syntax" % what,
       files = []
       for ext in exts:
-        for dirpat in [ "*/*", "*/*/*"]:
+        for dirpat in [ "*", "chrome/*", "chrome/*/*"]:
           files += glob.glob(os.path.join(inpdir, dirpat+ext))
       for fn in files:
         print ".", ; sys.stdout.flush()
 
         rc = os.system(cmd + " " + (par % fn));
 
-        assert rc == 0, "%s Syntax check failed!" % what
+        assert rc == 0, "%s Syntax check failed for '%s'!" % (what, fn)
+
       print; sys.stdout.flush()
 
     fname = os.path.join(outdir, "%s-%s-dev.xpi" % (opts.project, ver))

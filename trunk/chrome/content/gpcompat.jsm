@@ -97,8 +97,7 @@ AddonCompat.prototype = {
     
     this.gpr        = gpr;
 
-    this.DEBUG      = Services.prefs.getBoolPref("extensions.gprivacy.debug");
-    this.debug      = gpr.debug;
+    this.debug      = this.gpr.debug.bind(this.gpr);
     this.tabbrowser = this.gpr.browser; // only works, if the window is already opened Services.wm.getMostRecentWindow("navigator:browser");
     this.xulwindow  = this.gpr.window;
     
@@ -144,7 +143,6 @@ AddonCompat.prototype = {
   },
   
   refresh: function(doc) {
-    this.DEBUG = Services.prefs.getBoolPref("extensions.gprivacy.debug");
     for (let a in this.addons) {
       try { this.addons[a].refresh(doc); }
       catch (exc) { this.logAddonException(exc, id, "refresh failed"); }

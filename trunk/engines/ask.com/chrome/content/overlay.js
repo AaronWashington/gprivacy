@@ -2,6 +2,12 @@
 
 "use strict";
 
+// Overlays connot be used yet: https://bugzilla.mozilla.org/show_bug.cgi?id=675387
+// But for a bootstrapped extension, this file will be obsolete anyway...
+// See bootstrap.js
+
+/*
+
 Components.utils.import("chrome://gprivacy/content/gpengines.jsm");
 Components.utils.import("chrome://gprask/content/engine.jsm");
 
@@ -15,3 +21,4 @@ var gprask = {
 
 window.addEventListener("load", function () { gprask.onLoad(); }, false);
 
+*/

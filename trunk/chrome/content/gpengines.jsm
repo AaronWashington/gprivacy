@@ -12,9 +12,11 @@ Components.utils.import("chrome://gprivacy/content/youtube.jsm");
 
 Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 
-var EXPORTED_SYMBOLS = [ "Engines" ];
+var EXPORTED_SYMBOLS = [ "Engines", "gBrowserEngines" ];
 
 var UID = 0;
+
+var gBrowserEngines = [];
 
 //***************************************************************************
 //* Default engine
@@ -26,10 +28,13 @@ function gprivacyDefault(engines, instance) {
   this.CUSTOM  = this.gpr.lockedprop;
   
   if (instance) {
+    // manual subclassing...
     this.instance = instance;
     for (let i in this._COPYPROPS)
       if (instance[this._COPYPROPS[i]])
-        this[this._COPYPROPS[i]] = instance[this._COPYPROPS[i]];
+        this[this._COPYPROPS[i]]     = instance[this._COPYPROPS[i]];
+      else
+        instance[this._COPYPROPS[i]] = this[this._COPYPROPS[i]];
   }
   else
     this.instance = null;
@@ -68,8 +73,8 @@ gprivacyDefault.prototype = {
     for (let i in this.TRACKATTR) {
       if (link.hasAttribute(this.TRACKATTR[i])) {
         is = true;
-        if (!this.engines.DEBUG) break;
-        this.engines.debug(this.TRACKATTR[i] + ": <" + link.href + "> " + link.getAttribute(this.TRACKATTR[i]));
+        if (!this.gpr.DEBUG) break;
+        this.gpr.debug(this.TRACKATTR[i] + ": <" + link.href + "> " + link.getAttribute(this.TRACKATTR[i]));
       }
     }
     return is;
@@ -135,11 +140,11 @@ gprivacyDefault.prototype = {
       let stop = null;
       if (evt in evts) {
         EventUtils.stopEvent(evt, link);
-        this.engines.debug("Removed '" + evt + "' handler from '" + link.href + "'");
+        this.gpr.debug("Removed '" + evt + "' handler from '" + link.href + "'");
       }
       if (link.hasAttribute("on" + evt)) {
         link.removeAttribute("on" + evt);
-        this.engines.debug("Removed 'on" + evt + "' from '" + link.href + "'");
+        this.gpr.debug("Removed 'on" + evt + "' from '" + link.href + "'");
       }
     }
   },
@@ -175,6 +180,10 @@ EngineError.prototype.constructor = EngineError;
 //*
 //*
 //***************************************************************************
+var gEngineClasses = [ gprivacyGoogle, gprivacyYahoo,
+                       gprivacyBing,   gprivacyFacebook, 
+                       gprivacyYouTube
+                     ];
 
 function Engines(gprivacy) {
   this.initialize(gprivacy);
@@ -186,19 +195,15 @@ Engines.prototype = {
   
   initialize: function(gprivacy) {
     if (this._initialized) throw new EngineError("Already initialized");
-    this.DEBUG = Services.prefs.getBoolPref("extensions.gprivacy.debug");
     let self   = this;
 
     this.gpr       = gprivacy;
-    this.debug     = gprivacy.debug;
+    this.debug     = gprivacy.debug.bind(gprivacy);
     this.register  = Components.utils.import;
     let stdEngines = [];
-    let stdClasses = [ gprivacyGoogle, gprivacyYahoo,
-                       gprivacyBing,   gprivacyFacebook, 
-                       gprivacyYouTube
-                     ];
-    for (let i in stdClasses) {
-      let Class = stdClasses[i];
+
+    for (let i in gEngineClasses) {
+      let Class = gEngineClasses[i];
       try { stdEngines.push(new Class(this)); }
       catch (exc) { Logging.logException(exc, "Engine '"+Class.prototype.NAME+"' (id: '"+Class.prototype.ID+"') failed to initialize"); }
     }
@@ -206,6 +211,7 @@ Engines.prototype = {
     this._initialized = true;
     this._load(stdEngines, "extensions.gprivacy.engines.custom");
     this._load = null; // add-ons must use Engines.add(..)
+    gBrowserEngines.push(this);
     this.debug("Engines instance initialized");
   },
 
@@ -231,24 +237,50 @@ Engines.prototype = {
     this.debug("Engine "+eng+" "+(eng.enabled ? "" : "not ")+"active for '"+eng.PATTERN.toString()+"'");
   },
   
+  addClass: function(engClass) {
+    if (gEngineClasses.indexOf(engClass) == -1) {
+      gEngineClasses.push(engClass);
+      if (this._initialized)
+        this.add(new engClass(this));
+    } else {
+      try { this.debug("Engine class for '"+engClass.prototype.ID+"' already registered"); } catch (exc) {}
+    }
+  },
+  
+  removeClass: function(engClass) {
+    for (let e in this._engines) {
+      try {
+        if (this._engines[e] instanceof engClass)
+          this._closeEngine(this._engines[e].ID);
+      } catch (exc) {
+        Logging.logException(exc);
+      }
+    }
+    if (gEngineClasses.indexOf(engClass) != -1)
+      gEngineClasses.splice(gEngineClasses.indexOf(engClass), 1);
+  },
+  
   _closeEngine: function(id) {
     try {
-      this._engines[e].call("close");
-      delete this._engines[e].call;
-      delete this._engines[e].UID;
-      delete this._engines[e].super;
-      delete this._engines[e].sameorigin;
-      delete this._engines[e].enabled;
-      delete this._engines[e].all;
-      delete this._engines[e];
+      let eng = this._engines[id];
+      this.debug("Closing engine "+eng);
+      eng.call("close");
+      delete eng.call;    delete eng.UID; delete eng.super;
+      delete eng.enabled; delete eng.all; delete eng.sameorigin;
+      delete this._engines[id];
     } catch (exc) {
-      Logging.logExcpetion(e);
+      Logging.logException(id);
     }
   },
   
   close: function() {
     for (let id in this.engines)
-      this._closeEngine(e);
+      this._closeEngine(id);
+
+    let me = gBrowserEngines.indexOf(this);
+    if (me >= 0) gBrowserEngines.splice(me, 1);
+    else         Logging.error("Engine collection not found. How did this happen?");
+    this.debug("Engine collection closed");
   },
   
   remove: function(eng) { this._closeEngine(eng.ID); },
@@ -290,7 +322,6 @@ Engines.prototype = {
   },
   
   refresh: function(doc) {
-    this.DEBUG = Services.prefs.getBoolPref("extensions.gprivacy.debug");
     for (let e in this.engines) {
       this.setPreferences(this._engines[e]);
       this._engines[e].call("refresh", doc);

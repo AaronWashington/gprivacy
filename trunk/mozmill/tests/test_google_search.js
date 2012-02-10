@@ -40,16 +40,19 @@ var testLogoff = function() {
   let doc = ctlr.tabs.activeTab;
   let log = doc.getElementById("gbg6");
   if (log != null) {
+    common.progress("logging off");
     ctlr.click(new el.Elem(log));
     ctlr.waitThenClick(new el.ID(doc, "gb_71"));
     doc = gpr.waitPage(ctlr);
     assert.match(doc.location.host, /accounts\.google\./, "Google logout page redirect");
     ctlr.goBack();
+    ctlr.sleep(500);
     ctlr.refresh();
     doc = gpr.waitPage(ctlr);
     assert.equal(doc.getElementById("gbg6"), null, "Logged out.")
   }
-  ctlr.waitForElement(new el.ID(doc, "gbi4s1"));
+  ctlr.waitForElement(new el.ID(doc, "gb_70"));
+  ctlr.sleep(500);
   common.progress("testLogoff");
 };
 

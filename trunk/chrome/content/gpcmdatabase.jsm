@@ -70,8 +70,7 @@ var ChangeMonitorDB = {
     var self = this;
 
     // refres some prefs
-    this.DEBUG = changemon.DEBUG;
-    this.debug = changemon.debug;
+    this.debug = Logging.debug.bind(Logging);
     
     if (!this.dbconn) {
       var pbs = null;

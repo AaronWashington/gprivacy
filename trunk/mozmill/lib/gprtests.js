@@ -48,7 +48,7 @@ gpr.setPrefs = function(prefs, pfx) {
   return saved;
 };
 
-gpr.waitPage = function(ctlr, refresh, tabIndex, url) {
+gpr.waitPage = function(ctlr, refresh, tabIndex) {
   let doc = ctlr.tabs.activeTab;
   if (tabIndex !== undefined && tabIndex !== null) {
     assert.equal(tabIndex < ctlr.tabs.length, true, "Tab index: "+tabIndex+" < "+ctlr.tabs.length);

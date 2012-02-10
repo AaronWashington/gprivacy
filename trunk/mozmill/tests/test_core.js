@@ -25,6 +25,8 @@ var setupModule = function (mod) {
   ctlr.window.focus();
   
   Logging._mozmill = [];
+  Logging._mozmillExpected = [];
+  Logging._mozmillExpect = function(msg) { Logging._mozmillExpected.push(msg); }
 //  Logging._saved   = gpr.setPrefs({"extensions.gprivacy.changemon": 1052 });
 
 //  mod.common.testDelay = 2000;
@@ -49,7 +51,11 @@ var testHookLogging = function() {
   for (let h in hooks) Logging[hooks[h]] = hookLogFunc(hooks[h]);
 
   try         { undefined(); }
-  catch (exc) { Logging.logException(exc, "mozmill-tests: There should be exactly this one entry"); }
+  catch (exc) {
+    let msg = "undefined is not a function";
+    Logging.logException(exc, "mozmill-tests: Expect '"+msg+"'");
+    Logging._mozmillExpect(msg);
+  }
 
 }
 
