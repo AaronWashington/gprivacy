@@ -10,7 +10,7 @@ Components.utils.import("chrome://gprivacy/content/gpchangemon.jsm");
 Components.utils.import("chrome://gprivacy/content/gpcompat.jsm");
 
 var gprivacy = {
-  INSERT_EVT: "DOMNode" + "Inserted", // What are we going to do, when these will be removed (already deprecated)???
+  INSERT_EVT: "DOMNodeInserted", // What are we going to do, when these will be removed (already deprecated)???
   DEBUG:      false,
   MARKHTML:   { node: "img", height:12, width:12, title: "Privacy Respected!", src: "chrome://gprivacy/skin/private16.png",  class: "gprivacy-private" , isTemplate: true },
   MARKORIG:   { node: "img", height:12, width:12, title: "Privacy Violated!",  src: "chrome://gprivacy/skin/tracking16.png", class: "gprivacy-tracking", isTemplate: true },
@@ -132,9 +132,10 @@ var gprivacy = {
     
       let links   = doc.getElementsByTagName("a");
       let changed = 0;
+      let logged  = this._loggedIn(eng, doc);
 
       for (let i = 0; i < links.length; i++)
-          changed += self.changeLink(eng, doc, links[i], self.replace) ? 1 : 0;
+          changed += self.changeLink(eng, doc, links[i], self.replace, false, logged) ? 1 : 0;
 
       changed += eng.call("removeGlobal", doc) ? 1 : 0;
 
@@ -165,9 +166,10 @@ var gprivacy = {
     // doc.removeEventListener(this.INSERT_EVT, gprivacy.onNodeInserted, false);
 
     let changed = 0;
+    let logged  = this._loggedIn(eng, doc);
     
     for (let i = 0; i < links.length; i++)
-        changed += this.changeLink(eng, doc, links[i], this.replace) ? 1 : 0;
+        changed += this.changeLink(eng, doc, links[i], this.replace, false, logged) ? 1 : 0;
         
     this.changemon.nodeInserted(eng, doc, elt, links, changed);
   },
@@ -243,7 +245,7 @@ var gprivacy = {
     }
   },
   
-  changeLink: function(eng, doc, orgLink, replace, forced) {
+  changeLink: function(eng, doc, orgLink, replace, forced, loggedIn) {
     if (!this.active) return false;
 
     let self   = this;
@@ -275,7 +277,6 @@ var gprivacy = {
     let tracked = wrap(orgLink);
     let priv    = null; 
     
-    let loggedIn =  this._loggedIn(eng, doc);
     let modify   =  this.active && !loggedIn;
 
     if (modify) { // maybe we're logged in

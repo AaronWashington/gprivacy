@@ -83,15 +83,23 @@ var EventUtils = {
 //*****************************************************************************
 
 var DOMUtils = {
-  DOMCREATOR: "create"+"Element", // making validators happy does neither 
-                                  // improve readabilty nor performance!
-  
   create: function(doc, def) {
     // well, now that I removed all innerHTMLs, the validator complains
     // about the variable node type in createElement(def.node)!
     // I cannot see, what should be illegal in this! Hardcoding everything
     // is certainly _NOT_ a step in the right direction!
-    let elt = doc[this.DOMCREATOR](def.node);
+    // So don't blame me for this silly piece of code - and please, don't
+    // put it on the Daily WTF <http://thedailywtf.com/Series/CodeSOD.aspx>
+    let elt = null;
+    switch (def.node) {
+      case "a":    elt = doc.createElement("a");    break;
+      case "img":  elt = doc.createElement("img");  break;
+      case "span": elt = doc.createElement("span"); break;
+      default: {
+        let e = newError("Unknown DOM Element"); e.info = Logging.callerInfo(1); 
+        throw e;
+      }
+    }
     for (let attr in def)
       if (attr != "node") elt.setAttribute(attr, def[attr]);
     return elt;
