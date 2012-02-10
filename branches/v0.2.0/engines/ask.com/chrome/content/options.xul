@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<!-- @change: replace 'ask' with your engine ID -->
+
+<!DOCTYPE overlay [ 
+<!ENTITY % gpoverlayDTD SYSTEM "chrome://gprivacy/locale/overlay.dtd">
+<!ENTITY % gpoptionsDTD SYSTEM "chrome://gprivacy/locale/options.dtd">
+<!ENTITY % optionsDTD   SYSTEM "chrome://gprask/locale/options.dtd">
+%gpoverlayDTD;
+%gpoptionsDTD;
+%optionsDTD;
+]>
+
+<overlay id="gprask-options" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <preferences id="gprivacyPrefs" defaultbutton="cancel">
+    <!-- Please @change those to make them unique (use your engine ID!) -->
+    <preference id="eask"  name="extensions.gprivacy.engines.ask.enabled" type="bool"/>
+    <preference id="aask"  name="extensions.gprivacy.engines.ask.allevts" type="bool"/>
+    <preference id="sask"  name="extensions.gprivacy.engines.ask.own"     type="bool"/>
+  </preferences>
+  
+   <rows id="gprivacyEngineRows">
+     <row insertbefore="gprivacyEngineInsertHere">
+       <!-- DO NOT change that id-prefix here ('ce', 'cs', 'ca') or
+            auto-enabling won't work!
+            But please DO change 'ask' your engine ID. -->
+       <checkbox id="ceask" preference="eask"  label="&ceask.label;"/>
+       <checkbox id="csask" preference="sask"  label="&own.allowed;" tooltiptext="&own.tip;"/>
+       <checkbox id="caask" preference="aask"  label="&all.blocked;" tooltiptext="&all.tip;"/>
+     </row>
+   </rows>
+  
+</overlay>

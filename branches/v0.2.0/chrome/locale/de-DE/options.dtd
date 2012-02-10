@@ -1,0 +1,56 @@
+<!ENTITY prefwindow.title "&gprivacy.name; preferences">
+<!ENTITY prefpane.title   "&prefwindow.title;">
+<!ENTITY options.label "Einstellungen">
+<!ENTITY checkactive.label "Privatsphäre aktiv">
+<!ENTITY checkactive.accesskey "A">
+<!ENTITY checkauto.label "Links beim Laden von Websites anpassen">
+<!ENTITY checkauto.accesskey "L">
+<!ENTITY checkauto.tip "Falls abgeschaltet, bitte das Kontextmenü (rechte Maustaste) benutzen, um private Links zu erzeugen.">
+<!ENTITY checkactivel.label "Privatsphäre aktiv wenn angemeldet">
+<!ENTITY checkactivel.accesskey "G">
+<!ENTITY checkreplace.label "Original-Links ersetzen">
+<!ENTITY checkreplace.accesskey "R">
+<!ENTITY checkorig.label "Original-Links anzeigen">
+<!ENTITY checkorig.accesskey "O">
+<!ENTITY checkmark.label "Ersetzte Links markieren (kleines Symbol)">
+<!ENTITY checkmark.accesskey "M">
+<!ENTITY checktext.label "mit Beschreibungstext">
+<!ENTITY checktext.accesskey "T">
+<!ENTITY checkembed.label "Eingebettete Websites">
+<!ENTITY checkembed.accesskey "B">
+<!ENTITY checkdebug.label "Debug-Ausgabe auf Konsole">
+<!ENTITY checkdebug.accesskey "D">
+<!ENTITY checkanon.label "JavaScript- und leere Links ersetzen">
+<!ENTITY checkanon.accesskey "J">
+<!ENTITY checkbrowser.label "Private Links über den Browser leiten">
+<!ENTITY checkbrowser.accesskey "Ü">
+<!ENTITY checkDNT.label "Mozilla's &quot;Do-Not-Track Flag&quot; setzen">
+<!ENTITY checkDNT.accesskey "N">
+
+
+<!ENTITY engines.label  "Websites">
+<!ENTITY cegoogle.label "Google">
+<!ENTITY ceyahoo.label  "Yahoo!">
+<!ENTITY cebing.label   "Bing">
+<!ENTITY ceface.label   "Facebook">
+<!ENTITY cetube.label   "YouTube">
+
+<!ENTITY own.label   "Eigene Links">
+<!ENTITY own.tip     "Links auf die gleiche Website werden nich verändert">
+<!ENTITY own.allowed "erlaubt">
+
+<!ENTITY all.label   "Alle Klicks">
+<!ENTITY all.tip     "Achtung! Wenn alle Klicks blockiert werden, funktioniert die Website wahrscheinlich nicht mehr!">
+<!ENTITY all.blocked "blockiert">
+
+<!ENTITY advanced.label "Werweiter (Achtung!)">
+<!ENTITY advanced.tip   "Das Setzen dieser Optionen kann Websites zerstören und die Broweser-Leistung massiv beeinträchtigen!">
+
+<!ENTITY warning.icon   "chrome://gprivacy/skin/attention16.png">
+
+<!ENTITY support.text1   "Hilfe und Support für diese Einstellungen finden sie auf der ">
+<!ENTITY support.url     "http://code.google.com/p/gprivacy/wiki/README#Options">
+<!ENTITY support.urltext "gprivacy Homepage">
+<!ENTITY support.text2   " bei Google Code (auf Englisch).">
+
+<!ENTITY help.text1 "Wenn sie OK drücken, werden alle betroffenen Websites neu geladen.">
