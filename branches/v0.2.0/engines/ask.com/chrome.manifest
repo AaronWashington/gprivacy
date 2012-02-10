@@ -1,7 +1,0 @@
-content   gprask                 chrome/content/
-skin      gprask   classic/1.0   chrome/skin/
-locale    gprask   en-US         chrome/locale/en-US/
-locale    gprask   de-DE         chrome/locale/de-DE/
-
-overlay chrome://gprivacy/content/overlay.xul chrome://gprask/content/overlay.xul
-overlay chrome://gprivacy/content/options.xul chrome://gprask/content/options.xul
