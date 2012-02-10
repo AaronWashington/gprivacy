@@ -66,11 +66,10 @@ ChangeMonitor.prototype = {
   init: function(gpr) {
     this.gpr        = gpr;
 
-    this.DEBUG      = Services.prefs.getBoolPref("extensions.gprivacy.debug");
     this.tabbrowser = this.gpr.browser; // only works, if the window is already opened Services.wm.getMostRecentWindow("navigator:browser");
     this.xulwindow  = this.gpr.window;
-    this.popup      = gpr.popup;
-    this.debug      = gpr.debug;
+    this.popup      = this.gpr.popup;
+    this.debug      = this.gpr.debug.bind(this.gpr);
     this.db         = null;
     this.ignorerules= [];
     
@@ -81,6 +80,7 @@ ChangeMonitor.prototype = {
   
   close: function() {
     if (this.db) this.db.close();
+    this.debug("ChangeMonitor instance closed");
   },
   
   refresh: function(doc, eng) {

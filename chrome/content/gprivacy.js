@@ -10,7 +10,7 @@ Components.utils.import("chrome://gprivacy/content/gpchangemon.jsm");
 Components.utils.import("chrome://gprivacy/content/gpcompat.jsm");
 
 var gprivacy = {
-  INSERT_EVT: "DOMNode" + "Inserted", // What are we going to do, when these will be removed (already deprecated)???
+  INSERT_EVT: "DOMNodeInserted", // What are we going to do, when these will be removed (already deprecated)???
   DEBUG:      false,
   MARKHTML:   { node: "img", height:12, width:12, title: "Privacy Respected!", src: "chrome://gprivacy/skin/private16.png",  class: "gprivacy-private" , isTemplate: true },
   MARKORIG:   { node: "img", height:12, width:12, title: "Privacy Violated!",  src: "chrome://gprivacy/skin/tracking16.png", class: "gprivacy-tracking", isTemplate: true },
@@ -19,6 +19,7 @@ var gprivacy = {
   onLoad: function() {
     try {
       let self = this;
+      this.debug      = Logging.debug.bind(Logging);
       this.loadPrefs();
       this.strings    = document.getElementById("gprivacy-strings");
       this.appcontent = document.getElementById("appcontent");
@@ -41,16 +42,25 @@ var gprivacy = {
         this.changemon = new ChangeMonitor(this);
         this.engines   = new Engines(this);
 
+        // notify bootstrapped add-on engines
+        let evt = window.document.createEvent("Event");
+        evt.initEvent("gprivacy:engines", true, true);
+        window.document.dispatchEvent(evt);
+        
         // Now for the event listeners
 
-        this.appcontent.addEventListener("DOMContentLoaded", function(e) {
-          self.onPrePageLoad(e);
-        }, false, true);
+        this.onContent = function(e) { self.onPrePageLoad(e); };
+        this.onContext = function(e) { self.showContextMenu(e); };
+
+        this.appcontent.addEventListener("DOMContentLoaded", this.onContent, false, true);
         document.getElementById("contentAreaContextMenu")
-                .addEventListener("popupshowing", function (e){ self.showContextMenu(e); }, false);
+                .addEventListener("popupshowing", this.onContext, false);
       }
-      window.addEventListener("unload", function() { self.onUnload(); }, false);
-    
+      let onUnload = function() {
+        window.removeEventListener("unload", onUnload, false);
+        self.onUnload();
+      }
+      window.addEventListener("unload", onUnload, false);
     
       this.debug("initialized!");
     }
@@ -60,7 +70,7 @@ var gprivacy = {
   },
 
   loadPrefs: function() {
-    this.DEBUG        = Services.prefs.getBoolPref("extensions.gprivacy.debug");
+    Logging.DEBUG     = Services.prefs.getBoolPref("extensions.gprivacy.debug");
     this.active       = Services.prefs.getBoolPref("extensions.gprivacy.active");
     this.auto         = Services.prefs.getBoolPref("extensions.gprivacy.auto");
     this.replace      = Services.prefs.getBoolPref("extensions.gprivacy.replace");
@@ -75,12 +85,14 @@ var gprivacy = {
   onUnload: function() {
     if (this.appcontent)
     {
-      this.appcontent.removeEventListener("DOMContentLoaded", function(e) { self.onPageLoad(e); }, false);
+      this.appcontent.removeEventListener("DOMContentLoaded", this.onContent, false);
       this.appcontent = null;
       this.engines.close();
       this.changemon.close();
       this.compat.close();
       this.popup.close();
+      document.getElementById("contentAreaContextMenu")
+              .removeEventListener("popupshowing", this.onContext, false);
       this.debug("instance unloaded");
     }
   },
@@ -105,9 +117,12 @@ var gprivacy = {
         self.debug("page '"+doc.location.href+"' matched engine "+eng);
       
         this.changemon.refresh(doc, eng);
-
-        doc.defaultView.addEventListener("load",   function _opl()  { self.onPageLoad(eng, doc, e)   }, false);
-        doc.defaultView.addEventListener("unload", function _opul() { self.onPageUnload(eng, doc, e) }, false);
+        
+        let opl = function()  {
+          doc.defaultView.removeEventListener("load", opl,  false);
+          self.onPageLoad(eng, doc, e);
+        }
+        doc.defaultView.addEventListener("load",   opl,  false);
       }
     } catch (exc) {
       Logging.logException(exc);
@@ -119,7 +134,13 @@ var gprivacy = {
     Logging.log("Page '"+doc.location.href+"' unloaded.");
   },
   
-  onPageLoad: function(eng, doc, _e) {
+  onPageLoad: function(eng, doc, e) {
+    let self = this;
+    let opul = function() {
+      doc.defaultView.removeEventListener("unload", opul, false);
+      self.onPageUnload(eng, doc, e)
+    }
+    doc.defaultView.addEventListener("unload", opul, false);
     if (this.auto)
       this.privatize(eng, doc);
   },
@@ -132,9 +153,10 @@ var gprivacy = {
     
       let links   = doc.getElementsByTagName("a");
       let changed = 0;
+      let logged  = this._loggedIn(eng, doc);
 
       for (let i = 0; i < links.length; i++)
-          changed += self.changeLink(eng, doc, links[i], self.replace) ? 1 : 0;
+          changed += self.changeLink(eng, doc, links[i], self.replace, false, logged) ? 1 : 0;
 
       changed += eng.call("removeGlobal", doc) ? 1 : 0;
 
@@ -165,9 +187,10 @@ var gprivacy = {
     // doc.removeEventListener(this.INSERT_EVT, gprivacy.onNodeInserted, false);
 
     let changed = 0;
+    let logged  = this._loggedIn(eng, doc);
     
     for (let i = 0; i < links.length; i++)
-        changed += this.changeLink(eng, doc, links[i], this.replace) ? 1 : 0;
+        changed += this.changeLink(eng, doc, links[i], this.replace, false, logged) ? 1 : 0;
         
     this.changemon.nodeInserted(eng, doc, elt, links, changed);
   },
@@ -243,7 +266,7 @@ var gprivacy = {
     }
   },
   
-  changeLink: function(eng, doc, orgLink, replace, forced) {
+  changeLink: function(eng, doc, orgLink, replace, forced, loggedIn) {
     if (!this.active) return false;
 
     let self   = this;
@@ -275,7 +298,6 @@ var gprivacy = {
     let tracked = wrap(orgLink);
     let priv    = null; 
     
-    let loggedIn =  this._loggedIn(eng, doc);
     let modify   =  this.active && !loggedIn;
 
     if (modify) { // maybe we're logged in
@@ -367,12 +389,12 @@ var gprivacy = {
         this.privatize(eng, doc);
     }
   },
-  
-  debug: function(txt) {
-    if (this.DEBUG)
-      Logging.log("DEBUG: " + txt);
-  }
 
 };
 
-window.addEventListener("load", function () { gprivacy.onLoad(); }, false);
+let onLoad = function () {
+  gprivacy.onLoad();
+  window.removeEventListener("load", onLoad, false);
+};
+
+window.addEventListener("load", onLoad, false);
