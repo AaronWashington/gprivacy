@@ -5,7 +5,7 @@
     <em:type>2</em:type>
     <em:bootstrap>true</em:bootstrap>
     <em:name>Ask.com for Google Privacy</em:name>
-    <em:version>0.2.0pre8</em:version>
+    <em:version>0.2.0</em:version>
     <em:creator>Herrminator</em:creator>
     <em:contributor></em:contributor>
     <em:description>Add Ask.com support to Google Privacy</em:description>

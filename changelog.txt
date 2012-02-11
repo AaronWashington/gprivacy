@@ -1,5 +1,10 @@
 Current svn: $Id$
 
+0.2.0
+
+* [build] Upload to AMO
+* [build] Bump version number
+
 0.2.0pre8
 
 - [google] fix log-in-check
