@@ -7,8 +7,8 @@
     
     <em:name>Google Privacy</em:name> <!-- We'll probably have to change this -->
     
-    <!-- REMOVEME: Don't forget to update about.xul and update.rdf, too! -->
-    <em:version>0.2.0-dev</em:version>
+    <!-- REMOVEME: Don't forget to update about.xul (also Ask.com) and update.rdf, too! -->
+    <em:version>0.2.0pre8-dev</em:version>
 
     <em:creator>Herrminator</em:creator>
     <em:homepageURL>http://code.google.com/p/gprivacy/wiki/README</em:homepageURL>

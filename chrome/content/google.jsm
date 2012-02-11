@@ -20,7 +20,8 @@ gprivacyGoogle.prototype = {
   TRACKATTR:  [ "onmousedown", "data-ctorig" ],
   
   loggedIn: function(doc) {
-    return doc.getElementById("gbi4i")  != null;   // new style
+    return doc.getElementById("gbi4")   != null ||   // old style (no +)
+           doc.getElementById("gbi4i")  != null      // new style (with image)
   },
   
   isTracking: function(doc, link) {

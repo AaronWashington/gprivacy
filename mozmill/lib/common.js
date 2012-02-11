@@ -280,7 +280,8 @@ CommonTests.prototype = {
 
     let nhref = doc.location.href;
     
-    let same  = isSameFunc ? isSameFunc(expct, doc.location) : gpr.equalURI(expct, doc.location);
+    let same  = isSameFunc ? isSameFunc(expct, doc.location)
+                           : gpr.equalURI(expct, doc.location);
 
     if (newTab) {
       assert.equal(ctlr.tabs.length, 2, "Number of tabs");
@@ -291,8 +292,8 @@ CommonTests.prototype = {
     }
     if (expectSame != same) { // make messages nicer
       assert.notEqual(curr, nhref, "Document not loaded");
-      if (expectSame) assert.equal(   expct.href, nhref, "Link not tracked");
-      else            assert.notEqual(expct.href, nhref, "Link tracked");
+      if (expectSame) assert.equal(   nhref, expct.href, "Link not tracked");
+      else            assert.notEqual(nhref, expct.href, "Link tracked");
     }
     this.refreshResults(); // links may have been modified by click events
   },

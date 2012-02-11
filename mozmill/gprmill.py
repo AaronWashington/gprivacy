@@ -18,7 +18,7 @@ class GprivacyProfile(mozrunner.FirefoxProfile):
     "extensions.gprivacy.logfile": os.path.abspath(os.path.join(os.path.dirname(__file__), "tmp", "gprivacy.log")),
     
     "extensions.requestpolicy.allowedOriginsToDestinations": 
-       "gmail.com|google.com googlemail.com|google.com google.com|ggpht.com gmodules.com|googleapis.com google.de|googlepages.com googlepages.com|google.com " +\
+       "google.com|gstatic.com gstatic.com|google.com google.com|google.de google.de|google.com gmail.com|google.com googlemail.com|google.com google.com|ggpht.com gmodules.com|googleapis.com google.de|googlepages.com googlepages.com|google.com " +\
        "facebook.com|fbcdn.net fbcdn.net|facebook.com facebook.com|akamaihd.net facebook.com|recaptcha.net facebook.com|facebook.net " +\
        "yahoo.com|yimg.com yimg.com|yahoo.com youtube.com|ytimg.com " +\
        "youtube.com|google.com youtube.com|gstatic.com",
@@ -86,7 +86,7 @@ class CLI(mozmill.CLI):
 
         insert into moz_cookies
           select * from template.moz_cookies
-          where  baseDomain in ('facebook.com', 'bing.com', 'google.com'); --, 'yahoo.com'
+          where  baseDomain in ('facebook.com', 'bing.com'); --, 'google.com', 'yahoo.com'
       """ % self.options.template);
       db.close()    
     return profile    

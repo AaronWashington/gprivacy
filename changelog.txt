@@ -1,9 +1,24 @@
 Current svn: $Id$
 
-0.2.0
+0.2.0pre8
 
-* [build] Upload to AMO
-* [build] Bump version number
+- [google] fix log-in-check
+- [core] Use proper function binding for engine methods
+* [core] Remove dynamic engine loading from AMO-release
+- [core] Properly bind debug method to gprivacy instance
+- [core] remove more event listeners on unload
++ [core] Enable bootstrapped engines by sending events after initialization
++ [core] Make engine collections available to bootstrapped engines
+- [core] fix typo
+* [core] check login only once per document
+* [ask] Make Ask.com engine bootstrapped (restartless)
++ [build] Syntax-check XUL-files in extension-root
+- [build] Adress AMO reviewers complaints
+- [tests] Fix page waiting for additional tabs (hopefully)
+* [tests] Use message box for pause under windows
++ [tests] Add test module for implemented fixes and for debugging
+- [tests] Fix Google deadlock
++ [tests] Allow expected errors and warnings in log
 
 0.2.0pre7
 
@@ -31,6 +46,7 @@ Current svn: $Id$
 + [tests] show error console
 - [tests] fallback coordinate calculation
 + [tests] Slowly start adding unit tests
+* [proj] Commit attribute changes
 
 0.2.0pre6
 
