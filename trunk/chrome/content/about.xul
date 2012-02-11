@@ -15,7 +15,7 @@
   <groupbox align="center" orient="horizontal">
     <vbox>
       <text value="&gprivacy.name;" style="font-weight: bold; font-size: x-large;"/>
-      <text value="&version; 0.2.0"/>
+      <text value="&version; 0.2.0pre8"/>
       <separator class="thin"/>
       <text value="&createdBy;" style="font-weight: bold;"/>
       <text value="Herrminator"/>

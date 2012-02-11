@@ -6,10 +6,12 @@ var gpr = exports;
 
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("chrome://gprivacy/content/gputils.jsm");
+var frame = {}; Components.utils.import('resource://mozmill/modules/frame.js', frame);
 
 var {assert, expect} = require("mozmill/assertions");
 
 gpr.XPathResult = Components.interfaces.nsIDOMXPathResult;
+gpr.frame       = frame;
 
 const DEBUG = Services.prefs.getBoolPref("extensions.gprivacy.debug");
 
@@ -56,7 +58,7 @@ gpr.waitPage = function(ctlr, refresh, tabIndex) {
   }
   let win = ctlr.tabs.findWindow(doc);
   if (refresh) win.content.location.reload();
-  ctlr.waitForPageLoad(win);
+  ctlr.waitForPageLoad(doc);
   
   if (tabIndex !== undefined && tabIndex !== null)
     doc = ctlr.tabs.getTab(tabIndex);
@@ -111,6 +113,17 @@ gpr.equalURI = function(l, r) {
        //  && l.hash     == r.hash
     ;
 }           
+
+gpr.testData = function(key) {
+  try {
+    let {data} = require("../tmp/gprtests.data");
+    frame.log({"property": "test data for '"+key+"'", "message": "found"});
+    return data[key] || {};
+  } catch (exc) {
+    frame.log({"property": "test data for '"+key+"'", "message": "not found: '"+(exc.message||"unknown")+"'"});
+    return {}
+  }
+}
 
 gpr.firePythonCallback = function (ctlr, method, obj) {
   assert.equal(typeof ctlr, "object", "Invalid controller object");

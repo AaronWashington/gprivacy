@@ -162,7 +162,7 @@ ChangeMonitor.prototype = {
     let data = new MoniData(status.eng, status.doc, e);
     
     if (this.ignorerules.match(data) ||
-        status.eng.call("changemonIgnored", status.doc, link, e) || // Engine said it's OK!
+        status.eng.changemonIgnored(status.doc, link, e) || // Engine said it's OK!
         e.type == this.gpr.INSERT_EVT) { // This is handled by gprivacy itself
       link.gprivacyCompromised = false;
       return;

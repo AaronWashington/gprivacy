@@ -19,5 +19,5 @@ elif item.filename == "chrome.manifest":
   xpidata = amo_r.sub("\n", xpidata)
 
 if xpidata is not None:
-  amo_r = re.compile(r"\s//\s*<ChangeMonitor>(.|\n)+?</ChangeMonitor>", re.S)
+  amo_r = re.compile(r"\s//\s*<(ChangeMonitor|DevRelease)>(.|\n)+?</\1>", re.S)
   xpidata = amo_r.sub("\n", xpidata)

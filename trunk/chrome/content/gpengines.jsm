@@ -19,6 +19,22 @@ var UID = 0;
 var gBrowserEngines = [];
 
 //***************************************************************************
+//* 'Public' engine methods
+//***************************************************************************
+const API = [
+  "close",           "cloneLink",
+  "createLinkAnnot", "hasBadHandler",
+  "insertLinkAnnot", "isTracking",
+  "loggedIn",        "refresh",
+  "removeAll",       "removeGlobal",
+  "removeTracking",  "replaceLink", 
+  "_toString"
+// <ChangeMonitor>
+  , "changemonIgnored"
+// </ChangeMonitor>
+];
+
+//***************************************************************************
 //* Default engine
 //***************************************************************************
 function gprivacyDefault(engines, instance) {
@@ -199,7 +215,6 @@ Engines.prototype = {
 
     this.gpr       = gprivacy;
     this.debug     = gprivacy.debug.bind(gprivacy);
-    this.register  = Components.utils.import;
     let stdEngines = [];
 
     for (let i in gEngineClasses) {
@@ -209,7 +224,7 @@ Engines.prototype = {
     }
     this._engines     = {};
     this._initialized = true;
-    this._load(stdEngines, "extensions.gprivacy.engines.custom");
+    this._load(stdEngines);
     this._load = null; // add-ons must use Engines.add(..)
     gBrowserEngines.push(this);
     this.debug("Engines instance initialized");
@@ -223,12 +238,16 @@ Engines.prototype = {
     this.setPreferences(eng);
     eng.super   = new gprivacyDefault(self, eng);
     eng.UID     = ++UID;
-    eng.call    = function(func, doc, p1, p2, p3, p4, p5) {
-      return self.call(this, func, doc, p1, p2, p3, p4, p5);
+    
+    // Add super calls if necessary, so extensions don't have to bother
+    // about derivation and subclassing
+    for (let call in API) {
+      if (!eng[API[call]]) 
+        eng[API[call]] = eng.super[API[call]].bind(eng);
     }
-    eng.toString = function() {
-        return self.call(this, "_toString");
-    };
+
+    eng.toString = eng._toString;
+
     if (eng.ID in this._engines) {
       Logging.warn("Engine '"+eng+"' will be replaced.");
       this._closeEngine(eng.ID);
@@ -240,7 +259,7 @@ Engines.prototype = {
   addClass: function(engClass) {
     if (gEngineClasses.indexOf(engClass) == -1) {
       gEngineClasses.push(engClass);
-      if (this._initialized)
+      if (this._initialized) // of not too early...
         this.add(new engClass(this));
     } else {
       try { this.debug("Engine class for '"+engClass.prototype.ID+"' already registered"); } catch (exc) {}
@@ -264,9 +283,9 @@ Engines.prototype = {
     try {
       let eng = this._engines[id];
       this.debug("Closing engine "+eng);
-      eng.call("close");
-      delete eng.call;    delete eng.UID; delete eng.super;
-      delete eng.enabled; delete eng.all; delete eng.sameorigin;
+      eng.close();
+      delete eng.UID; delete eng.super;      delete eng.enabled;
+      delete eng.all; delete eng.sameorigin;
       delete this._engines[id];
     } catch (exc) {
       Logging.logException(id);
@@ -324,22 +343,30 @@ Engines.prototype = {
   refresh: function(doc) {
     for (let e in this.engines) {
       this.setPreferences(this._engines[e]);
-      this._engines[e].call("refresh", doc);
+      this._engines[e].refresh(doc);
     }
   },
   
-  _load: function(stdEngines, settings) {
+  _load: function(stdEngines) {
     for (let i in stdEngines)
       this.add(stdEngines[i]);
-    
+// <DevRelease>
+    // Dynamically load engines (may be file:///-URL)
+    let settings = "extensions.gprivacy.engines.custom";
     let ret = {}, reg;
     let set = Services.prefs.getChildList(settings, ret);
     for (let c in set) {
-      let name = Services.prefs.getCharPref(set[c]); ret = {};
-      try { this.register(name, ret); for (let r in ret) { reg = new ret[r](this); this.add(reg); } }
-      catch (exc) { Logging.logException(exc, "Error registering '"+name+"'"); }
+      let url = Services.prefs.getCharPref(set[c]); ret = {};
+      try {
+        Components.utils.import(url, ret);
+        for (let r in ret) {
+          reg = new ret[r](this);
+          this.add(reg);
+        }
+      }
+      catch (exc) { Logging.logException(exc, "Error registering '"+url+"'"); }
     }
-    this.register = null;
+// </DevRelease>
   },
   
   find: function(href, enabledOnly, embedded) {
@@ -366,26 +393,6 @@ Engines.prototype = {
         }
     }
     return null;
-  },
-  
-  call: function(eng, func, doc, p1, p2, p3, p4, p5) {
-    let ret = null;
-    try {
-      let f = eng[func];
-      if (f) ret = f.call(eng, doc, p1, p2, p3, p4, p5); 
-      else ret = undefined;
-    }
-    catch (exc) {
-      Logging.logException(exc, "PRIVACY ENGINE ERROR: " +eng+"."+func)
-      Logging.warn("PRIVACY WARNING: Trying to call generic method '" + func + "' after engine error");
-      ret = undefined;
-    }
-    let superf = eng.super[func];
-    if (ret === undefined && superf)
-      return superf.call(eng, doc, p1, p2, p3, p4, p5);
-    else if (!superf)
-      Logging.error("Engine '"+eng+"' does not have a method '"+func+"', and there's no default method too...", false);
-    return ret;
   },
   
 };

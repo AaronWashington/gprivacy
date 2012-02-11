@@ -153,12 +153,12 @@ var gprivacy = {
     
       let links   = doc.getElementsByTagName("a");
       let changed = 0;
-      let logged  = this._loggedIn(eng, doc);
+      let logged  = !this.ifloggedin && eng.loggedIn(doc);
 
       for (let i = 0; i < links.length; i++)
           changed += self.changeLink(eng, doc, links[i], self.replace, false, logged) ? 1 : 0;
 
-      changed += eng.call("removeGlobal", doc) ? 1 : 0;
+      changed += eng.removeGlobal(doc) ? 1 : 0;
 
       if (this.auto)
         doc.addEventListener(self.INSERT_EVT, function(evt) { self.onNodeInserted(evt, eng); }, false, true);
@@ -184,10 +184,9 @@ var gprivacy = {
       return;
     }
     let links = elt.getElementsByTagName("a");
-    // doc.removeEventListener(this.INSERT_EVT, gprivacy.onNodeInserted, false);
 
     let changed = 0;
-    let logged  = this._loggedIn(eng, doc);
+    let logged  = !this.ifloggedin && eng.loggedIn(doc);
     
     for (let i = 0; i < links.length; i++)
         changed += this.changeLink(eng, doc, links[i], this.replace, false, logged) ? 1 : 0;
@@ -205,50 +204,22 @@ var gprivacy = {
     if (link.hostname == "" && !this.anonlinks)
       return false;
 
-    let is = eng.call("isTracking", doc, link);
+    let is = eng.isTracking(doc, link);
 
     if (eng.all)
-      return is || this._hasBadHandler(eng, doc, link);
+      return is || eng.hasBadHandler(doc, link);
 
     return is;
   },
     
-  // REMOVEME: These stubs should  be removed, if there's no additional functionality
-
-  _hasBadHandler: function(eng, doc, link) {
-    return eng.call("hasBadHandler", doc, link);
-  },
-
   _removeTracking: function(eng, doc, link, replaced) {
     let rc = null;
-    if (eng.all) rc = this._removeAll(eng, doc, link, replaced);
-    else         rc = eng.call("removeTracking", doc, link, replaced);
+    if (eng.all) rc = eng.removeAll(     doc, link, replaced);
+    else         rc = eng.removeTracking(doc, link, replaced);
     if (this.browserclick)
       EventUtils.makeBrowserLinkClick(this.window, doc, link, true);
     return rc;
   },
-  
-  _removeAll: function(eng, doc, link, replaced) {
-    return eng.call("removeAll", doc, link, replaced);
-  },
-
-  _loggedIn: function(eng, doc) {
-    return !this.ifloggedin && eng.call("loggedIn", doc);
-  },
-  
-  _cloneLink: function(eng, doc, link) {
-    return eng.call("cloneLink", doc, link);
-  },
-  
-  _createLinkAnnot: function(eng, doc, orgLink, isRepl) {
-    return eng.call("createLinkAnnot", doc, orgLink, isRepl);
-  },
-  
-  _insertLinkAnnot: function(eng, doc, link, what) {
-    return eng.call("insertLinkAnnot", doc, link, what);
-  },
-  
-  // end of REMOVEME:
   
   _setIcons: function(_eng, _doc, priv, tracked, privicon, trackicon) {
     
@@ -303,16 +274,16 @@ var gprivacy = {
     if (modify) { // maybe we're logged in
       let annot = null; 
       
-      priv = wrap(this._cloneLink(eng, doc, tracked));
+      priv = wrap(eng.cloneLink(doc, tracked));
 
       if (!replace || this.keeporg)
-        annot = this._createLinkAnnot(eng, doc, orgLink, replace);
+        annot = eng.createLinkAnnot(doc, orgLink, replace);
       
       let first  = tracked;
       let second = priv;
       
       if (replace) {
-        eng.call("replaceLink", doc, tracked, priv);
+        eng.replaceLink(doc, tracked, priv);
         first = priv; second = tracked;
       }
 
@@ -322,7 +293,7 @@ var gprivacy = {
           second.appendChild(replace ? doc.createTextNode(this.tracktext)
                                      : doc.createTextNode(this.privtext));
 
-        this._insertLinkAnnot(eng, doc, first, annot);
+        eng.insertLinkAnnot(doc, first, annot);
         if (annot.setLink) annot.setLink(second);
         else               annot.appendChild(second);
       }
