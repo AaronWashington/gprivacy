@@ -94,3 +94,7 @@ So the idea for this add-on was born.
   <li>Better settings dialog</li>
   <li>Icon customizing</li>
 </ul>
+
+== Notes for reviewers ==
+= v0.2.0 =
+If there are any recommendations what to use instead of 'DOMNodeInserted' (like an observer), please tell me so...
