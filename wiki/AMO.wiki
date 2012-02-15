@@ -87,11 +87,8 @@ So the idea for this add-on was born.
 
 == Whats next for this addon ==
 <ul>
-  <li>Check embedded websites (iframes)</li>
-  <li>Additional installable engines (Add-ons can add or override engines)</li>
-  <li>Improve marker insertion</li>
-  <li>Better settings dialog</li>
-  <li>Icon customizing</li>
+  <li>Bug fixes</li>
+  <li>Internal clean-up</li>
 </ul>
 
 == Notes for reviewers ==
