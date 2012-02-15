@@ -12,7 +12,7 @@ In case somebody's wondering why I'm using HTML-markup: I want to copy this
 page to and from the AMO release notes.
 </wiki:comment>
 
-=== v0.2.0 (unreleased) ===
+=== v0.2.0 ===
   <li>More <i>Google</i> sites supported (News, Mail)</li>
   <li>More <i>Yahoo</i> sites supported (My!, Mail, News). Blocked more clicks.</li>
   <li>Better <i>Facebook</i> look.</li>
