@@ -1,9 +1,10 @@
 #summary gprivacy Release History
 #labels Featured
 
-This is a history of releases `gprivacy`-Versions.
+This is a history of `gprivacy`-Versions.
 
-The complete change-log can be found [http://code.google.com/p/gprivacy/source/list here] and developer-annotated change-log is [here].
+The complete change-log can be found [http://code.google.com/p/gprivacy/source/list here] and a developer-annotated change-log is
+[https://gprivacy.googlecode.com/svn/trunk/changelog.txt here].
 
 = Release History =
 
