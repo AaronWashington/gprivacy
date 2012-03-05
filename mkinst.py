@@ -4,17 +4,18 @@
 
 import sys, os, re, shutil, zipfile, glob, optparse, time
 
-DEFPROJ    = "gprivacy"
+DEFPROJ    = os.path.basename(os.path.dirname(__file__))
 
-ROOT_FILES = "chrome defaults chrome.manifest install.rdf bootstrap.js changelog.txt"
+ROOT_FILES = "chrome modules defaults chrome.manifest install.rdf bootstrap.js changelog.txt"
 OUTDIR     = "versions"
 
-JAR     = os.environ.get("JAR",      "jar")
-SHA1SUM = os.environ.get("SHA1SUM",  "sha1sum")
-SVN     = os.environ.get("SVN",      "svn")
-JSCHK   = os.environ.get("JSCHK",    'jsshell -s -C -e options(\'werror\')')
-XULLINT = os.environ.get("XULLINT",  "xullint.py")
-AMOEXIT = os.environ.get("AMOEXIT",  "amoexit.py")
+JAR       = os.environ.get("JAR",       "jar")
+SHA1SUM   = os.environ.get("SHA1SUM",   "sha1sum")
+SVN       = os.environ.get("SVN",       "svn")
+JSCHK     = os.environ.get("JSCHK",     'jsshell -s -C -e options(\'werror\')')
+XULLINT   = os.environ.get("XULLINT",   "xullint.py")
+AMOEXIT   = os.environ.get("AMOEXIT",   "amoexit.py")
+BUILDEXIT = os.environ.get("BUILDEXIT", "buildexit.py")
 
 XMLLINT_OPTS = "--nodefdtd --noout"
 LOCALES      = [ "en-US", "de-DE", "fr-FR" ]
@@ -30,6 +31,7 @@ def main(argv=sys.argv[1:]):
   op.add_option("-b", "--builddir",  default="build", help="only for SVN")
   op.add_option("-m", "--manifests", default=[], action="append")
   op.add_option("-a", "--AMO",       default=False,   help="build AMO version", action="store_true")
+  op.add_option("-l", "--latest",    default=False,   help="create *-latest-dev.xpi", action="store_true")
   
   opts, args = op.parse_args(argv);
 
@@ -52,6 +54,10 @@ def main(argv=sys.argv[1:]):
   inpdir = svnbdir
   
   try:
+    if os.path.isfile(BUILDEXIT):
+      glbl = globals(); glbl.update(locals())
+      execfile(BUILDEXIT, glbl, {})
+    
     f = file(os.path.join(inpdir, "install.rdf")); inst = f.read(); f.close()
     m = re.search(r'em:version="'+VERPATT+'"', inst)
     if m is None:
@@ -78,7 +84,8 @@ def main(argv=sys.argv[1:]):
       print "checking %s Syntax" % what,
       files = []
       for ext in exts:
-        for dirpat in [ "*", "chrome/*", "chrome/*/*"]:
+        for dirpat in [ "*", "chrome/*",  "chrome/*/*",  "chrome/*/*/*",
+                             "modules/*", "modules/*/*", "modules/*/*/*" ]:
           files += glob.glob(os.path.join(inpdir, dirpat+ext))
       for fn in files:
         print ".", ; sys.stdout.flush()
@@ -125,6 +132,9 @@ def main(argv=sys.argv[1:]):
         if xpidata is not None:
           amo.writestr(item, xpidata)
       amo.close(); xpi.close()
+
+    if opts.latest:
+      shutil.copy(fname, os.path.join(outdir, "%s-latest-dev.xpi" % opts.project))
 
   finally:
     os.chdir(cwd)
