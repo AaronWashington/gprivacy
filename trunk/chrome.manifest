@@ -2,6 +2,7 @@ content   gprivacy                  chrome/content/ contentaccessible=yes
 skin      gprivacy    classic/1.0   chrome/skin/
 locale    gprivacy    en-US         chrome/locale/en-US/
 locale    gprivacy    de-DE         chrome/locale/de-DE/
+locale    gprivacy    fr-FR         chrome/locale/fr-FR/
 
 resource  gprivacy    chrome/skin/
 resource  gpchangemon chrome/resource/changemon/

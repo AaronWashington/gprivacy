@@ -17,7 +17,7 @@ XULLINT = os.environ.get("XULLINT",  "xullint.py")
 AMOEXIT = os.environ.get("AMOEXIT",  "amoexit.py")
 
 XMLLINT_OPTS = "--nodefdtd --noout"
-LOCALES      = [ "en-US", "de-DE"]
+LOCALES      = [ "en-US", "de-DE", "fr-FR" ]
 
 VERPATT      = r'([\d.]+)((?:pre\d+)?)(-dev)?'
 

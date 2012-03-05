@@ -15,10 +15,12 @@
   <groupbox align="center" orient="horizontal">
     <vbox>
       <text value="&gprivacy.name;" style="font-weight: bold; font-size: x-large;"/>
-      <text value="&version; 0.2.0"/>
+      <text value="&version; 0.2.1pre1"/>
       <separator class="thin"/>
-      <text value="&createdBy;" style="font-weight: bold;"/>
-      <text value="Herrminator"/>
+      <hbox><text value="&createdBy; " style="font-weight: bold;"/>
+            <text value="Herrminator"/></hbox>
+      <hbox><text value="fr-FR : " style="font-weight: bold;"/>
+            <text value="Ethelshai"/></hbox>
       <separator class="thin"/>
       <text value="Built from: $Revision$,"/>
       <text value="$Date$"/>
