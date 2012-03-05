@@ -1,5 +1,12 @@
 Current svn: $Id$
 
+0.2.1pre1
+
++ [core] Added fr-FR locale (thanks, Ethelshai!)
+* [core] Start changing name to gPrivacy
+* [options] de-DE title wrong
+* [build] Make update.rdf get latest version from trunk
+
 0.2.0
 
 * [build] Upload to AMO

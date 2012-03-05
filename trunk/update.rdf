@@ -27,7 +27,7 @@
                 <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
                 <em:minVersion>2.1</em:minVersion>
                 <em:maxVersion>2.10a1</em:maxVersion>
-                <em:updateLink>https://gprivacy.googlecode.com/files/gprivacy-0.2.1pre1-sm%2Bfx-dev.xpi</em:updateLink>
+                <em:updateLink>https://gprivacy.googlecode.com/svn/trunk/versions/gprivacy-latest-dev.xpi</em:updateLink>
               </Description>
             </em:targetApplication>
           </RDF:Description>
