@@ -1,4 +1,4 @@
-<!ENTITY prefwindow.title "&gprivacy.name; preferences">
+<!ENTITY prefwindow.title "&gprivacy.name; Einstellungen">
 <!ENTITY prefpane.title   "&prefwindow.title;">
 <!ENTITY options.label "Einstellungen">
 <!ENTITY checkactive.label "Privatsphäre aktiv">
