@@ -6,15 +6,15 @@
 <!ENTITY checkauto.label "Modifier les liens au chargement des pages">
 <!ENTITY checkauto.accesskey "L">
 <!ENTITY checkauto.tip "Si désactivé, utiliser le menu contextuel (clic droit) pour nettoyer les liens pistés.">
-<!ENTITY checkactivel.label "Mode vie privée activé avec session ouverte">
+<!ENTITY checkactivel.label "Protéger la vie privée lorsqu'une session est ouverte">
 <!ENTITY checkactivel.accesskey "O">
-<!ENTITY checkreplace.label "Remplacer les liens d'origine">
+<!ENTITY checkreplace.label "Remplacer les liens d'origine par les liens non-pistés">
 <!ENTITY checkreplace.accesskey "R">
 <!ENTITY checkorig.label "Afficher également les liens d'origine">
 <!ENTITY checkorig.accesskey "O">
-<!ENTITY checkmark.label "Marquer les liens modifiés (petites icônes)">
+<!ENTITY checkmark.label "Afficher de petites icônes montrant l'état des liens pistés/non-pistés">
 <!ENTITY checkmark.accesskey "M">
-<!ENTITY checktext.label "Afficher l'état privé ou pisté des liens (texte)">
+<!ENTITY checktext.label "Afficher l'état pisté/non-pisté des liens sous forme de texte">
 <!ENTITY checktext.accesskey "T">
 <!ENTITY checkembed.label "Sites incorporés">
 <!ENTITY checkembed.accesskey "B">
@@ -37,14 +37,14 @@
 
 <!ENTITY own.label   "Liens internes">
 <!ENTITY own.tip     "Les liens appartenant à un même site ne sont pas modifiés">
-<!ENTITY own.allowed "authorisé">
+<!ENTITY own.allowed "autoriser">
 
 <!ENTITY all.label   "Tous les clics">
 <!ENTITY all.tip     "Attention ! Bloquer les événements de clic peuvent empêcher certains sites de fonctionner !">
-<!ENTITY all.blocked "bloqué">
+<!ENTITY all.blocked "bloquer">
 
 <!ENTITY advanced.label "Avancé (attention !)">
-<!ENTITY advanced.tip   "Activer ces options peut empêcher complètement le fonctionnement des sites et/ou sérieusement impacter les performances du navigateur !">
+<!ENTITY advanced.tip   "Activer ces options peut fortement entraver le bon fonctionnement des sites et/ou sérieusement dégrader les performances du navigateur !">
 
 <!ENTITY warning.icon   "chrome://gprivacy/skin/attention16.png">
 
