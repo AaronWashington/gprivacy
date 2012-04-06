@@ -50,15 +50,16 @@ var testLogon = function() {
   ctlr.type(new el.ID(doc, "Email"),  data.user);
   ctlr.type(new el.ID(doc, "Passwd"), data.password);
   ctlr.click(new el.ID(doc, "signIn"));
+  ctlr.sleep(500);
   gpr.waitPage(ctlr);
-  let {doc} = common.refreshResults(TEST_URL);
+  let {doc} = common.refreshResults(TEST_URL); // ...then reload
   ctlr.tabs.findWindow(doc).content.location.reload();
   ctlr.sleep(500);
   doc = gpr.waitPage(ctlr);
   assert.notEqual(doc.getElementById("gbi4") || doc.getElementById("gbi4i"), null, "Logged in.");
   common.progress("testLogon");
 };
-testLogon.__force_skip__ = "unreliable";
+//testLogon.__force_skip__ = "unreliable";
 
 var testWhenLoggedOn = function() {
   let { doc, found, track, priv } = common.refreshResults(TEST_URL);
@@ -76,17 +77,23 @@ var testWhenLoggedOn = function() {
   }
   common.progress("testWhenLoggedOn");
 };
-testWhenLoggedOn.__force_skip__ = "unreliable";
+//testWhenLoggedOn.__force_skip__ = "unreliable";
 
 var testLogoff = function() {
   let doc = ctlr.tabs.activeTab;
   let log = doc.getElementById("gbi4") || doc.getElementById("gbi4i");
   if (log != null) {
     common.progress("logging off");
+/*
     log = doc.getElementById("gbg4") || doc.getElementById("gbg6");
     if (log) ctlr.click(new el.Elem(log));  // make sign out visible
     ctlr.waitThenClick(new el.ID(doc, "gb_71")); // but try, anyway
     doc = gpr.waitPage(ctlr);
+*/    
+    let off = doc.getElementById("gb_71")
+    assert.notEqual(off, null, "Logoff link found");
+    let { doc: odoc } = common.refreshResults(off.href);
+    ctlr.sleep(500);
     let { doc: ndoc } = common.refreshResults(TEST_URL);
     doc = ndoc;
     assert.equal(doc.getElementById("gbi4"), null, "Logged out.")

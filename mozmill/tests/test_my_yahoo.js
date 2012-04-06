@@ -2,25 +2,26 @@
 
 "use strict";
 
-var yahoo = (typeof exports != "undefined" ? exports : {});
-
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("chrome://gprivacy/content/gputils.jsm");
 
 var gpr              = require("../lib/gprtests");
+var yahoo            = require("test_yahoo_search");
 var {CommonTests}    = require("../lib/common");
 var {assert, expect} = require("../lib/mozmill/assertions");
 var el               = elementslib;
+var global           = null;
 
-const TEST_URL    = "http://search.yahoo.com/search?p=Wikipedia";
+const TEST_URL    = "http://my.yahoo.com/";
 const PREFS = {
   "gprivacy.active.loggedin": false,
 };
 
 var setupModule = function (mod) {
-  mod.ctlr    = yahoo.ctlr = mozmill.getBrowserController();
+  mod.ctlr    = mozmill.getBrowserController();
   mod.saved   = gpr.setPrefs(PREFS, "extensions");
-  mod.common  = new CommonTests("yahoo", 10, linkPred());
+  mod.common  = new CommonTests("yahoo", 2, linkPred());
+  global      = mod;
 //  mod.common.testDelay = 2000;
 //  mod.common.testConfirm = true;
 }
@@ -37,23 +38,6 @@ var testLoad = function () {
   common.expect.minLinks(track);
   common.progress("testLoad");
 };
-
-function logoffTest(ctlr, common, gpr) {
-  let doc = ctlr.tabs.activeTab;
-  
-  let first = gpr.XPath(doc, "//a[contains(@href,'logout=1')]", gpr.XPathResult.FIRST_ORDERED_NODE_TYPE);
-  if (first.singleNodeValue) {
-    let log = first.singleNodeValue;
-    ctlr.click(new el.Elem(log));
-    doc = gpr.waitPage(ctlr);
-    assert.match(doc.location.host, /search\.yahoo\.com/, "Yahoo! looged out result");
-    first = gpr.XPath(doc, "//a[contains(@href,'logout=1')]", gpr.XPathResult.FIRST_ORDERED_NODE_TYPE);
-    assert.equal(first.singleNodeValue, null, "Logged out.")
-  }
-  common.progress("testLogoff");
-};
-
-yahoo.logoffTest = logoffTest;
 
 var testLogoff          = function() { yahoo. logoffTest(ctlr, common, gpr); }
 var testDefaultSettings = function() { common.testDefaultSettings(); };

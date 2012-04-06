@@ -89,8 +89,8 @@ CommonTests.prototype = {
     let first = elt.getClientRects()[0];
     if (!first) return { dX: null, dY:null }; // let the controller decide... (though I don't know why this happens)
     let bound = elt.getBoundingClientRect();
-    return { dX: first.left - bound.left + first.width / 2,
-             dY: first.top  - bound.top  + first.height / 2 };
+    return { dX: Math.floor(first.left - bound.left + first.width  / 2),
+             dY: Math.floor(first.top  - bound.top  + first.height / 2) };
   },
   
   testDefaultSettings: function() {
@@ -270,13 +270,13 @@ CommonTests.prototype = {
     // doesn't accept modifiers: ctlr.waitThenClick(link);
     ctlr.waitForElement(link);
     ctlr.mouseEvent(link, dX, dY, info || {});
-    frame.events.pass({'function':"common.click('"+expct.href+"',"+JSON.stringify(info||{})+")"});
+    frame.events.pass({'function':"common.click('"+(link.href||expct.href)+"',"+JSON.stringify({ dX: dX, dY: dY, info: info||{}})+")"});
 
     let newTab = (!!expct.target && expct.target != "_self" && expct.target != "_top")
               || (info && (info.accelKey || info.ctrlKey || info.metaKey || (info.button && info.button == 2)));
     if (newTab) ctlr.sleep(750);
 
-    doc = gpr.waitPage(this.ctlr, false, newTab ? 1 : undefined);
+    doc = gpr.waitPage(ctlr, false, newTab ? 1 : undefined);
 
     let nhref = doc.location.href;
     
@@ -288,7 +288,7 @@ CommonTests.prototype = {
       ctlr.tabs.selectTabIndex(1);
       ctlr.window.gBrowser.removeCurrentTab();
     } else {
-      this.ctlr.goBack(); this.ctlr.waitForPageLoad();
+      ctlr.goBack(); ctlr.waitForPageLoad();
     }
     if (expectSame != same) { // make messages nicer
       assert.notEqual(curr, nhref, "Document not loaded");
