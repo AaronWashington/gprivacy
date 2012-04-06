@@ -8,11 +8,12 @@
     <em:name>Google Privacy</em:name> <!-- We'll probably have to change this -->
     
     <!-- REMOVEME: Don't forget to update about.xul (also Ask.com) and update.rdf, too! -->
-    <em:version>0.2.1pre1-dev</em:version>
+    <em:version>0.2.1pre2-dev</em:version>
 
     <em:creator>Herrminator</em:creator>
     <em:homepageURL>http://code.google.com/p/gprivacy/wiki/README</em:homepageURL>
-    <em:contributor>Ethelshai (fr-FR locale)</em:contributor>
+    <em:translator>Ethelshai - fr</em:translator>
+    <em:contributor></em:contributor>
     <em:description>gPrivacy - Make search engines respect your privacy settings</em:description>
     <em:aboutURL>chrome://gprivacy/content/about.xul</em:aboutURL>
     <em:optionsURL>chrome://gprivacy/content/options.xul</em:optionsURL>
@@ -21,14 +22,14 @@
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- Firefox -->
         <em:minVersion>6.0</em:minVersion>
-        <em:maxVersion>13.0a1</em:maxVersion>
+        <em:maxVersion>14.0a1</em:maxVersion>
       </Description>
     </em:targetApplication>
     <em:targetApplication>
       <Description>
         <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id> <!-- SeaMonkey -->
         <em:minVersion>2.1</em:minVersion>
-        <em:maxVersion>2.10a1</em:maxVersion>
+        <em:maxVersion>2.11a1</em:maxVersion>
       </Description>
     </em:targetApplication>
     <em:updateURL>https://gprivacy.googlecode.com/svn/trunk/update.rdf</em:updateURL>
