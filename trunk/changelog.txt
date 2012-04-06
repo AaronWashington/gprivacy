@@ -1,11 +1,20 @@
 Current svn: $Id$
 
-0.2.1pre1
+0.2.1
+
+* [build] Upload to AMO
+* [build] Bump version number
+
+0.2.1pre2
 
 + [core] Added fr-FR locale (thanks, Ethelshai!)
 * [core] Start changing name to gPrivacy
 * [options] de-DE title wrong
 * [build] Make update.rdf get latest version from trunk
++ [tests] Test google login
+* [tests] Improve click hits
++ [tests] Add initial tests for My Yahoo!
++ [tests] Add fr locale for google searches
 
 0.2.0
 
