@@ -2,7 +2,7 @@
 
 import os, copy, mozmill, mozrunner, glob
 
-GPRIVACY_DEFAULT_EXT = "../versions/gprivacy-0.2.1pre1-sm+fx-amo.xpi"
+GPRIVACY_DEFAULT_EXT = "../versions/gprivacy-0.2.1pre2-sm+fx-amo.xpi"
 
 # Try to find latest version
 for en in sorted(glob.glob(os.path.join("..","versions","gprivacy-*.xpi")),
@@ -18,7 +18,7 @@ class GprivacyProfile(mozrunner.FirefoxProfile):
     "extensions.gprivacy.logfile": os.path.abspath(os.path.join(os.path.dirname(__file__), "tmp", "gprivacy.log")),
     
     "extensions.requestpolicy.allowedOriginsToDestinations": 
-       "google.com|gstatic.com gstatic.com|google.com google.com|google.de google.de|google.com gmail.com|google.com googlemail.com|google.com google.com|ggpht.com gmodules.com|googleapis.com google.de|googlepages.com googlepages.com|google.com " +\
+       "google.com|gstatic.com gstatic.com|google.com google.com|google.de google.de|google.com google.com|google.fr google.fr|google.com gmail.com|google.com googlemail.com|google.com google.com|ggpht.com gmodules.com|googleapis.com google.de|googlepages.com google.fr|googlepages.com googlepages.com|google.com " +\
        "facebook.com|fbcdn.net fbcdn.net|facebook.com facebook.com|akamaihd.net facebook.com|recaptcha.net facebook.com|facebook.net " +\
        "yahoo.com|yimg.com yimg.com|yahoo.com youtube.com|ytimg.com " +\
        "youtube.com|google.com youtube.com|gstatic.com",
@@ -39,6 +39,7 @@ class GprivacyProfile(mozrunner.FirefoxProfile):
     "layout.css.report_errors": False,
     "security.warn_viewing_mixed": False,
     "shell.checkDefaultClient": False,
+    "signon.rememberSignons": False,
   })
   
 class GprivacyMill(mozmill.MozMill):
