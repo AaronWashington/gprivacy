@@ -16,7 +16,7 @@ var gprivacy = {
   MARKORIG:   { node: "img", height:12, width:12, title: "Privacy Violated!",  src: "chrome://gprivacy/skin/tracking16.png", class: "gprivacy-tracking", isTemplate: true },
   MARKBOGUS:  { node: "img", height:12, width:12, title: "Compromised!",       src: "chrome://gprivacy/skin/modified16.png", class: "gprivacy-bogus",    isTemplate: true },
 
-  onLoad: function() {
+  onLoad: function GP_onLoad() {
     try {
       let self = this;
       this.debug      = Logging.debug.bind(Logging);
@@ -49,14 +49,14 @@ var gprivacy = {
         
         // Now for the event listeners
 
-        this.onContent = function(e) { self.onPrePageLoad(e); };
-        this.onContext = function(e) { self.showContextMenu(e); };
+        this.onContent = function GP_onContent(e) { self.onPrePageLoad(e); };
+        this.onContext = function GP_onContext(e) { self.showContextMenu(e); };
 
         this.appcontent.addEventListener("DOMContentLoaded", this.onContent, false, true);
         document.getElementById("contentAreaContextMenu")
                 .addEventListener("popupshowing", this.onContext, false);
       }
-      let onUnload = function() {
+      let onUnload = function GP_onUnload() {
         window.removeEventListener("unload", onUnload, false);
         self.onUnload();
       }
@@ -69,7 +69,7 @@ var gprivacy = {
     }
   },
 
-  loadPrefs: function() {
+  loadPrefs: function GP_loadPrefs() {
     Logging.DEBUG     = Services.prefs.getBoolPref("extensions.gprivacy.debug");
     this.active       = Services.prefs.getBoolPref("extensions.gprivacy.active");
     this.auto         = Services.prefs.getBoolPref("extensions.gprivacy.auto");
@@ -82,7 +82,7 @@ var gprivacy = {
     this.ifloggedin   = Services.prefs.getBoolPref("extensions.gprivacy.active.loggedin")
   },
 
-  onUnload: function() {
+  onUnload: function GP_onUnload() {
     if (this.appcontent)
     {
       this.appcontent.removeEventListener("DOMContentLoaded", this.onContent, false);
@@ -97,7 +97,7 @@ var gprivacy = {
     }
   },
   
-  onPrePageLoad: function(e) {
+  onPrePageLoad: function GP_onPrePageLoad(e) {
     let self = this;
     let evt  = e;
 
@@ -118,7 +118,7 @@ var gprivacy = {
       
         this.changemon.refresh(doc, eng);
         
-        let opl = function()  {
+        let opl = function GP_opl()  {
           doc.defaultView.removeEventListener("load", opl,  false);
           self.onPageLoad(eng, doc, e);
         }
@@ -129,14 +129,14 @@ var gprivacy = {
     }
   },
   
-  onPageUnload: function(eng, doc, e) {
+  onPageUnload: function GP_onPageUnload(eng, doc, e) {
     // TODO: find and remove all listeners
     Logging.log("Page '"+doc.location.href+"' unloaded.");
   },
   
-  onPageLoad: function(eng, doc, e) {
+  onPageLoad: function GP_onPageLoad(eng, doc, e) {
     let self = this;
-    let opul = function() {
+    let opul = function GP_opul() {
       doc.defaultView.removeEventListener("unload", opul, false);
       self.onPageUnload(eng, doc, e)
     }
@@ -145,34 +145,40 @@ var gprivacy = {
       this.privatize(eng, doc);
   },
   
-  privatize: function(eng, doc) {
+  privatize: function GP_privatize(eng, doc) {
     try {
       let self = this;
 
       doc.gprivacyLoaded = new Date(); // a little bit of performance timing
-    
+
       let links   = doc.getElementsByTagName("a");
       let changed = 0;
       let logged  = !this.ifloggedin && eng.loggedIn(doc);
 
-      for (let i = 0; i < links.length; i++)
-          changed += self.changeLink(eng, doc, links[i], self.replace, false, logged) ? 1 : 0;
+      for (let i = 0; i < links.length; i++) {
+        changed += self.changeLink(eng, doc, links[i], self.replace, false, logged) ? 1 : 0;
+      }
 
       changed += eng.removeGlobal(doc) ? 1 : 0;
 
-      if (this.auto)
-        doc.addEventListener(self.INSERT_EVT, function(evt) { self.onNodeInserted(evt, eng); }, false, true);
-      else      
+      if (this.auto) {
+        doc.addEventListener(self.INSERT_EVT, function GP_oni(evt) { self.onNodeInserted(evt, eng); }, false, true);
+      } else {
         changed = changed || 1; // if links are already processed, avoid changemonitor warning
+      }
 
       self.changemon.pageLoaded(eng, doc, links, changed);
-
     } catch (exc) {
       Logging.logException(exc);
     }
   },
   
-  onNodeInserted:  function(e, eng) {
+  // Work around bug 757639
+  _pageLoadTime: function GP__pageLoadTime(doc) {
+    return doc.gprivacyLoaded.getTime();
+  },
+  
+  onNodeInserted:  function GP_onNodeInserted(e, eng) {
     let doc = e.currentTarget;
     let elt = e.originalTarget
     
@@ -194,7 +200,7 @@ var gprivacy = {
     this.changemon.nodeInserted(eng, doc, elt, links, changed);
   },
   
-  _isTracking: function(eng, doc, link, forced) {
+  _isTracking: function GP__isTacking(eng, doc, link, forced) {
     if (forced)
       return true;
 
@@ -212,7 +218,7 @@ var gprivacy = {
     return is;
   },
     
-  _removeTracking: function(eng, doc, link, replaced) {
+  _removeTracking: function GP__removeTracking(eng, doc, link, replaced) {
     let rc = null;
     if (eng.all) rc = eng.removeAll(     doc, link, replaced);
     else         rc = eng.removeTracking(doc, link, replaced);
@@ -221,7 +227,7 @@ var gprivacy = {
     return rc;
   },
   
-  _setIcons: function(_eng, _doc, priv, tracked, privicon, trackicon) {
+  _setIcons: function GP__setIcons(_eng, _doc, priv, tracked, privicon, trackicon) {
     
     if (priv && privicon) {
       if (priv.setIcon) priv.setIcon(privicon); 
@@ -237,7 +243,7 @@ var gprivacy = {
     }
   },
   
-  changeLink: function(eng, doc, orgLink, replace, forced, loggedIn) {
+  changeLink: function GP_changeLink(eng, doc, orgLink, replace, forced, loggedIn) {
     if (!this.active) return false;
 
     let self   = this;
@@ -330,19 +336,19 @@ var gprivacy = {
     return true;
   },
   
-  showOptions: function(args) {
+  showOptions: function GP_showOptions(args) {
     return window.openDialog("chrome://gprivacy/content/options.xul", "",
                              "chrome, dialog, modal, resizable=no", args).focus();
   },
   
-  showContextMenu: function(e) {
+  showContextMenu: function GP_showContextMenu(e) {
     // show or hide the menuitem based on what the context menu is on
     let eng = this.engines.find(gBrowser.selectedBrowser.contentDocument, false, this.embedded);
     document.getElementById("context-gprivacy").hidden = (eng == null);
     document.getElementById("context-gprrun").hidden   = (eng == null || this.auto);
   },
 
-  onMenuItemCommand: function(e) {
+  onMenuItemCommand: function GP_onMenuItemCommand(e) {
     let self = (this || gprivacy);
     if (e.target.id == "context-gprivacy") {
       let args = { rc: null };

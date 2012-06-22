@@ -2,7 +2,7 @@
 
 import os, copy, mozmill, mozrunner, glob
 
-GPRIVACY_DEFAULT_EXT = "../versions/gprivacy-0.2.1pre2-sm+fx-amo.xpi"
+GPRIVACY_DEFAULT_EXT = "../versions/gprivacy-0.2.2pre1-sm+fx-amo.xpi"
 
 # Try to find latest version
 for en in sorted(glob.glob(os.path.join("..","versions","gprivacy-*.xpi")),
