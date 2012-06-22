@@ -8,7 +8,10 @@
 == Basic Information ==
 ==== Summary ====
 Make some popular websites respect your privacy settings.
-This is still a beta version. Please see the known issues below!
+Please see the known issues below!
+
+==== Tags ====
+bing, facebook, google, privacy, yahoo, youtube, clicktracking, tracking
 
 == Images ==
 Options dialog (v0.1.0)
@@ -31,10 +34,11 @@ Websites supported (for now) are Google, YouTube, Yahoo!, Bing and Facebook.
 </ul>
 <strong>Known Issues</strong>
 <ul>
-  <li>Google log-on is not always recognized (v0.0.3-v0.2.0).</li>
+  <li>Local Google sites (google.com.* and google.co.*) are not recognized (v0.0.3-v0.2.1).</li>
+  <li>Google log-on is not always recognized (v0.0.3-v0.2.1).</li>
 </ul>
 
-<strong>Please Note: This software is still in it's beta testing phase and COMES AS IS! - <a href="http://code.google.com/p/gprivacy/wiki/README#Disclaimer">DISCLAIMER</a>
+<strong>Please Note: This software COMES AS IS! No warranties included - Please read also: <a href="http://code.google.com/p/gprivacy/wiki/README#Disclaimer">DISCLAIMER</a>
 If you're scared sh*tless now, don't use it!
 </strong>
 That said, if you find any problems or websites that stopped working, please <a href="http://code.google.com/p/gprivacy/issues/entry">report the issue</a>!
