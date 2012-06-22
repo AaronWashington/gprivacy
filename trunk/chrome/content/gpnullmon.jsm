@@ -48,7 +48,7 @@ ChangeMonitor.prototype = {
   pageLoaded: function(eng, doc, links, changed) {
     if (this.level > 0 && changed > 0) {
       Logging.log("changemon: Engine '"+eng+"': "+changed+" links changed "+
-                  "in " + (new Date().getTime() - doc.gprivacyLoaded.getTime()) + " ms " +
+                  "in " + (new Date().getTime() - this.gpr._pageLoadTime(doc)) + " ms " + // see _pageLoadTime in gprivacy.js
                   "when loading page '"+doc.location.href.substring(0, 128)+"'");
     }
   },

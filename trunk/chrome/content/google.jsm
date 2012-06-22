@@ -11,7 +11,7 @@ function gprivacyGoogle(engines) {
   this.engines = engines;
   this.gpr     = engines.gpr;
   this.strings = this.gpr.strings;
-  this.PATTERN = /https?:\/\/((?!(maps|code|(plusone)))\w+\.)*?(google)\.\w+\//
+  this.PATTERN = /https?:\/\/((?!(maps|code|(plusone)))\w+\.)*?(google)(.com?)?\.\w+\//
 }
 
 gprivacyGoogle.prototype = {
@@ -19,19 +19,19 @@ gprivacyGoogle.prototype = {
   NAME:      "Google",
   TRACKATTR:  [ "onmousedown", "data-ctorig" ],
   
-  loggedIn: function(doc) {
+  loggedIn: function GG_loggedIn(doc) {
     return doc.getElementById("gbi4")   != null ||   // old style (no +)
            doc.getElementById("gbi4i")  != null      // new style (with image)
   },
   
-  isTracking: function(doc, link) {
+  isTracking: function GG_isTracking(doc, link) {
     return this.super.isTracking(doc, link) ||
            (doc.location.hostname &&
             doc.location.hostname.match(/^news\./) &&
             link.hasAttribute("url"))
   },
   
-  removeTracking: function(doc, link, replaced) {
+  removeTracking: function GG_removeTracking(doc, link, replaced) {
   
     if (doc.location.hostname.match(/^news\./)) {
       link.classList.add("_tracked"); // as simple as that?
@@ -42,14 +42,14 @@ gprivacyGoogle.prototype = {
   
   // <ChangeMonitor>
   ,
-  removeGlobal: function(doc) {
+  removeGlobal: function GG_removeGlobal(doc) {
     if (this.changemonIgnored(doc, null, null))
       // no search result on page. probably google home page so ignore and...
       return 1; // ...make ChangeMonitor happy
     return 0;
   },
   
-  changemonIgnored: function(doc, link, e) { // don't warn on certain pages without hits
+  changemonIgnored: function GG_changemonIgnored(doc, link, e) { // don't warn on certain pages without hits
     // TODO: think of a proper policy mechanism, used by other engines too
     var ignored = false;
     if (link == null || e == null) { // whole document

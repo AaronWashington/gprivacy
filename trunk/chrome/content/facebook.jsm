@@ -35,14 +35,23 @@ gprivacyFacebook.prototype = {
   },
   
   createLinkAnnot: function(doc, orgLink, isReplacement) {
+    let annot = null;
     if (!orgLink.classList.contains("UIImageBlock_Image") &&
-        !orgLink.classList.contains("uiImageBlockImage") )
-      return this.super.createLinkAnnot(doc, orgLink, isReplacement);
-    else {
-      return { gprfbdummy: true,
-               setLink: function(link) { this.link = link, this.after = orgLink; } }
+        !orgLink.classList.contains("uiImageBlockImage") ) {
+      annot = this.super.createLinkAnnot(doc, orgLink, isReplacement);
+    } else {
+      annot = { gprfbdummy: true,
+                setLink: function(link) { this.link = link, this.after = orgLink; } };
     }
-    
+    if (isReplacement) {
+      let setlink = annot.setLink;
+      annot.setLink = function(link) {
+        link.style.minHeight = "0px";    link.style.height = "auto";
+        link.style.display   = "inline"; link.style.border = "none";
+        setlink.call(annot, link);
+      };
+    }
+    return annot;
   },
   
   insertLinkAnnot: function(doc, link, elt) {

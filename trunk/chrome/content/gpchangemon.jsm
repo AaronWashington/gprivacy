@@ -63,7 +63,7 @@ ChangeMonitor.prototype = {
   DPFX:  "DO"+"M",
   engines: null,
   
-  init: function(gpr) {
+  init: function CM_init(gpr) {
     this.gpr        = gpr;
 
     this.tabbrowser = this.gpr.browser; // only works, if the window is already opened Services.wm.getMostRecentWindow("navigator:browser");
@@ -78,12 +78,12 @@ ChangeMonitor.prototype = {
     this.debug("ChangeMonitor instance initialized");
   },
   
-  close: function() {
+  close: function CM_close() {
     if (this.db) this.db.close();
     this.debug("ChangeMonitor instance closed");
   },
   
-  refresh: function(doc, eng) {
+  refresh: function CM_refresh(doc, eng) {
     this.DEBUG       = Services.prefs.getBoolPref("extensions.gprivacy.debug");
     this.level       = Services.prefs.getIntPref( "extensions.gprivacy.changemon");
     this.active      = this.level != 0;
@@ -94,7 +94,7 @@ ChangeMonitor.prototype = {
       this.IGNORED_ATTRS.concat(eng && eng.IGNORED_ATTRS ? eng.IGNORED_ATTRS : []));
   },
   
-  pageLoaded: function(eng, doc, links, changed) {
+  pageLoaded: function CM_pageLoaded(eng, doc, links, changed) {
     let self = this;
     if (changed == 0 && links.length > 0) {
       if (this.active) {
@@ -106,19 +106,19 @@ ChangeMonitor.prototype = {
       }
     } else if (this.active && changed > 0) {
       Logging.log("changemon: Engine '"+eng+"': "+changed+" links changed "+
-                  "in " + (new Date().getTime() - doc.gprivacyLoaded.getTime()) + " ms " +
+                  "in " + (new Date().getTime() - this.gpr._pageLoadTime(doc)) + " ms " + // see _pageLoadTime in gprivacy.js
                   "when loading page '"+doc.location.href.substring(0, 128)+"'");
     }
   },
   
-  nodeInserted: function(eng, doc, _node, _links, changed) {
+  nodeInserted: function CM_nodeInserted(eng, doc, _node, _links, changed) {
     if (this.active && changed > 0) {
       Logging.log("Engine '"+eng+"': "+changed+" links changed while inserting on page '"+doc.location.href.substring(0, 128)+"'");
     }
   },
   
-  getWrapper: function(eng, doc) {
-    return function(link) {
+  getWrapper: function CM_getWrapper(eng) {
+    return function CM_wrappedLink(link) {
       if (!link.gprwapper) {
         link.gpwrapper = this;
         link.gpwatched = false;
@@ -127,7 +127,7 @@ ChangeMonitor.prototype = {
     }
   },
   
-  watch: function(eng, doc, link) {
+  watch: function CM_watch(eng, doc, link) {
     let self = this;
 
     if (this.active) {
@@ -137,21 +137,21 @@ ChangeMonitor.prototype = {
                      hit: false, notified: false, ignored: this.ignorerules }
 
       for (let m in mods) {
-        link.addEventListener(mods[m], function(e) { self.onPrivacyCompromised(e, status); }, false, true);
+        link.addEventListener(mods[m], function CM_opc(e) { self.onPrivacyCompromised(e, status); }, false, true);
       }
 
       link.gpwatched = true;
     }
   },
   
-  warnLink: function(msg, severe, data) {
+  warnLink: function CM_warnLink(msg, severe, data) {
     if (this.level & this.WARN)
       severe ? Logging.error(msg, false) : Logging.warn(msg);
     if ((this.level & this.STORE) && this.db)
       this.db.writeEntry(this, data);
   },
   
-  onPrivacyCompromised: function(e, status) {
+  onPrivacyCompromised: function CM_onPrivacyCompromised(e, status) {
     let self = this;
     
     let link = e.currentTarget;
@@ -209,12 +209,12 @@ ChangeMonitor.prototype = {
     }
   },
   
-  switchOff: function(flags) {
+  switchOff: function CM_switchOff(flags) {
     this.level &= ~flags;
     Services.prefs.setIntPref("extensions.gprivacy.changemon", this.level);
   },
   
-  showLogs: function() {
+  showLogs: function CM_showLogs() {
     let self = this;
     
     // Show native error console
@@ -230,20 +230,20 @@ ChangeMonitor.prototype = {
     }
   },
 
-  showPopup: function(id, txt, icon, prim, sec, opts) {
+  showPopup: function CM_showPopup(id, txt, icon, prim, sec, opts) {
     let self = this;
     
     if ((this.level & this.NOTIFY) && this.popup) {
       prim = prim || {           
         label: "Open error console", accessKey: "E",
-        callback: function(state) { self.showLogs(); self.popup.close(); }
+        callback: function CM_popPrimCb(state) { self.showLogs(); self.popup.close(); }
       };
       sec = sec || [ 
         { label: "Stop nagging in this window", accessKey: "S", 
-          callback: function(state) { self.popup.close(); self.popup = null; }
+          callback: function CM_popSecCb1(state) { self.popup.close(); self.popup = null; }
         },
         { label: "Turn off completely", accessKey: "O", 
-          callback: function(state) { self.switchOff(self.NOTIFY); self.popup.close(); }
+          callback: function CM_popSecCb2(state) { self.switchOff(self.NOTIFY); self.popup.close(); }
         }
       ];
       this.popup.show(id, txt, icon, prim, sec, opts);

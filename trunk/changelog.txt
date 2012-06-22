@@ -1,5 +1,12 @@
 Current svn: $Id$
 
+0.2.2pre1
+
+- [google] Match .co.* and .com.* google-domains
+- [facebook] cosemetic fixes
+- [core][changemon] Work around bug 757639
+* [build] Use jsshell from Gecko 15 for syntax check
+
 0.2.1
 
 * [build] Upload to AMO
