@@ -3,6 +3,7 @@ Current svn: $Id$
 0.2.2pre2
 
 * [facebook] Handle new tracking mechanism
+* [build] Update to latest Gecko versions
 
 0.2.2pre1
 
