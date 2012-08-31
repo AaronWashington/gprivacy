@@ -20,21 +20,37 @@ gprivacyFacebook.prototype = {
   TRACKATTR:  [ "onmousedown" ],
   LINK_CLASS: "emuEvent1",
   
-  adjustLink: function(link, moreStyles) {
+  adjustLink: function FB_adjustLink(link, moreStyles) {
     var style = link.hasAttribute("style") ? link.getAttribute("style")+" " : ""
     style += "display: inline !important;"
     if (moreStyles) style += moreStyles;
     link.setAttribute("style", style);
   },
   
-  cloneLink: function(doc, link) {
+  cloneLink: function FB_cloneLink(doc, link) {
     var neew = link.cloneNode(true);
     this.adjustLink(neew);
 
     return neew;
   },
   
-  createLinkAnnot: function(doc, orgLink, isReplacement) {
+  isTracking: function FB_isTracking(doc, link) {
+    // the old method: replace link on mouse down
+    // if (this.super.isTracking(doc, link)) return true;
+    // TODO: decide what to do with the old method for internal links
+    return link.hasAttribute("onmouseover") &&
+           link.getAttribute("onmouseover").match(/^Link[\w\.]*\.swap/);
+  },
+  
+  removeTracking: function FB_removeTracking(doc, link, replaced) {
+    let shim = link.getAttribute("onmouseover");
+    let href = shim.replace(/^Link[\w\.]*\.swap\s*\(.*?,\s*"(.*?)".*/, "$1");
+    link.href = JSON.parse('"'+href+'"');
+    link.removeAttribute("onmouseover");
+    link.removeAttribute("onclick");
+  },
+  
+  createLinkAnnot: function FB_createLinkAnnot(doc, orgLink, isReplacement) {
     let annot = null;
     if (!orgLink.classList.contains("UIImageBlock_Image") &&
         !orgLink.classList.contains("uiImageBlockImage") ) {
@@ -54,7 +70,7 @@ gprivacyFacebook.prototype = {
     return annot;
   },
   
-  insertLinkAnnot: function(doc, link, elt) {
+  insertLinkAnnot: function FB_insertLinkAnnot(doc, link, elt) {
     if (elt.gprfbdummy) {
       if (elt.after && elt.link) {
         this.adjustLink(elt.link, "clear: left !important;");
@@ -67,7 +83,7 @@ gprivacyFacebook.prototype = {
     return link.parentNode.insertBefore(elt, link.nextSibling);
   },
 
-  loggedIn: function(doc) {
+  loggedIn: function FB_loggedIn(doc) {
     return true; // TODO: really check...
   }
 };

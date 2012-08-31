@@ -22,7 +22,7 @@ pref("extensions.gprivacy.engines.bing.allevts",     false);
 pref("extensions.gprivacy.engines.bing.own",         true);
 pref("extensions.gprivacy.engines.facebook.enabled", true);
 pref("extensions.gprivacy.engines.facebook.allevts", false);
-pref("extensions.gprivacy.engines.facebook.own",     true);
+pref("extensions.gprivacy.engines.facebook.own",     false);
 pref("extensions.gprivacy.engines.youtube.enabled",  true);
 pref("extensions.gprivacy.engines.youtube.allevts",  false);
 pref("extensions.gprivacy.engines.youtube.own",      false);
