@@ -16,7 +16,7 @@ function MoniData(eng, doc, e, ts) {
   let link = e.currentTarget || doc.location;
   let attr = e.attrName || null, oldv = e.prevValue || null, newv = e.newValue || null;
   
-  if (!e.attrChange && e.type == DOMSTM) {
+  if (!e.attrChange && (e.type == DOMSTM || e.type == "childList")) {
     let elt = e.originalTarget;
     attr = elt.tagName; oldv = link.outerHTML; newv = elt.outerHTML;
   }
@@ -131,14 +131,17 @@ ChangeMonitor.prototype = {
     let self = this;
 
     if (this.active) {
-      let mods = [  DPFX + "Attr"+"Modified", DPFX + "Node"+"Inserted",
-                    /* deprecated, I know: */ DPFX + "Subtree"+"Modified" ];
       let status = { eng: eng,   doc: doc,        link:    link,
                      hit: false, notified: false, ignored: this.ignorerules }
 
-      for (let m in mods) {
-        link.addEventListener(mods[m], function CM_opc(e) { self.onPrivacyCompromised(e, status); }, false, true);
-      }
+      // REMOVEME: we're switching to mutation observers
+      // let mods = [  DPFX + "Attr"+"Modified", DPFX + "Node"+"Inserted",
+      //               /* deprecated, I know: */ DPFX + "Subtree"+"Modified" ];
+      // for (let m in mods) {
+      //    link.addEventListener(mods[m], function CM_opc(e) { self.onPrivacyCompromised(e, status); }, false, true);
+      // }
+      this.gpr.observeMutations(link, function CM_opc(e) { self.onPrivacyCompromised(e, status); },
+                                { attributes: true, childList: true, subtree: true });
 
       link.gpwatched = true;
     }

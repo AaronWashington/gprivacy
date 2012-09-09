@@ -10,7 +10,8 @@ Components.utils.import("chrome://gprivacy/content/gpchangemon.jsm");
 Components.utils.import("chrome://gprivacy/content/gpcompat.jsm");
 
 var gprivacy = {
-  INSERT_EVT: "DOMNodeInserted", // What are we going to do, when these will be removed (already deprecated)???
+  INSERT_EVT: "DOMNodeInserted", // See observeMutations below!
+              // Once FF ESR 10 is phased out, this will be removed!
   DEBUG:      false,
   MARKHTML:   { node: "img", height:12, width:12, title: "Privacy Respected!", src: "chrome://gprivacy/skin/private16.png",  class: "gprivacy-private" , isTemplate: true },
   MARKORIG:   { node: "img", height:12, width:12, title: "Privacy Violated!",  src: "chrome://gprivacy/skin/tracking16.png", class: "gprivacy-tracking", isTemplate: true },
@@ -162,7 +163,7 @@ var gprivacy = {
       changed += eng.removeGlobal(doc) ? 1 : 0;
 
       if (this.auto) {
-        doc.addEventListener(self.INSERT_EVT, function GP_oni(evt) { self.onNodeInserted(evt, eng); }, false, true);
+        this.observeMutations(doc, function GP_oni(evt) { self.onNodeInserted(evt, eng); });
       } else {
         changed = changed || 1; // if links are already processed, avoid changemonitor warning
       }
@@ -176,6 +177,53 @@ var gprivacy = {
   // Work around bug 757639
   _pageLoadTime: function GP__pageLoadTime(doc) {
     return doc.gprivacyLoaded.getTime();
+  },
+  
+  observeMutations: function GP_observeMutations(elt, evtHandler, config) {
+    let self = this;
+    let obs  = null;
+
+    function GP_obsMut(mutations) {
+      mutations.forEach(function GP_inserted(mutation) {      
+        switch (mutation.type) {
+          case "childList": {
+            for (let i = 0; i < mutation.addedNodes.length; i++) {
+              let pseudoEvt = { type:           mutation.type,
+                                currentTarget:  elt,
+                                originalTarget: mutation.addedNodes[i] };
+              evtHandler(pseudoEvt);
+            }
+            break;
+          }
+          case "attributes": {
+            let newv = mutation.target.getAttribute(mutation.attributeName);
+            let pseudoEvt = { type:           mutation.type,
+                              currentTarget:  elt,
+                              originalTarget: mutation.target,
+                              attrChange:     mutation.prevValue != newv,
+                              attrName:       mutation.attributeName,
+                              prevValue:      mutation.prevValue || "",
+                              newValue:       newv };
+            evtHandler(pseudoEvt);
+          }
+        }
+      });
+    }
+    // REMOVEME: This is a compatibility hack until ESR 10 is EOLed
+    try {   obs = new MutationObserver(GP_obsMut);
+    } catch (exc) {
+      try { obs = new MozMutationObserver(GP_obsMut); Logging.debug("Using MozMutationObserver"); }
+      catch (ex2) {}
+    }
+    if (obs != null) {
+      config = config || { childList: true, subtree: true };
+      obs.observe(elt, config);
+    } else {
+      Logging.debug("MutationObserver not implemented, using DOM Mutation events");
+      elt.addEventListener(self.INSERT_EVT, evtHandler, false, true);
+      if (config.attributes)
+        Logging.error("Attributes are not supported via DOM Mutation events")
+    }
   },
   
   onNodeInserted:  function GP_onNodeInserted(e, eng) {

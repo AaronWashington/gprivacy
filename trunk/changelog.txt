@@ -1,5 +1,8 @@
 Current svn: $Id$
 
+0.2.3pre1
+* [core] Use mutation observers where available
+
 0.2.2
 
 * [build] Upload to AMO
