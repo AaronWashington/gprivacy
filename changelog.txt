@@ -1,5 +1,14 @@
 Current svn: $Id$
 
+0.2.2
+
+* [build] Upload to AMO
+* [build] Bump version number
+
+0.2.2pre3
+
+- [compat] Make missing addon a warning
+
 0.2.2pre2
 
 * [facebook] Handle new tracking mechanism
