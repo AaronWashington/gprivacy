@@ -113,7 +113,7 @@ AddonCompat.prototype = {
           if (addons[a] == null ) {
             // Seems to happen with disabled addons
             // This seems to be fixed in Gecko 12.0 (maybe even 11.0)
-            Logging.error("AddonManager returned null for installed addon '"+keys[a]+"'. Compatibility checks not added!");
+            Logging.warn("AddonManager returned null for installed addon '"+keys[a]+"'. Disabled? Compatibility checks not added!");
             continue;
           }
           if (addons[a].isActive) {

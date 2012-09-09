@@ -13,6 +13,11 @@ In case somebody's wondering why I'm using HTML-markup: I want to copy this
 page to and from the AMO release notes.
 </wiki:comment>
 
+=== v0.2.2 ===
+  <li>Handle new Facebook tracking method.</li>
+  <li>Recognize .com.* and .co.* Google-Domains.</li>
+  <li>Some Facebook cosmetics.</li>
+  
 === v0.2.1 ===
   <li>Added fr-FR locale (Thanks, Ethelshai!).</li>
 

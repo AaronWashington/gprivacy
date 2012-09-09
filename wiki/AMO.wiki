@@ -34,8 +34,9 @@ Websites supported (for now) are Google, YouTube, Yahoo!, Bing and Facebook.
 </ul>
 <strong>Known Issues</strong>
 <ul>
-  <li>Local Google sites (google.com.* and google.co.*) are not recognized (v0.0.3-v0.2.1).</li>
-  <li>Google log-on is not always recognized (v0.0.3-v0.2.1).</li>
+  <li>Facebook has changed their click-tracking mechanism.
+       This should be fixed in <a href="https://addons.mozilla.org/en-US/seamonkey/addon/google-privacy/versions/">version 0.2.2</a>. Please let me know!</li>
+  <li>Google log-on is not always recognized (v0.0.3-v0.2.2).</li>
 </ul>
 
 <strong>Please Note: This software COMES AS IS! No warranties included - Please read also: <a href="http://code.google.com/p/gprivacy/wiki/README#Disclaimer">DISCLAIMER</a>
