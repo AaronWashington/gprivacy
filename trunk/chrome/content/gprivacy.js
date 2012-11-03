@@ -4,10 +4,6 @@
 
 Components.utils.import("resource://gre/modules/Services.jsm");
 
-Components.utils.import("chrome://gprivacy/content/gputils.jsm");
-Components.utils.import("chrome://gprivacy/content/gpengines.jsm");
-Components.utils.import("chrome://gprivacy/content/gpchangemon.jsm");
-Components.utils.import("chrome://gprivacy/content/gpcompat.jsm");
 
 var gprivacy = {
   INSERT_EVT: "DOMNodeInserted", // See observeMutations below!
@@ -20,7 +16,9 @@ var gprivacy = {
   onLoad: function GP_onLoad() {
     try {
       let self = this;
-      this.debug      = Logging.debug.bind(Logging);
+      Components.utils.import("chrome://gprivacy/content/gputils.jsm", this);
+
+      this.debug      = this.Logging.debug.bind(this.Logging);
       this.loadPrefs();
       this.strings    = document.getElementById("gprivacy-strings");
       this.appcontent = document.getElementById("appcontent");
@@ -34,14 +32,17 @@ var gprivacy = {
       this.MARKBOGUS.title = this.strings.getString("compromisedTip");
       
       if (this.appcontent) { // this is a browser
+        Components.utils.import("chrome://gprivacy/content/gpengines.jsm",   this);
+        Components.utils.import("chrome://gprivacy/content/gpchangemon.jsm", this);
+        Components.utils.import("chrome://gprivacy/content/gpcompat.jsm",    this);
         // Property intializaion should be done by here...
 
         this.window    = window;
         this.browser   = gBrowser;
-        this.popup     = new Popup(this);
-        this.compat    = new AddonCompat(this);
-        this.changemon = new ChangeMonitor(this);
-        this.engines   = new Engines(this);
+        this.popup     = new this.Popup(this);
+        this.compat    = new this.AddonCompat(this);
+        this.changemon = new this.ChangeMonitor(this);
+        this.engines   = new this.Engines(this);
 
         // notify bootstrapped add-on engines
         let evt = window.document.createEvent("Event");
@@ -66,12 +67,12 @@ var gprivacy = {
       this.debug("initialized!");
     }
     catch (exc) {
-      Logging.logException(exc);
+      this.Logging.logException(exc);
     }
   },
 
   loadPrefs: function GP_loadPrefs() {
-    Logging.DEBUG     = Services.prefs.getBoolPref("extensions.gprivacy.debug");
+    this.Logging.DEBUG= Services.prefs.getBoolPref("extensions.gprivacy.debug");
     this.active       = Services.prefs.getBoolPref("extensions.gprivacy.active");
     this.auto         = Services.prefs.getBoolPref("extensions.gprivacy.auto");
     this.replace      = Services.prefs.getBoolPref("extensions.gprivacy.replace");
@@ -126,13 +127,13 @@ var gprivacy = {
         doc.defaultView.addEventListener("load",   opl,  false);
       }
     } catch (exc) {
-      Logging.logException(exc);
+      this.Logging.logException(exc);
     }
   },
   
   onPageUnload: function GP_onPageUnload(eng, doc, e) {
     // TODO: find and remove all listeners
-    Logging.log("Page '"+doc.location.href+"' unloaded.");
+    this.Logging.log("Page '"+doc.location.href+"' unloaded.");
   },
   
   onPageLoad: function GP_onPageLoad(eng, doc, e) {
@@ -170,7 +171,7 @@ var gprivacy = {
 
       self.changemon.pageLoaded(eng, doc, links, changed);
     } catch (exc) {
-      Logging.logException(exc);
+      this.Logging.logException(exc);
     }
   },
   
@@ -200,7 +201,7 @@ var gprivacy = {
             let pseudoEvt = { type:           mutation.type,
                               currentTarget:  elt,
                               originalTarget: mutation.target,
-                              attrChange:     mutation.prevValue != newv,
+                              attrChange:     mutation.prevValue && (mutation.prevValue != newv),
                               attrName:       mutation.attributeName,
                               prevValue:      mutation.prevValue || "",
                               newValue:       newv };
@@ -212,17 +213,17 @@ var gprivacy = {
     // REMOVEME: This is a compatibility hack until ESR 10 is EOLed
     try {   obs = new MutationObserver(GP_obsMut);
     } catch (exc) {
-      try { obs = new MozMutationObserver(GP_obsMut); Logging.debug("Using MozMutationObserver"); }
+      try { obs = new MozMutationObserver(GP_obsMut); this.Logging.debug("Using MozMutationObserver"); }
       catch (ex2) {}
     }
     if (obs != null) {
       config = config || { childList: true, subtree: true };
       obs.observe(elt, config);
     } else {
-      Logging.debug("MutationObserver not implemented, using DOM Mutation events");
+      this.Logging.debug("MutationObserver not implemented, using DOM Mutation events");
       elt.addEventListener(self.INSERT_EVT, evtHandler, false, true);
       if (config.attributes)
-        Logging.error("Attributes are not supported via DOM Mutation events")
+        this.Logging.error("Attributes are not supported via DOM Mutation events")
     }
   },
   
@@ -234,7 +235,7 @@ var gprivacy = {
       return;
 
     if (!elt.getElementsByTagName) {
-      Logging.error(elt.tagName + " doesn't have a 'getElementsByTagName' method! Not inserted!");
+      this.Logging.error(elt.tagName + " doesn't have a 'getElementsByTagName' method! Not inserted!");
       return;
     }
     let links = elt.getElementsByTagName("a");
@@ -271,7 +272,7 @@ var gprivacy = {
     if (eng.all) rc = eng.removeAll(     doc, link, replaced);
     else         rc = eng.removeTracking(doc, link, replaced);
     if (this.browserclick)
-      EventUtils.makeBrowserLinkClick(this.window, doc, link, true);
+      this.EventUtils.makeBrowserLinkClick(this.window, doc, link, true);
     return rc;
   },
   
@@ -279,14 +280,14 @@ var gprivacy = {
     
     if (priv && privicon) {
       if (priv.setIcon) priv.setIcon(privicon); 
-      else              DOMUtils.setIcon(priv, privicon);
+      else              this.DOMUtils.setIcon(priv, privicon);
       priv.gprivacyIcon = privicon; // remember it
     }
     
     if (tracked && trackicon) // original link is kept
     {
       if (tracked.setIcon) tracked.setIcon(trackicon);
-      else                 DOMUtils.setIcon(tracked, trackicon);
+      else                 this.DOMUtils.setIcon(tracked, trackicon);
       tracked.gprivacyIcon = trackicon;
     }
   },
@@ -309,7 +310,7 @@ var gprivacy = {
     if (!tracking && // do we watch this link anyway?
         (this.changemon.level & this.changemon.ALL) &&
         (orgLink.hostname != "" || this.anonlinks)) {
-      let moni = wrap(orgLink), icon = DOMUtils.create(doc, this.MARKORIG);
+      let moni = wrap(orgLink), icon = this.DOMUtils.create(doc, this.MARKORIG);
       moni.setAttribute("gprivacy", "unknown"); // mark as visited
       icon.setAttribute("title", "Unknown...");
       if (this.seticons && !(this.changemon.level & this.changemon.SILENT))
@@ -342,7 +343,7 @@ var gprivacy = {
       }
 
       if (annot !== null) {
-        DOMUtils.removeAllChildren(second);
+        this.DOMUtils.removeAllChildren(second);
         if (verb)
           second.appendChild(replace ? doc.createTextNode(this.tracktext)
                                      : doc.createTextNode(this.privtext));
@@ -392,13 +393,13 @@ var gprivacy = {
   showContextMenu: function GP_showContextMenu(e) {
     // show or hide the menuitem based on what the context menu is on
     let eng = this.engines.find(gBrowser.selectedBrowser.contentDocument, false, this.embedded);
-    document.getElementById("context-gprivacy").hidden = (eng == null);
-    document.getElementById("context-gprrun").hidden   = (eng == null || this.auto);
+    document.getElementById("gprivacy-context-gprivacy").hidden = (eng == null);
+    document.getElementById("gprivacy-context-gprrun").hidden   = (eng == null || this.auto);
   },
 
   onMenuItemCommand: function GP_onMenuItemCommand(e) {
     let self = (this || gprivacy);
-    if (e.target.id == "context-gprivacy") {
+    if (e.target.id == "gprivacy-context-gprivacy") {
       let args = { rc: null };
       this.showOptions(args);
       if (args.rc)
@@ -407,7 +408,7 @@ var gprivacy = {
           if (self.engines.find(b.contentDocument, false, this.embedded) != null)
             b.reload();
         }
-    } else if (e.target.id == "context-gprrun") {
+    } else if (e.target.id == "gprivacy-context-gprrun") {
       let doc = gBrowser.selectedBrowser.contentDocument;
       let eng = self.engines.find(doc, true, this.embedded);
       if (eng)
@@ -417,9 +418,7 @@ var gprivacy = {
 
 };
 
-let onLoad = function () {
+window.addEventListener("load", function gprivacy_onLoad() {
   gprivacy.onLoad();
-  window.removeEventListener("load", onLoad, false);
-};
-
-window.addEventListener("load", onLoad, false);
+  window.removeEventListener("load", gprivacy_onLoad, false);
+}, false);

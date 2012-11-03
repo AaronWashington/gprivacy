@@ -13,17 +13,17 @@
   </stringbundleset>
 
   <popup id="contentAreaContextMenu">
-    <menuitem id="context-gprivacy" label="&gprivacyContext.label;"
+    <menuitem id="gprivacy-context-gprivacy" label="&gprivacyContext.label;"
               class="menuitem-iconic"
               image="&gprivacyContext.icon;"
               accesskey="&gprivacyContext.accesskey;"
               insertafter="context-sep-selectall,context-sep-stop,context-sep-copylink,context-sep-properties"
               oncommand="gprivacy.onMenuItemCommand(event)"/>
-    <menuitem id="context-gprrun" label="&gprivacyRun.label;"
+    <menuitem id="gprivacy-context-gprrun" label="&gprivacyRun.label;"
               class="menuitem-iconic"
               image="&gprivacyRun.icon;"
               accesskey="&gprivacyRun.accesskey;"
-              insertafter="context-gprivacy"
+              insertafter="gprivacy-context-gprivacy"
               oncommand="gprivacy.onMenuItemCommand(event)"/>
   </popup>
   
