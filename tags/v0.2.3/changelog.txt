@@ -1,0 +1,217 @@
+Current svn: $Id$
+
+0.2.3
+
+* [build] Upload to AMO
+* [build] Bump version number
+
+0.2.3pre3
+
+* [bing] Handle new tracking
+
+0.2.3pre2
+
+* [core] Join Mozilla's war on globals
+
+0.2.3pre1
+
+* [core] Use mutation observers where available
+
+0.2.2
+
+* [build] Upload to AMO
+* [build] Bump version number
+
+0.2.2pre3
+
+- [compat] Make missing addon a warning
+
+0.2.2pre2
+
+* [facebook] Handle new tracking mechanism
+* [build] Update to latest Gecko versions
+
+0.2.2pre1
+
+- [google] Match .co.* and .com.* google-domains
+- [facebook] cosemetic fixes
+- [core][changemon] Work around bug 757639
+* [build] Use jsshell from Gecko 15 for syntax check
+
+0.2.1
+
+* [build] Upload to AMO
+* [build] Bump version number
+
+0.2.1pre2
+
++ [core] Added fr-FR locale (thanks, Ethelshai!)
+* [core] Start changing name to gPrivacy
+* [options] de-DE title wrong
+* [build] Make update.rdf get latest version from trunk
++ [tests] Test google login
+* [tests] Improve click hits
++ [tests] Add initial tests for My Yahoo!
++ [tests] Add fr locale for google searches
+
+0.2.0
+
+* [build] Upload to AMO
+* [build] Bump version number
+
+0.2.0pre8
+
+- [google] fix log-in-check
+- [core] Use proper function binding for engine methods
+* [core] Remove dynamic engine loading from AMO-release
+- [core] Properly bind debug method to gprivacy instance
+- [core] remove more event listeners on unload
++ [core] Enable bootstrapped engines by sending events after initialization
++ [core] Make engine collections available to bootstrapped engines
+- [core] fix typo
+* [core] check login only once per document
+* [ask] Make Ask.com engine bootstrapped (restartless)
++ [build] Syntax-check XUL-files in extension-root
+- [build] Adress AMO reviewers complaints
+- [tests] Fix page waiting for additional tabs (hopefully)
+* [tests] Use message box for pause under windows
++ [tests] Add test module for implemented fixes and for debugging
+- [tests] Fix Google deadlock
++ [tests] Allow expected errors and warnings in log
+
+0.2.0pre7
+
+- [google] Fix a syntax error in the developer release
+* [google] re-enable formatting (keep inner elements, remove warnings, pref)
+- [google] Avoid multiple warning popups in one window
+* [google] Reverse defaults in warning
++ [yahoo] Better styling for images
++ [core] Prepare engines for dynamic removal (bootstrapped engines)
+* [core] Option to turn of automatic privatization
+* [core] Optimize CSS-icon assignments
+* [core] More 'strict' enforcements and optimizations
+* [core] [changemon] Move popup-functions to utilities (and use in AMO version, too)
+* [core] Get window and browser from gprivacy instance
+- [options] Fix checking for context menu call - again.
+* [options] cosmetics
+* [utils] flush log files after writing
++ [utils] Write log to file
++ [build] Prepare build for bootstrapping
+* [build] Touching sources doesn't update SVN-stamps - so don't do it
+* [build] Remove more ChangeMonitor code from AMO builds.
+* [build] [changemon] remove resource directory from AMO build
++ [tests] add Ask.com tests
++ [tests] allow venkman
++ [tests] show error console
+- [tests] fallback coordinate calculation
++ [tests] Slowly start adding unit tests
+* [proj] Commit attribute changes
+
+0.2.0pre6
+
++ [bing] Hotmail support (experimental)
+* [google] Display add-on name in popup warning
+* [yahoo] Route clicks through browser API on Search
++ [core] Advanced option to route all link clicks through chrome
+* [core] New method to block event handlers (load page via browser API)
+* [core] Some small optimizations
+- [compat] AddonManager seems tu return null for some add-ons in older Geckos
+- [changemon] Fix error when logging NoTracking found events
+- [build] Bump Mozilla browser versions
++ [build] create an update.rdf for developer versions
+* [build] remove all changemon resources from AMO build
+- [options] Fix checking for context menu call
+
+0.2.0pre5
+
+- [core] Omit some initializations if we're not in a browser window
+- [core] Only handle complete load events if engine matches
+- [core] Don't overwrite existing background-image styles
+- [compat] Fix RequestPolicy compatibility by registering link clicks with it
++ [changemon] Read ignore rules from DB
++ [changemon] Page-load timing
++ [changemon] Option to switch off all-links-decoration (SILENT)
+* [changemon] Split DB access into a module
+- [changemon] Fix DB creation handling
+- [build] Enable and fix strict JavaScript warnings
+- [build] Fix Python < 2.7 incompatibility in xullint
+* [build] Don't ship monitor sources with AMO builds
+
+* [core] Use styles for icons (fixes a lot of  Yahoo! and other general click problems)
++ [core] Add an add-on compatibility module
++ [changemon] Option to log modifications to DB
++ [changemon] Open firebug, web console or RequestPolicy network log
+* [changemon] ignore unchanged attributes
+* [changemon] let engines ignore changes
+* [changemon] remove proxy code
+* [yahoo] Use capturing event handlers
+* [build] Allow command overriding outside build.cmd
+* [build] Set homepage in install.rdf
+
+0.2.0pre4
+
+* [google] Ignore Google+ notification iframe
++ [core] Added de-DE locale
++ [core] Overlay browser preferences  
+* [core] setMark is now setIcon, 'cause that's what it is...
+* [core] monitor tracked links in debug mode
+* [core] Change displayed Add-on name to 'Website Privacy'
++ [changemon] Monitor events from untrusted sources (experimental)
++ [build] Check XUL syntax before packing
++ [build] Add a dummy change monitor for distribution on AMO
+
+0.2.0pre3
+
+* Replace inner elements in google search results (and warn user)
+* Improved page load handling
+* Simplified link modification
+* Create a new engines collection for each window
+* Create a new change monitor for each window
+* Change support links
+- Remove the last data: urls
+- Several bugfixes
+  
+0.2.0pre2
+
+* Improve Ask.com sample add-on
+* Improve link monitoring
+
+0.2.0pre1
+
++ Monitor modified links for dynamic changes (for add-on developers).
+- Fix YouTube login check
+* Ignore maps|code|plus(one)?\.google\..* for now
++ Support news.google.com
+- Remove 'data:...' urls
+- Remove innerHTML access
+- Fix Ctrl-click
+* Major Code refactoring
++ Add possibility to add engines from other add-ons
++ Sample Ask.com add-on
+- More Facebook improvements
+- Hide pattern preferences from users
+
+0.1.0:
+
++ Enable engines separately
++ Add options leave links from same domain alone (default!)
++ Open options from context menu on recognized websites
++ YouTube support
++ Allow blocking of all link events
+- Improve Facebook links
+  
+0.0.4:
+
++ Facebook support (alpha)
+- Fix link order in Google results
+
+0.0.3:
+
+Initial AMO public release
+
+0.0.0:
+
+Icons from http://openiconlibrary.sourceforge.net/
+  private:   16x16\status\security-high-2.png
+  tracking:  16x16\status\security-low-2.png
+  attention: 16x16\status\dialog-warning-2.png
