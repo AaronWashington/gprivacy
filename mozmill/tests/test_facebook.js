@@ -88,20 +88,17 @@ var testTrackedClick = function() {
 
 function linkPred() {
   // Ignore images for now and treat them in a separate test
-  function gprLinkPred(link, what) {
+  let gprLinkPred = function(link, what) {
     let gprivacy = (what=="priv").toString();
     if (!link.getAttribute("gprivacy") ||
         link.getAttribute("gprivacy") != gprivacy ||
         link.classList.contains("UIImageBlock_Image") ||
         link.classList.contains("uiImageBlockImage") )
       return false;
-    if (what == "found")
-      return link.hasAttribute("onmouseover") &&
-             link.getAttribute("onmouseover").match(/^Link[\w\.]*\.swap/)
     return true;
   };
   
-  return { found: gprLinkPred, track: gprLinkPred, priv:  gprLinkPred, };
+  return { found: LINK_PATH, track: gprLinkPred, priv:  gprLinkPred, };
 }  
 
 function dispBlueBar(how) { // see testPrivateLink
