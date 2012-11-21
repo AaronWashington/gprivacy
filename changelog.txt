@@ -1,6 +1,20 @@
 Current svn: $Id$
 
+0.2.3
+
+* [build] Upload to AMO
+* [build] Bump version number
+
+0.2.3pre3
+
+* [bing] Handle new tracking
+
+0.2.3pre2
+
+* [core] Join Mozilla's war on globals
+
 0.2.3pre1
+
 * [core] Use mutation observers where available
 
 0.2.2

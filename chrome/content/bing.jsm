@@ -17,7 +17,7 @@ function gprivacyBing(engines) {
 gprivacyBing.prototype = {
   ID:         "bing",
   NAME:       "Bing",
-  TRACKATTR:  [ "onmousedown" ],
+  TRACKATTR:  [ "onmousedown", "h" ],
   LINK_CLASS: "sb_meta",
   
   loggedIn: function(doc) {
