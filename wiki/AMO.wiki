@@ -100,6 +100,12 @@ So the idea for this add-on was born.
 = v0.2.0 =
 If there are any recommendations what to use instead of 'DOMNodeInserted' (like an observer), please tell me so...
 
+= v0.2.3 =
+Regarding the review of 0.2.2
+1) All 'loose' variables except 'gprivacy' have been removed - this is used as the namespace.
+2) All DOM-Nodes created are now prefixed with 'gprivacy-'.
+3) Debug output was always _off_ by default and can be enabled in the advanced preferences on request, to assist troubleshooting. No debug output should be visible in a default installation.
+
 = Contributions =
 
 == Thank you note ==

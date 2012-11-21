@@ -13,6 +13,10 @@ In case somebody's wondering why I'm using HTML-markup: I want to copy this
 page to and from the AMO release notes.
 </wiki:comment>
 
+=== v0.2.3 ===
+  <li>Handle new Bing tracking method.</li>
+  <li>Join Mozilla's war on global variables.</li>
+
 === v0.2.2 ===
   <li>Handle new Facebook tracking method.</li>
   <li>Recognize .com.* and .co.* Google-Domains.</li>
