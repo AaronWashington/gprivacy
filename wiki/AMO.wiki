@@ -104,7 +104,7 @@ If there are any recommendations what to use instead of 'DOMNodeInserted' (like 
 Regarding the review of 0.2.2
 1) All 'loose' variables except 'gprivacy' have been removed - this is used as the namespace.
 2) All DOM-Nodes created are now prefixed with 'gprivacy-'.
-3) Debug output was always _off_ by default and can be enabled in the advanced preferences on request, to assist troubleshooting. No debug output should be visible in a default installation.
+3) Debug output was always _off_ by default and can be enabled in the advanced preferences on request, to assist troubleshooting. No debug output should be visible in a default installation. There were, however, two missed locations.
 
 = Contributions =
 
