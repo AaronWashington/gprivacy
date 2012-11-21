@@ -133,7 +133,7 @@ var gprivacy = {
   
   onPageUnload: function GP_onPageUnload(eng, doc, e) {
     // TODO: find and remove all listeners
-    this.Logging.log("Page '"+doc.location.href+"' unloaded.");
+    this.Logging.debug("Page '"+doc.location.href+"' unloaded.");
   },
   
   onPageLoad: function GP_onPageLoad(eng, doc, e) {
