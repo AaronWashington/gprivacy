@@ -1,7 +1,5 @@
 Current svn: $Id$
 
-0.2.4
-
 0.2.3
 
 * [build] Upload to AMO
