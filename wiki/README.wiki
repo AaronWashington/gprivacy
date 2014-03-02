@@ -73,10 +73,10 @@ http://gprivacy.googlecode.com/svn/wiki/screens/gprivacy-options.default.jpg
 
 ==== Website Options ====
   * *Own links allowed* - Links to the same website will not be modified. This prevents the cluttering of some websites by sacrificing a little privacy. This is usually not a problem, as the links target is clearly visible in the browsers status, and the website can register the click anyway.
-  * *All Clicks http://gprivacy.googlecode.com/svn/trunk/chrome/skin/attention.png * - Try to catch *`*`every`*`* click on recognized links, and block it. Use this only, if you don't trust a website, as this might impair its functionality!
+  * *All Clicks http://gprivacy.googlecode.com/svn/trunk/chrome/skin/attention16.png * - Try to catch *`*`every`*`* click on recognized links, and block it. Use this only, if you don't trust a website, as this might impair its functionality!
 
 ==== Advanced Options ====
-http://gprivacy.googlecode.com/svn/trunk/chrome/skin/attention.png
+http://gprivacy.googlecode.com/svn/trunk/chrome/skin/attention16.png
 You should leave this options as is, unless asked by the developers to
 change them!
 
