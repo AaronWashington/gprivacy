@@ -108,10 +108,10 @@ var gprivacy = {
       
       if (!this.active) return;
       
+      let doc = e.type != "DOMFrameContentLoaded" ? e.originalTarget : e.originalTarget.contentDocument;
+    
       this.compat.refresh(doc);
       this.engines.refresh(doc);
-    
-      let doc = e.type != "DOMFrameContentLoaded" ? e.originalTarget : e.originalTarget.contentDocument;
     
       let eng = self.engines.find(doc.location.href, true)
 
