@@ -43,7 +43,7 @@
 <!ENTITY all.tip     "Achtung! Wenn alle Klicks blockiert werden, funktioniert die Website wahrscheinlich nicht mehr!">
 <!ENTITY all.blocked "blockiert">
 
-<!ENTITY advanced.label "Werweiter (Achtung!)">
+<!ENTITY advanced.label "Erweitert (Achtung!)">
 <!ENTITY advanced.tip   "Das Setzen dieser Optionen kann Websites zerstören und die Broweser-Leistung massiv beeinträchtigen!">
 
 <!ENTITY warning.icon   "chrome://gprivacy/skin/attention16.png">
