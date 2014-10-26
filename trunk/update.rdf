@@ -9,7 +9,7 @@
 
         <RDF:li>
           <RDF:Description>
-            <em:version>0.2.4pre2-dev</em:version> <!-- This is the version number of the add-on -->
+            <em:version>0.2.4-dev</em:version> <!-- This is the version number of the add-on -->
             <!-- ALERT: please update the updateLink's below! -->
             
             <em:targetApplication>

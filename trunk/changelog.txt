@@ -1,6 +1,6 @@
 Current svn: $Id$
 
-0.2.4pre2
+0.2.4
 
 - [core] Fix uninitialized variable
 - [core] Fix a typo in german translation
