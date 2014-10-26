@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id$ -->
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>{ea61041c-1e22-4400-99a0-aea461e69d04}</em:id>
+    <em:type>2</em:type>
+    
+    <em:name>Google Privacy</em:name> <!-- We'll probably have to change this -->
+    
+    <!-- REMOVEME: Don't forget to update about.xul (also Ask.com) and update.rdf, too! -->
+    <em:version>0.2.4-dev</em:version>
+
+    <em:creator>Herrminator</em:creator>
+    <em:homepageURL>http://code.google.com/p/gprivacy/wiki/README</em:homepageURL>
+    <em:translator>Ethelshai - fr</em:translator>
+    <em:contributor></em:contributor>
+    <em:description>gPrivacy - Make search engines respect your privacy settings</em:description>
+    <em:aboutURL>chrome://gprivacy/content/about.xul</em:aboutURL>
+    <em:optionsURL>chrome://gprivacy/content/options.xul</em:optionsURL>
+    <em:iconURL>chrome://gprivacy/skin/icon.png</em:iconURL>  
+    <em:targetApplication>
+      <Description>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- Firefox -->
+        <em:minVersion>6.0</em:minVersion>
+        <em:maxVersion>35.0a1</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+    <em:targetApplication>
+      <Description>
+        <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id> <!-- SeaMonkey -->
+        <em:minVersion>2.1</em:minVersion>
+        <em:maxVersion>2.32a1</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+    <em:updateURL>https://gprivacy.googlecode.com/svn/trunk/update.rdf</em:updateURL>
+  </Description>
+</RDF>
